@@ -1,6 +1,6 @@
 # Sprint 1 — Auth e Onboarding
 
-Status: **quase concluído**. Pendente: 1 autorização do owner (criar superadmin).
+Status: **CONCLUÍDO**. Superadmin criado e login validado end-to-end.
 
 ## Projeto Supabase
 
@@ -47,9 +47,13 @@ Status: **quase concluído**. Pendente: 1 autorização do owner (criar superadm
 
 > Isolamento por `tenant_id = current_tenant_id()` (claim do JWT). Teste end-to-end por papel será feito após bootstrap do superadmin + criação de um tenant piloto.
 
-## Pendência — autorização do owner
+## Superadmin
 
-Criar o **superadmin** (Gabriel) foi bloqueado pelo classificador de segurança (conta de privilégio máximo com credencial escolhida pelo agente). Precisa de autorização explícita + senha escolhida pelo Gabriel. Ver opções no chat.
+Criado via SQL server-side (autorizado pelo owner, senha escolhida por ele): `biel.atm11@gmail.com`, role `superadmin`, `tenant_id` null. Login validado por API (`/auth/v1/token`) — JWT carrega `app_metadata.role=superadmin`. **Owner deve trocar a senha temporária no primeiro acesso.**
+
+## Validação de senha (UI)
+
+Checklist ao vivo na tela de redefinir senha (`PasswordRequirements`): ≥8 chars, 1 maiúscula, 1 minúscula, 1 número, 1 especial. Regras puras em `src/lib/password.ts` (testadas). Botão bloqueado até cumprir.
 
 ## Próximo (Sprint 2)
 Cadastros base: Unidades (mapa Leaflet + import CSV), Equipamentos (QR code), Empresas, Contratos (upload PDF).

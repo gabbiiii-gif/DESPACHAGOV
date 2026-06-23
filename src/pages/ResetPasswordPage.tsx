@@ -6,10 +6,15 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
+import { senhaValida } from "@/lib/password";
 
 // Acessada via link do e-mail (Supabase já cria sessão de recovery na URL).
 const schema = z
-  .object({ senha: z.string().min(8, "Mínimo 8 caracteres"), confirma: z.string() })
+  .object({
+    senha: z.string().refine(senhaValida, "A senha não cumpre os requisitos"),
+    confirma: z.string(),
+  })
   .refine((v) => v.senha === v.confirma, { message: "As senhas não conferem", path: ["confirma"] });
 
 export function ResetPasswordPage() {
@@ -40,8 +45,9 @@ export function ResetPasswordPage() {
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         {erro && <Alert tipo="erro">{erro}</Alert>}
         <Input label="Nova senha" type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+        <PasswordRequirements senha={senha} />
         <Input label="Confirmar senha" type="password" autoComplete="new-password" value={confirma} onChange={(e) => setConfirma(e.target.value)} />
-        <Button type="submit" loading={loading} className="w-full">
+        <Button type="submit" loading={loading} disabled={!senhaValida(senha)} className="w-full">
           Salvar senha
         </Button>
       </form>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;-webkit-font-smoothing:antialiased;}
+.dgcard{background:#fff;border-radius:3px;box-shadow:0 1px 3px rgba(16,40,76,.1),0 8px 28px rgba(16,40,76,.08);}
+.dglabel{font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;color:#5a6478;margin:0 0 12px 2px;display:flex;align-items:center;gap:8px;}
+.dglabel span{font-size:10.5px;font-weight:700;color:#fff;background:#636B2F;padding:3px 8px;border-radius:4px;letter-spacing:.06em;}
+.dgsub{font-family:'Public Sans',sans-serif;font-size:12px;color:#8a93a6;margin:2px 0 0 2px;}
+</style>
+</helmet>
+
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:48px;background:#E7E8EC;font-family:'Public Sans',sans-serif;">
+
+  <div style="margin-bottom:38px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="30" height="30" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:22px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span>
+    </div>
+    <div style="font-family:'Public Sans',sans-serif;font-size:14px;color:#6B7488;margin-top:8px;">Fluxo completo — Secretaria abre · Empresa recebe · Técnico executa e comprova</div>
+  </div>
+
+  <!-- ============ ROW 1: ABRIR CHAMADO + EMPRESA DESKTOP ============ -->
+  <div style="display:flex;gap:48px;align-items:flex-start;margin-bottom:54px;">
+
+    <!-- FRAME 1: MODAL ABRIR CHAMADO -->
+    <div style="flex:none;width:1180px;">
+      <div class="dglabel"><span>01 · SECRETARIA</span> Abrir chamado — modal (desktop)</div>
+      <div class="dgcard" data-screen-label="Modal Abrir Chamado" style="width:1180px;height:760px;overflow:hidden;position:relative;">
+        <!-- blurred dashboard behind -->
+        <div style="position:absolute;inset:0;background:#EEF1F6;">
+          <div style="height:68px;background:#fff;border-bottom:1px solid #E3E6EC;display:flex;align-items:center;padding:0 28px;gap:14px;">
+            <div style="display:flex;align-items:center;gap:9px;"><svg width="24" height="24" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/></svg><span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:16px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span></div>
+          </div>
+          <div style="padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;opacity:.5;">
+            <div style="height:96px;background:#fff;border:1px solid #E3E6EC;border-radius:13px;"></div><div style="height:96px;background:#fff;border:1px solid #E3E6EC;border-radius:13px;"></div><div style="height:96px;background:#fff;border:1px solid #E3E6EC;border-radius:13px;"></div><div style="height:96px;background:#fff;border:1px solid #E3E6EC;border-radius:13px;"></div>
+          </div>
+        </div>
+        <!-- scrim -->
+        <div style="position:absolute;inset:0;background:rgba(11,16,24,.55);backdrop-filter:blur(2px);"></div>
+        <!-- modal -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;background:#fff;border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.4);overflow:hidden;">
+          <div style="padding:22px 26px;border-bottom:1px solid #EEF0F4;display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:800;color:#636B2F;">Abrir novo chamado</div>
+              <div style="font-size:13px;color:#6B7488;margin-top:3px;">A empresa responsável é notificada na hora.</div>
+            </div>
+            <div style="width:32px;height:32px;border-radius:8px;background:#F2F4F8;display:flex;align-items:center;justify-content:center;color:#6B7488;cursor:pointer;font-size:18px;">✕</div>
+          </div>
+          <div style="padding:22px 26px;max-height:520px;overflow:auto;">
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Título do serviço</label>
+              <div style="border:1.5px solid #636B2F;border-radius:9px;padding:12px 14px;font-size:14px;color:#636B2F;background:#fff;">Vazamento na recepção</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+              <div>
+                <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Secretaria</label>
+                <div style="border:1px solid #E3E6EC;border-radius:9px;padding:12px 14px;font-size:14px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">Saúde <span style="color:#9099ab;">▾</span></div>
+              </div>
+              <div>
+                <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Unidade</label>
+                <div style="border:1px solid #E3E6EC;border-radius:9px;padding:12px 14px;font-size:14px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">UBS Central <span style="color:#9099ab;">▾</span></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+              <div>
+                <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Categoria</label>
+                <div style="border:1px solid #E3E6EC;border-radius:9px;padding:12px 14px;font-size:14px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">Hidráulica <span style="color:#9099ab;">▾</span></div>
+              </div>
+              <div>
+                <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Prestador sugerido</label>
+                <div style="border:1px solid #E3E6EC;border-radius:9px;padding:12px 14px;font-size:14px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">HidroFix Ltda <span style="color:#9099ab;">▾</span></div>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Prioridade</label>
+              <div style="display:flex;gap:9px;">
+                <div style="flex:1;text-align:center;padding:11px;border-radius:9px;font-size:13px;font-weight:700;background:#F6E9DE;color:#8A3D18;border:1.5px solid #C2602F;cursor:pointer;">Urgente · 30min</div>
+                <div style="flex:1;text-align:center;padding:11px;border-radius:9px;font-size:13px;font-weight:700;background:#F7F8FB;color:#6B7488;border:1px solid #E3E6EC;cursor:pointer;">Alta · 4h</div>
+                <div style="flex:1;text-align:center;padding:11px;border-radius:9px;font-size:13px;font-weight:700;background:#F7F8FB;color:#6B7488;border:1px solid #E3E6EC;cursor:pointer;">Normal · 48h</div>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Descrição</label>
+              <div style="border:1px solid #E3E6EC;border-radius:9px;padding:12px 14px;font-size:13.5px;color:#6B7488;background:#fff;line-height:1.5;min-height:64px;">Vazamento sob a pia da recepção, água acumulando no piso. Risco de escorregão para o público.</div>
+            </div>
+            <div>
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Anexos</label>
+              <div style="border:1.5px dashed #C9D0DC;border-radius:10px;padding:18px;text-align:center;background:#FAFBFC;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size:12.5px;color:#6B7488;">Arraste fotos ou <span style="color:#C2602F;font-weight:700;">selecione</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:18px 26px;border-top:1px solid #EEF0F4;display:flex;justify-content:flex-end;gap:10px;background:#FAFBFC;">
+            <button style="font-family:inherit;background:#fff;color:#636B2F;border:1px solid #cdd5e2;border-radius:9px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;">Cancelar</button>
+            <button style="font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(194,96,47,.3);">Despachar chamado →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRAME 2: EMPRESA DESKTOP -->
+    <div style="flex:none;width:1180px;">
+      <div class="dglabel"><span>02 · EMPRESA</span> Painel do prestador — recebe solicitações (desktop)</div>
+      <div class="dgcard" data-screen-label="Painel Empresa Desktop" style="width:1180px;height:760px;overflow:hidden;display:flex;background:#EEF1F6;">
+        <!-- sidebar empresa -->
+        <aside style="width:230px;flex:none;background:#3C401B;color:#cdd8ea;display:flex;flex-direction:column;padding:20px 14px;">
+          <div style="display:flex;align-items:center;gap:9px;padding:6px 8px 20px;">
+            <span style="width:30px;height:30px;border-radius:8px;background:#C2602F;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">HF</span>
+            <div style="line-height:1.2;"><div style="font-size:14px;font-weight:800;color:#fff;">HidroFix Ltda</div><div style="font-size:11px;color:#8696b4;">Prestador</div></div>
+          </div>
+          <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7e8aa1;font-weight:700;padding:8px 10px 6px;">Menu</div>
+          <a style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;background:#6E7639;color:#fff;font-size:13.5px;font-weight:700;margin-bottom:3px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Solicitações <span style="margin-left:auto;font-size:11px;font-weight:800;color:#fff;background:#C2602F;padding:2px 7px;border-radius:999px;">3</span>
+          </a>
+          <a style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;color:#cdd8ea;font-size:13.5px;font-weight:600;margin-bottom:3px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Agenda</a>
+          <a style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;color:#cdd8ea;font-size:13.5px;font-weight:600;margin-bottom:3px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Técnicos</a>
+          <a style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;color:#cdd8ea;font-size:13.5px;font-weight:600;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/></svg>Desempenho</a>
+        </aside>
+        <!-- main empresa -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+          <header style="height:64px;flex:none;background:#fff;border-bottom:1px solid #E3E6EC;display:flex;align-items:center;padding:0 24px;">
+            <div><div style="font-size:11px;color:#6B7488;font-weight:600;">Prefeitura de Santa Helena</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#636B2F;">Solicitações recebidas</div></div>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:12px;"><span style="font-size:12px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:6px 12px;border-radius:999px;display:flex;align-items:center;gap:6px;"><span style="width:7px;height:7px;border-radius:50%;background:#1F9D6B;"></span>Online</span></div>
+          </header>
+          <div style="padding:22px 24px;overflow:auto;">
+            <!-- new request alert -->
+            <div style="background:#fff;border:1px solid #EAD2BE;border-left:4px solid #C2602F;border-radius:12px;padding:18px 20px;margin-bottom:18px;box-shadow:0 6px 18px rgba(194,96,47,.1);">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                  <span style="width:44px;height:44px;border-radius:11px;background:rgba(194,96,47,.13);display:flex;align-items:center;justify-content:center;"><span style="width:11px;height:11px;border-radius:50%;background:#C2602F;"></span></span>
+                  <div>
+                    <div style="display:flex;align-items:center;gap:9px;margin-bottom:3px;"><span style="font-size:11px;font-weight:800;color:#fff;background:#C2602F;padding:3px 9px;border-radius:999px;">NOVA · URGENTE</span><span style="font-size:11.5px;color:#6B7488;font-weight:600;">recebida há 30s · SLA 30 min</span></div>
+                    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:#636B2F;">Vazamento na recepção</div>
+                    <div style="font-size:12.5px;color:#6B7488;margin-top:2px;">UBS Central · Saúde · Rua das Flores, 120</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                  <button style="font-family:inherit;background:#fff;color:#636B2F;border:1px solid #cdd5e2;border-radius:9px;padding:11px 18px;font-size:13.5px;font-weight:700;cursor:pointer;">Recusar</button>
+                  <button style="font-family:inherit;background:#636B2F;color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:13.5px;font-weight:700;cursor:pointer;">Aceitar &amp; designar técnico</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6B7488;margin:0 0 12px 2px;">Em andamento</div>
+            <div style="background:#fff;border:1px solid #E3E6EC;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:1.8fr 1.5fr 1.2fr 130px;gap:14px;padding:12px 20px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6B7488;border-bottom:1px solid #E3E6EC;"><span>Serviço</span><span>Unidade</span><span>Técnico</span><span style="text-align:right;">Status</span></div>
+              <div style="display:grid;grid-template-columns:1.8fr 1.5fr 1.2fr 130px;gap:14px;padding:14px 20px;border-bottom:1px solid #EEF0F4;align-items:center;"><div><div style="font-size:14px;font-weight:700;color:#636B2F;">Troca de lâmpadas</div><div style="font-size:12px;color:#6B7488;">há 38 min</div></div><div style="font-size:13px;color:#636B2F;">E.M. Vila Nova</div><div style="display:flex;align-items:center;gap:8px;"><span style="width:26px;height:26px;border-radius:50%;background:#2456A6;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;">RS</span><span style="font-size:13px;color:#636B2F;">Rian</span></div><span style="justify-self:end;font-size:11.5px;font-weight:700;color:#3f7be0;background:rgba(36,86,166,.14);padding:5px 11px;border-radius:999px;">Em campo</span></div>
+              <div style="display:grid;grid-template-columns:1.8fr 1.5fr 1.2fr 130px;gap:14px;padding:14px 20px;border-bottom:1px solid #EEF0F4;align-items:center;"><div><div style="font-size:14px;font-weight:700;color:#636B2F;">Conserto de torneira</div><div style="font-size:12px;color:#6B7488;">há 2h</div></div><div style="font-size:13px;color:#636B2F;">Creche Girassol</div><div style="display:flex;align-items:center;gap:8px;"><span style="width:26px;height:26px;border-radius:50%;background:#1F9D6B;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;">BA</span><span style="font-size:13px;color:#636B2F;">Bia</span></div><span style="justify-self:end;font-size:11.5px;font-weight:700;color:#3f7be0;background:rgba(36,86,166,.14);padding:5px 11px;border-radius:999px;">Em campo</span></div>
+              <div style="display:grid;grid-template-columns:1.8fr 1.5fr 1.2fr 130px;gap:14px;padding:14px 20px;align-items:center;"><div><div style="font-size:14px;font-weight:700;color:#636B2F;">Desentupimento</div><div style="font-size:12px;color:#6B7488;">comprovado · há 3h</div></div><div style="font-size:13px;color:#636B2F;">Posto Norte</div><div style="display:flex;align-items:center;gap:8px;"><span style="width:26px;height:26px;border-radius:50%;background:#636B2F;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;">PM</span><span style="font-size:13px;color:#636B2F;">Paulo</span></div><span style="justify-self:end;font-size:11.5px;font-weight:700;color:#1fa56f;background:rgba(31,157,107,.15);padding:5px 11px;border-radius:999px;">Concluído</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ROW 2: MOBILE TÉCNICO + MOBILE EMPRESA ============ -->
+  <div style="display:flex;gap:48px;align-items:flex-start;">
+
+    <!-- FRAME 3: APP TÉCNICO (3 telas) -->
+    <div style="flex:none;">
+      <div class="dglabel"><span>03 · TÉCNICO</span> App de campo — executa e comprova (mobile)</div>
+      <div style="display:flex;gap:26px;align-items:flex-start;">
+
+        <!-- 3a: lista do técnico -->
+        <div style="flex:none;">
+          <div class="dgsub" style="margin-bottom:10px;">Minhas ordens</div>
+          <div data-screen-label="App Técnico Lista" style="width:300px;background:#3C401B;border-radius:40px;padding:12px;box-shadow:0 22px 50px rgba(15,30,61,.3);">
+            <div style="background:#F4F5F8;border-radius:30px;overflow:hidden;">
+              <div style="background:#636B2F;padding:16px 18px 18px;color:#fff;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+                <div style="display:flex;align-items:center;gap:10px;"><span style="width:38px;height:38px;border-radius:50%;background:#2456A6;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">RS</span><div><div style="font-size:11px;color:#9fb0cc;">Olá, técnico</div><div style="font-size:15px;font-weight:800;">Rian Souza</div></div><span style="margin-left:auto;font-size:11px;font-weight:700;color:#636B2F;background:#C2602F;padding:5px 10px;border-radius:999px;">2 hoje</span></div>
+              </div>
+              <div style="padding:14px;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:10px;">ATRIBUÍDAS A VOCÊ</div>
+                <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #C2602F;border-radius:12px;padding:13px;margin-bottom:10px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><span style="font-size:10px;font-weight:800;color:#fff;background:#C2602F;padding:3px 8px;border-radius:999px;">URGENTE</span><span style="font-size:10.5px;color:#8A3D18;font-weight:700;">SLA 22 min</span></div>
+                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:800;color:#636B2F;">Vazamento na recepção</div>
+                  <div style="font-size:11.5px;color:#8a93a6;margin-top:2px;">UBS Central · 1,2 km</div>
+                  <button style="width:100%;margin-top:11px;font-family:inherit;background:#636B2F;color:#fff;border:none;border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;">Iniciar deslocamento</button>
+                </div>
+                <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #2456A6;border-radius:12px;padding:13px;">
+                  <div style="font-size:10px;font-weight:700;color:#1B4286;margin-bottom:5px;">EM CAMPO · iniciado 14:40</div>
+                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:800;color:#636B2F;">Troca de lâmpadas</div>
+                  <div style="font-size:11.5px;color:#8a93a6;margin-top:2px;">E.M. Vila Nova · no local</div>
+                  <button style="width:100%;margin-top:11px;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:9px;padding:10px;font-size:12.5px;font-weight:700;">Continuar execução →</button>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;padding:12px 0 16px;border-top:1px solid #E3E6EC;background:#fff;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#636B2F;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span style="font-size:9px;font-weight:700;">Ordens</span></div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9099ab;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span style="font-size:9px;font-weight:600;">Agenda</span></div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9099ab;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg><span style="font-size:9px;font-weight:600;">Perfil</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3b: comprovação foto + assinatura -->
+        <div style="flex:none;">
+          <div class="dgsub" style="margin-bottom:10px;">Comprovar execução</div>
+          <div data-screen-label="App Técnico Comprovação" style="width:300px;background:#3C401B;border-radius:40px;padding:12px;box-shadow:0 22px 50px rgba(15,30,61,.3);">
+            <div style="background:#F4F5F8;border-radius:30px;overflow:hidden;">
+              <div style="background:#636B2F;padding:16px 18px 16px;color:#fff;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:12px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+                <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:18px;">‹</span><div><div style="font-size:10.5px;color:#9fb0cc;">Chamado #2040</div><div style="font-size:14px;font-weight:800;">Troca de lâmpadas</div></div></div>
+              </div>
+              <div style="padding:14px;max-height:470px;overflow:auto;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">FOTO DA EXECUÇÃO</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                  <div style="aspect-ratio:1;border-radius:11px;background:linear-gradient(135deg,#cdd6e3,#e8edf4);display:flex;align-items:center;justify-content:center;color:#8a93a6;position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg><span style="position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:#fff;background:rgba(16,40,76,.7);padding:2px 6px;border-radius:6px;">antes</span></div>
+                  <div style="aspect-ratio:1;border-radius:11px;background:linear-gradient(135deg,#cde3d6,#e6f4ec);display:flex;align-items:center;justify-content:center;color:#1F9D6B;position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg><span style="position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:#fff;background:rgba(31,157,107,.85);padding:2px 6px;border-radius:6px;">depois</span></div>
+                </div>
+                <button style="width:100%;font-family:inherit;background:#fff;color:#636B2F;border:1.5px dashed #C9D0DC;border-radius:10px;padding:11px;font-size:12px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:7px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2602F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Tirar mais fotos</button>
+
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">OBSERVAÇÃO</div>
+                <div style="border:1px solid #E3E6EC;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#6B7488;background:#fff;line-height:1.5;margin-bottom:16px;">Trocadas 4 lâmpadas LED 18W na quadra. Testado, tudo funcionando.</div>
+
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">ASSINATURA DO RESPONSÁVEL</div>
+                <div style="border:1.5px solid #636B2F;border-radius:12px;background:#fff;height:96px;position:relative;overflow:hidden;margin-bottom:6px;">
+                  <svg width="100%" height="96" viewBox="0 0 260 96" preserveAspectRatio="none"><path d="M18 64 C 40 30, 56 30, 70 58 S 100 80, 116 50 S 150 24, 168 56 C 182 78, 196 40, 214 52 C 226 60, 236 48, 244 54" fill="none" stroke="#636B2F" stroke-width="2.4" stroke-linecap="round"/></svg>
+                  <span style="position:absolute;bottom:8px;left:14px;font-size:10.5px;color:#9099ab;">Maria Diretora · 15:12</span>
+                </div>
+                <div style="text-align:right;margin-bottom:16px;"><span style="font-size:11px;color:#C2602F;font-weight:700;">Limpar</span></div>
+
+                <button style="width:100%;font-family:inherit;background:#1F9D6B;color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:800;box-shadow:0 10px 20px rgba(31,157,107,.3);display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Concluir &amp; enviar comprovação</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRAME 4: APP EMPRESA MOBILE (2 telas) -->
+    <div style="flex:none;">
+      <div class="dglabel"><span>04 · EMPRESA</span> App do prestador — recebe solicitação (mobile)</div>
+      <div style="display:flex;gap:26px;align-items:flex-start;">
+
+        <!-- 4a: notificação nova solicitação -->
+        <div style="flex:none;">
+          <div class="dgsub" style="margin-bottom:10px;">Nova solicitação</div>
+          <div data-screen-label="App Empresa Nova Solicitação" style="width:300px;background:#05080d;border-radius:40px;padding:12px;box-shadow:0 22px 50px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);">
+            <div style="background:#0e131b;border-radius:30px;overflow:hidden;">
+              <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:16px 18px 18px;color:#fff;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:#bcc8de;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+                <div style="display:flex;align-items:center;gap:9px;"><span style="width:34px;height:34px;border-radius:9px;background:#C2602F;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">HF</span><div><div style="font-size:11px;color:#bcc8de;">HidroFix Ltda</div><div style="font-size:14px;font-weight:800;">Solicitações</div></div><span style="margin-left:auto;width:9px;height:9px;border-radius:50%;background:#C2602F;"></span></div>
+              </div>
+              <div style="padding:14px;">
+                <!-- incoming alert card -->
+                <div style="background:#171f2c;border:1.5px solid #C2602F;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 0 0 4px rgba(194,96,47,.12);">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:9px;height:9px;border-radius:50%;background:#C2602F;"></span><span style="font-size:10.5px;font-weight:800;color:#C2602F;letter-spacing:.05em;">NOVA · URGENTE</span><span style="margin-left:auto;font-size:10.5px;color:#8696b4;font-weight:600;">SLA 30 min</span></div>
+                  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:5px;">Vazamento na recepção</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bcc8de;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>UBS Central · Saúde</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bcc8de;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Rua das Flores, 120 · 1,2 km</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bcc8de;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>Categoria: Hidráulica</div>
+                  </div>
+                  <div style="display:flex;gap:9px;">
+                    <button style="flex:1;font-family:inherit;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:12px;font-size:13px;font-weight:700;">Recusar</button>
+                    <button style="flex:1.4;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:800;box-shadow:0 8px 16px rgba(194,96,47,.4);">Aceitar</button>
+                  </div>
+                </div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8696b4;margin-bottom:9px;">EM ANDAMENTO</div>
+                <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;"><div style="font-size:10px;font-weight:700;color:#7fa8ec;margin-bottom:4px;">EM CAMPO · Rian</div><div style="font-size:13px;font-weight:700;color:#fff;">Troca de lâmpadas</div><div style="font-size:11px;color:#8696b4;margin-top:2px;">E.M. Vila Nova</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4b: designar técnico -->
+        <div style="flex:none;">
+          <div class="dgsub" style="margin-bottom:10px;">Designar técnico</div>
+          <div data-screen-label="App Empresa Designar" style="width:300px;background:#05080d;border-radius:40px;padding:12px;box-shadow:0 22px 50px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);">
+            <div style="background:#0e131b;border-radius:30px;overflow:hidden;">
+              <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:16px 18px 16px;color:#fff;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:#bcc8de;margin-bottom:12px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+                <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:18px;">‹</span><div><div style="font-size:10.5px;color:#bcc8de;">Aceita · #2041</div><div style="font-size:14px;font-weight:800;">Designar técnico</div></div></div>
+              </div>
+              <div style="padding:14px;">
+                <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:13px;margin-bottom:14px;"><div style="font-size:13px;font-weight:800;color:#fff;">Vazamento na recepção</div><div style="font-size:11.5px;color:#8696b4;margin-top:2px;">UBS Central · urgente · SLA 28 min</div></div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8696b4;margin-bottom:10px;">TÉCNICOS DISPONÍVEIS</div>
+                <div style="background:#171f2c;border:1.5px solid #C2602F;border-radius:12px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;"><span style="width:36px;height:36px;border-radius:50%;background:#2456A6;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">CA</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Carlos Aguiar</div><div style="font-size:11px;color:#4fd6a0;">Livre · 0,8 km</div></div><span style="width:22px;height:22px;border-radius:50%;background:#C2602F;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;">✓</span></div>
+                <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;"><span style="width:36px;height:36px;border-radius:50%;background:#1F9D6B;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">BA</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Bia Alves</div><div style="font-size:11px;color:#8696b4;">Em campo · volta 16h</div></div></div>
+                <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:11px;"><span style="width:36px;height:36px;border-radius:50%;background:#636B2F;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">PM</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Paulo Marques</div><div style="font-size:11px;color:#4fd6a0;">Livre · 3,1 km</div></div></div>
+                <button style="width:100%;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:800;box-shadow:0 10px 20px rgba(194,96,47,.4);">Despachar Carlos →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

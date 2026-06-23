@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Public+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;background:#ECEDF1;-webkit-font-smoothing:antialiased;}
+@keyframes dgfloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+@keyframes dgtrail{0%{opacity:.25;}50%{opacity:1;}100%{opacity:.25;}}
+</style>
+</helmet>
+
+<div style="font-family:'Public Sans',sans-serif;color:#1A2233;">
+
+<!-- ============ COVER ============ -->
+<section data-screen-label="Capa" style="background:radial-gradient(120% 90% at 75% 10%, #3C401B 0%, #131922 55%, #0e131b 100%);color:#fff;padding:0;overflow:hidden;position:relative;">
+  <div style="max-width:1180px;margin:0 auto;padding:96px 48px 92px;position:relative;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:54px;">
+      <div style="width:9px;height:9px;background:#C2602F;border-radius:2px;"></div>
+      <span style="font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#9fb0cc;font-weight:600;">Sistema de Identidade Visual</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:48px;flex-wrap:wrap;">
+      <div style="max-width:620px;">
+        <div style="animation:dgfloat 6s ease-in-out infinite;margin-bottom:26px;transform-origin:center;">
+          <svg width="92" height="92" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M93 11 L25 45 L60 51 Z" fill="#5b8def"/>
+            <path d="M93 11 L60 51 L53 84 Z" fill="#3f6fcf"/>
+            <rect x="29" y="53" width="13" height="6" rx="1" transform="rotate(-27 35.5 56)" fill="#5b8def"/>
+            <rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/>
+            <rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/>
+            <rect x="21" y="79" width="5" height="5" fill="#C2602F"/><rect x="12" y="81" width="4" height="4" fill="#C2602F"/>
+          </svg>
+        </div>
+        <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-style:italic;font-size:76px;line-height:.96;letter-spacing:-.025em;margin:0 0 22px;">
+          <span style="color:#C2602F;">Despacha</span><span style="color:#eaf0fb;">Gov</span>
+        </h1>
+        <p style="font-size:21px;line-height:1.5;color:#c3cfe4;font-weight:400;margin:0 0 28px;max-width:540px;">A ponte em tempo real entre Secretaria, unidades e prestadores de serviço.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:12.5px;font-weight:600;letter-spacing:.04em;color:#cdd8ea;border:1px solid rgba(255,255,255,.16);padding:7px 14px;border-radius:999px;">B2G · Setor público</span>
+          <span style="font-size:12.5px;font-weight:600;letter-spacing:.04em;color:#cdd8ea;border:1px solid rgba(255,255,255,.16);padding:7px 14px;border-radius:999px;">Web &amp; Mobile</span>
+          <span style="font-size:12.5px;font-weight:600;letter-spacing:.04em;color:#1b1306;background:#C2602F;padding:7px 14px;border-radius:999px;">Tempo real</span>
+        </div>
+      </div>
+      <div style="flex:none;width:300px;max-width:42vw;">
+        <img src="uploads/Gemini_Generated_Image_7p3ysb7p3ysb7p3y.png" alt="DespachaGov" style="width:100%;border-radius:14px;display:block;box-shadow:0 24px 60px rgba(0,0,0,.45);" />
+      </div>
+    </div>
+    <div style="margin-top:64px;padding-top:26px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:44px;flex-wrap:wrap;color:#8696b4;font-size:13.5px;">
+      <span><strong style="color:#eaf0fb;font-weight:700;">3 direções</strong> &nbsp;para você escolher</span>
+      <span><strong style="color:#eaf0fb;font-weight:700;">Claro &amp; Escuro</strong> &nbsp;em cada uma</span>
+      <span><strong style="color:#eaf0fb;font-weight:700;">Marca · Cor · Tipo · UI</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARCA ============ -->
+<section data-screen-label="Marca" style="max-width:1180px;margin:0 auto;padding:84px 48px 36px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <span style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#C2602F;font-weight:700;">01 — Marca</span>
+  </div>
+  <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:40px;letter-spacing:-.02em;margin:0 0 14px;color:#636B2F;">O símbolo do despacho</h2>
+  <p style="font-size:17px;line-height:1.6;color:#5a6478;max-width:680px;margin:0 0 40px;">Um avião de papel em movimento — o ato de despachar — com rastro pixelado laranja que traduz o digital e a urgência. Marinho carrega a seriedade institucional; laranja, a ação.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+    <div style="background:#fff;border:1px solid #E3E6EC;border-radius:14px;padding:30px;">
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9099ab;font-weight:700;margin-bottom:18px;">Assinatura principal · fundo claro</div>
+      <img src="uploads/Gemini_Generated_Image_smevk6smevk6smev.png" alt="Logo fundo claro" style="width:100%;border-radius:10px;display:block;" />
+    </div>
+    <div style="background:#131922;border:1px solid #232c3a;border-radius:14px;padding:30px;">
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7e8aa1;font-weight:700;margin-bottom:18px;">Assinatura reversa · fundo escuro</div>
+      <img src="uploads/Gemini_Generated_Image_7p3ysb7p3ysb7p3y.png" alt="Logo fundo escuro" style="width:100%;border-radius:10px;display:block;" />
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+    <div style="background:#fff;border:1px solid #E3E6EC;border-radius:14px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:18px;">
+      <svg width="58" height="58" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="29" y="53" width="13" height="6" rx="1" transform="rotate(-27 35.5 56)" fill="#636B2F"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/><rect x="21" y="79" width="5" height="5" fill="#C2602F"/><rect x="12" y="81" width="4" height="4" fill="#C2602F"/></svg>
+      <span style="font-size:12.5px;color:#8a93a6;font-weight:600;">Símbolo · cores plenas</span>
+    </div>
+    <div style="background:#636B2F;border:1px solid #636B2F;border-radius:14px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:18px;">
+      <svg width="58" height="58" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#ffffff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="29" y="53" width="13" height="6" rx="1" transform="rotate(-27 35.5 56)" fill="#ffffff"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/><rect x="21" y="79" width="5" height="5" fill="#C2602F"/><rect x="12" y="81" width="4" height="4" fill="#C2602F"/></svg>
+      <span style="font-size:12.5px;color:#a9b8d6;font-weight:600;">Reversa · sobre marinho</span>
+    </div>
+    <div style="background:#fff;border:1px solid #E3E6EC;border-radius:14px;padding:28px;display:flex;flex-direction:column;align-items:center;gap:18px;">
+      <svg width="58" height="58" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#8A9159"/><rect x="29" y="53" width="13" height="6" rx="1" transform="rotate(-27 35.5 56)" fill="#636B2F"/><rect x="33" y="58" width="7" height="7" fill="#636B2F"/><rect x="24" y="63" width="7" height="7" fill="#636B2F"/><rect x="29" y="71" width="6" height="6" fill="#636B2F"/><rect x="18" y="69" width="6" height="6" fill="#636B2F"/><rect x="21" y="79" width="5" height="5" fill="#636B2F"/><rect x="12" y="81" width="4" height="4" fill="#636B2F"/></svg>
+      <span style="font-size:12.5px;color:#8a93a6;font-weight:600;">Monocromático</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETA ============ -->
+<section data-screen-label="Paleta" style="max-width:1180px;margin:0 auto;padding:48px 48px 36px;">
+  <div style="margin-bottom:14px;"><span style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#C2602F;font-weight:700;">02 — Cor</span></div>
+  <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:40px;letter-spacing:-.02em;margin:0 0 36px;color:#636B2F;">Marinho institucional, laranja de ação</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+    <div>
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9099ab;font-weight:700;margin-bottom:12px;">Azul-marinho · base</div>
+      <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid #E3E6EC;">
+        <div style="flex:1.6;background:#3C401B;padding:18px 16px;color:#fff;"><div style="font-weight:700;font-size:14px;">Marinho 900</div><div style="font-size:12px;color:#9fb0cc;margin-top:4px;">#3C401B</div></div>
+        <div style="flex:1.6;background:#636B2F;padding:18px 16px;color:#fff;"><div style="font-weight:700;font-size:14px;">Primário</div><div style="font-size:12px;color:#9fb0cc;margin-top:4px;">#636B2F</div></div>
+        <div style="flex:1;background:#2456A6;padding:18px 16px;color:#fff;"><div style="font-weight:700;font-size:14px;">Link</div><div style="font-size:12px;color:#cdd8ea;margin-top:4px;">#2456A6</div></div>
+        <div style="flex:1;background:#E6EBF3;padding:18px 16px;color:#636B2F;"><div style="font-weight:700;font-size:14px;">100</div><div style="font-size:12px;color:#6b7488;margin-top:4px;">#E6EBF3</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9099ab;font-weight:700;margin-bottom:12px;">Laranja · ação</div>
+      <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid #E3E6EC;">
+        <div style="flex:1;background:#8A3D18;padding:18px 16px;color:#fff;"><div style="font-weight:700;font-size:14px;">600</div><div style="font-size:12px;color:#ffd9c4;margin-top:4px;">#8A3D18</div></div>
+        <div style="flex:1.6;background:#C2602F;padding:18px 16px;color:#fff;"><div style="font-weight:700;font-size:14px;">Primário</div><div style="font-size:12px;color:#ffe3d2;margin-top:4px;">#C2602F</div></div>
+        <div style="flex:1;background:#E0A06B;padding:18px 16px;color:#5a2400;"><div style="font-weight:700;font-size:14px;">300</div><div style="font-size:12px;color:#7a3a12;margin-top:4px;">#E0A06B</div></div>
+        <div style="flex:1;background:#F6E9DE;padding:18px 16px;color:#8A3D18;"><div style="font-weight:700;font-size:14px;">100</div><div style="font-size:12px;color:#cc6a3a;margin-top:4px;">#F6E9DE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div>
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9099ab;font-weight:700;margin-bottom:12px;">Neutros · interface</div>
+      <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid #E3E6EC;">
+        <div style="flex:1;background:#14181F;padding:16px 14px;color:#fff;"><div style="font-weight:700;font-size:13px;">Grafite</div><div style="font-size:11px;color:#9099ab;margin-top:3px;">#14181F</div></div>
+        <div style="flex:1;background:#6B7488;padding:16px 14px;color:#fff;"><div style="font-weight:700;font-size:13px;">Muted</div><div style="font-size:11px;color:#dfe3ea;margin-top:3px;">#6B7488</div></div>
+        <div style="flex:1;background:#ECEDF1;padding:16px 14px;color:#1A2233;"><div style="font-weight:700;font-size:13px;">Fundo</div><div style="font-size:11px;color:#6b7488;margin-top:3px;">#ECEDF1</div></div>
+        <div style="flex:1;background:#fff;padding:16px 14px;color:#1A2233;border-left:1px solid #E3E6EC;"><div style="font-weight:700;font-size:13px;">Branco</div><div style="font-size:11px;color:#6b7488;margin-top:3px;">#FFFFFF</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9099ab;font-weight:700;margin-bottom:12px;">Status do chamado · semântico</div>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:#F6E9DE;border:1px solid #EAD2BE;border-radius:10px;padding:12px;text-align:center;"><div style="width:12px;height:12px;border-radius:50%;background:#C2602F;margin:0 auto 8px;"></div><div style="font-size:12px;font-weight:700;color:#8A3D18;">Aberto</div></div>
+        <div style="flex:1;background:#E6EEFA;border:1px solid #C6D6F0;border-radius:10px;padding:12px;text-align:center;"><div style="width:12px;height:12px;border-radius:50%;background:#2456A6;margin:0 auto 8px;"></div><div style="font-size:12px;font-weight:700;color:#1B4286;">Em campo</div></div>
+        <div style="flex:1;background:#E4F5EE;border:1px solid #BFE7D6;border-radius:10px;padding:12px;text-align:center;"><div style="width:12px;height:12px;border-radius:50%;background:#1F9D6B;margin:0 auto 8px;"></div><div style="font-size:12px;font-weight:700;color:#157A52;">Concluído</div></div>
+        <div style="flex:1;background:#FCE7E7;border:1px solid #F2C4C4;border-radius:10px;padding:12px;text-align:center;"><div style="width:12px;height:12px;border-radius:50%;background:#E23D3D;margin:0 auto 8px;"></div><div style="font-size:12px;font-weight:700;color:#B62A2A;">Atrasado</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIREÇÕES INTRO ============ -->
+<section style="max-width:1180px;margin:0 auto;padding:54px 48px 8px;">
+  <div style="margin-bottom:14px;"><span style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#C2602F;font-weight:700;">03 — Três direções</span></div>
+  <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:40px;letter-spacing:-.02em;margin:0 0 14px;color:#636B2F;max-width:760px;">Escolha o tom. A marca é a mesma.</h2>
+  <p style="font-size:17px;line-height:1.6;color:#5a6478;max-width:720px;margin:0;">Mesma logo, mesma paleta — três personalidades de sistema. Cada uma traz tipografia, raio de componente, uso de cor e um mockup real do app (claro e escuro) para você comparar e decidir.</p>
+</section>
+
+<!-- ============ DIREÇÃO 01 — INSTITUCIONAL ============ -->
+<section data-screen-label="Direção 01 Institucional" style="background:#fff;border-top:1px solid #E3E6EC;border-bottom:1px solid #E3E6EC;margin-top:40px;">
+  <div style="max-width:1180px;margin:0 auto;padding:64px 48px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:42px;">
+      <div style="max-width:560px;">
+        <div style="display:inline-flex;align-items:center;gap:9px;background:#636B2F;color:#fff;padding:7px 15px;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;">Direção 01 · Institucional Confiança</div>
+        <h3 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:34px;letter-spacing:-.02em;color:#636B2F;margin:0 0 12px;">Sério, sólido, prestação de contas</h3>
+        <p style="font-family:'Public Sans',sans-serif;font-size:16px;line-height:1.6;color:#5a6478;margin:0;">Marinho dominante, cantos retos (4px), tipografia <strong>Archivo + Public Sans</strong>. Laranja só onde exige ação. Transmite peso de órgão público e confiança de auditoria.</p>
+      </div>
+      <div style="flex:none;text-align:right;">
+        <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;color:#636B2F;letter-spacing:.04em;">Archivo</div>
+        <div style="font-family:'Public Sans',sans-serif;font-size:13px;color:#8a93a6;">Public Sans</div>
+        <div style="margin-top:8px;font-size:12px;color:#8a93a6;">Raio 4px · Marinho 70%</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.15fr 0.85fr;gap:40px;align-items:start;">
+      <!-- left: specimen + ui -->
+      <div>
+        <div style="border:1px solid #E3E6EC;border-radius:4px;padding:26px;margin-bottom:22px;">
+          <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.02em;color:#636B2F;margin-bottom:6px;">Aa Bb Cc</div>
+          <div style="font-family:'Public Sans',sans-serif;font-size:14px;color:#6b7488;line-height:1.6;">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz 0123456789</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+          <button style="font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:4px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;" style-hover="background:#A44E22;">Abrir chamado</button>
+          <button style="font-family:'Public Sans',sans-serif;background:#fff;color:#636B2F;border:1.5px solid #636B2F;border-radius:4px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;" style-hover="background:#636B2F;color:#fff;">Ver relatório</button>
+          <button style="font-family:'Public Sans',sans-serif;background:#EEF0F4;color:#6b7488;border:none;border-radius:4px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;">Cancelar</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;">
+          <span style="font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;color:#8A3D18;background:#F6E9DE;border:1px solid #EAD2BE;padding:5px 11px;border-radius:3px;">● Aberto</span>
+          <span style="font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;color:#1B4286;background:#E6EEFA;border:1px solid #C6D6F0;padding:5px 11px;border-radius:3px;">● Em campo</span>
+          <span style="font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;color:#157A52;background:#E4F5EE;border:1px solid #BFE7D6;padding:5px 11px;border-radius:3px;">● Concluído</span>
+        </div>
+        <div style="border:1px solid #E3E6EC;border-left:4px solid #636B2F;border-radius:4px;padding:18px 20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-family:'Public Sans',sans-serif;font-size:11px;font-weight:700;color:#8a93a6;letter-spacing:.06em;">CHAMADO #2041</span>
+            <span style="font-family:'Public Sans',sans-serif;font-size:11px;font-weight:700;color:#1B4286;background:#E6EEFA;padding:3px 9px;border-radius:3px;">EM CAMPO</span>
+          </div>
+          <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;color:#636B2F;margin-bottom:4px;">Troca de lâmpadas — quadra coberta</div>
+          <div style="font-family:'Public Sans',sans-serif;font-size:13px;color:#6b7488;">E.M. Vila Nova · Secretaria de Educação · há 12 min</div>
+        </div>
+      </div>
+      <!-- right: phone (light) -->
+      <div style="display:flex;justify-content:center;">
+        <div style="width:264px;background:#3C401B;border-radius:36px;padding:11px;box-shadow:0 26px 50px rgba(15,30,61,.28);">
+          <div style="background:#F4F5F8;border-radius:27px;overflow:hidden;">
+            <div style="background:#636B2F;padding:16px 18px 18px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:9px;">
+                <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+                <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:16px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+              </div>
+            </div>
+            <div style="padding:14px 14px 18px;">
+              <div style="font-family:'Public Sans',sans-serif;font-size:11px;font-weight:700;color:#8a93a6;letter-spacing:.08em;margin-bottom:10px;">CHAMADOS ATIVOS · 3</div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #C2602F;border-radius:4px;padding:12px;margin-bottom:9px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><span style="font-size:10px;font-weight:700;color:#8A3D18;">ABERTO · há 4 min</span></div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Vazamento — recepção</div>
+                <div style="font-size:11px;color:#8a93a6;margin-top:2px;">UBS Central · Saúde</div>
+              </div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #2456A6;border-radius:4px;padding:12px;margin-bottom:9px;">
+                <div style="font-size:10px;font-weight:700;color:#1B4286;margin-bottom:5px;">EM CAMPO · téc. Rian</div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Troca de lâmpadas</div>
+                <div style="font-size:11px;color:#8a93a6;margin-top:2px;">E.M. Vila Nova · Educação</div>
+              </div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #1F9D6B;border-radius:4px;padding:12px;">
+                <div style="font-size:10px;font-weight:700;color:#157A52;margin-bottom:5px;">CONCLUÍDO · comprovado</div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Poda de árvore</div>
+                <div style="font-size:11px;color:#8a93a6;margin-top:2px;">Praça Matriz · Obras</div>
+              </div>
+              <button style="width:100%;margin-top:14px;font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:4px;padding:13px;font-size:13px;font-weight:700;">+ Abrir novo chamado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIREÇÃO 02 — ÁGIL MODERNO ============ -->
+<section data-screen-label="Direção 02 Ágil Moderno" style="background:radial-gradient(120% 100% at 80% 0%, #1b2a4d 0%, #131922 60%, #0e131b 100%);color:#fff;">
+  <div style="max-width:1180px;margin:0 auto;padding:64px 48px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:42px;">
+      <div style="max-width:560px;">
+        <div style="display:inline-flex;align-items:center;gap:9px;background:linear-gradient(90deg,#2456A6,#C2602F);color:#fff;padding:8px 16px;border-radius:12px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px;">Direção 02 · Ágil Moderno</div>
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:34px;letter-spacing:-.025em;color:#fff;margin:0 0 12px;">Tech, dinâmico, tempo real</h3>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;line-height:1.6;color:#bcc8de;margin:0;">Azul e laranja em equilíbrio, cantos suaves (12px), profundidade e gradiente discreto. Tipografia <strong style="color:#fff;">Plus Jakarta Sans</strong>. Sensação de produto moderno e veloz.</p>
+      </div>
+      <div style="flex:none;text-align:right;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:#fff;">Plus Jakarta Sans</div>
+        <div style="margin-top:8px;font-size:12px;color:#8696b4;">Raio 12px · Azul + Laranja 50/50</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.15fr 0.85fr;gap:40px;align-items:start;">
+      <div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:26px;margin-bottom:22px;backdrop-filter:blur(6px);">
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.03em;color:#fff;margin-bottom:6px;">Aa Bb Cc</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:#9fb0cc;line-height:1.6;">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz 0123456789</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+          <button style="font-family:'Plus Jakarta Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:12px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(194,96,47,.35);transition:transform .15s;" style-hover="transform:translateY(-2px);">Abrir chamado</button>
+          <button style="font-family:'Plus Jakarta Sans',sans-serif;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:13px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;" style-hover="background:rgba(255,255,255,.18);">Ver relatório</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;">
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:#C2602F;background:rgba(194,96,47,.14);border:1px solid rgba(194,96,47,.35);padding:6px 13px;border-radius:999px;">● Aberto</span>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:#7fa8ec;background:rgba(36,86,166,.2);border:1px solid rgba(127,168,236,.4);padding:6px 13px;border-radius:999px;">● Em campo</span>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:#4fd6a0;background:rgba(31,157,107,.16);border:1px solid rgba(79,214,160,.4);padding:6px 13px;border-radius:999px;">● Concluído</span>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px 20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:#8696b4;letter-spacing:.06em;">CHAMADO #2041</span>
+            <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:#7fa8ec;background:rgba(36,86,166,.25);padding:4px 10px;border-radius:999px;">EM CAMPO</span>
+          </div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:17px;color:#fff;margin-bottom:4px;">Troca de lâmpadas — quadra coberta</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#9fb0cc;">E.M. Vila Nova · Educação · agora há pouco</div>
+        </div>
+      </div>
+      <!-- phone dark -->
+      <div style="display:flex;justify-content:center;">
+        <div style="width:264px;background:#05080d;border-radius:36px;padding:11px;box-shadow:0 26px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);">
+          <div style="background:#0e131b;border-radius:27px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:16px 18px 18px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#bcc8de;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:9px;">
+                <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+                <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:16px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+              </div>
+            </div>
+            <div style="padding:14px 14px 18px;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:#8696b4;letter-spacing:.08em;margin-bottom:10px;">CHAMADOS ATIVOS · 3</div>
+              <div style="background:#171f2c;border:1px solid #C2602F;border-radius:12px;padding:12px;margin-bottom:9px;">
+                <div style="font-size:10px;font-weight:700;color:#C2602F;margin-bottom:5px;">ABERTO · há 4 min</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:#fff;">Vazamento — recepção</div>
+                <div style="font-size:11px;color:#8696b4;margin-top:2px;">UBS Central · Saúde</div>
+              </div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;margin-bottom:9px;">
+                <div style="font-size:10px;font-weight:700;color:#7fa8ec;margin-bottom:5px;">EM CAMPO · téc. Rian</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:#fff;">Troca de lâmpadas</div>
+                <div style="font-size:11px;color:#8696b4;margin-top:2px;">E.M. Vila Nova · Educação</div>
+              </div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;">
+                <div style="font-size:10px;font-weight:700;color:#4fd6a0;margin-bottom:5px;">CONCLUÍDO · comprovado</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;color:#fff;">Poda de árvore</div>
+                <div style="font-size:11px;color:#8696b4;margin-top:2px;">Praça Matriz · Obras</div>
+              </div>
+              <button style="width:100%;margin-top:14px;font-family:'Plus Jakarta Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;box-shadow:0 8px 18px rgba(194,96,47,.4);">+ Abrir novo chamado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIREÇÃO 03 — ENERGIA EM CAMPO ============ -->
+<section data-screen-label="Direção 03 Energia em Campo" style="background:#fff;border-top:1px solid #E3E6EC;border-bottom:1px solid #E3E6EC;">
+  <div style="max-width:1180px;margin:0 auto;padding:64px 48px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:42px;">
+      <div style="max-width:560px;">
+        <div style="display:inline-flex;align-items:center;gap:9px;background:#C2602F;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;">Direção 03 · Energia em Campo</div>
+        <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:34px;letter-spacing:-.02em;color:#636B2F;margin:0 0 12px;">Ação, urgência, gente em movimento</h3>
+        <p style="font-family:'Manrope',sans-serif;font-size:16px;line-height:1.6;color:#5a6478;margin:0;">Laranja protagonista para alerta e velocidade, cantos bem arredondados (20px) e pílulas. Tipografia <strong>Sora + Manrope</strong>. Acessível e enérgica — fala com quem está na rua.</p>
+      </div>
+      <div style="flex:none;text-align:right;">
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:#C2602F;">Sora</div>
+        <div style="font-family:'Manrope',sans-serif;font-size:13px;color:#8a93a6;">Manrope</div>
+        <div style="margin-top:8px;font-size:12px;color:#8a93a6;">Raio 20px · Laranja 60%</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.15fr 0.85fr;gap:40px;align-items:start;">
+      <div>
+        <div style="background:#FBF4ED;border:1px solid #EAD2BE;border-radius:20px;padding:26px;margin-bottom:22px;">
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.02em;color:#C2602F;margin-bottom:6px;">Aa Bb Cc</div>
+          <div style="font-family:'Manrope',sans-serif;font-size:14px;color:#9a7a66;line-height:1.6;">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>abcdefghijklmnopqrstuvwxyz 0123456789</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+          <button style="font-family:'Manrope',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:999px;padding:14px 26px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(194,96,47,.32);transition:transform .15s;" style-hover="transform:scale(1.04);">Abrir chamado →</button>
+          <button style="font-family:'Manrope',sans-serif;background:#fff;color:#636B2F;border:2px solid #636B2F;border-radius:999px;padding:14px 26px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;" style-hover="background:#636B2F;color:#fff;">Relatório</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;">
+          <span style="font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;color:#fff;background:#C2602F;padding:7px 15px;border-radius:999px;">Aberto</span>
+          <span style="font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;color:#fff;background:#2456A6;padding:7px 15px;border-radius:999px;">Em campo</span>
+          <span style="font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;color:#fff;background:#1F9D6B;padding:7px 15px;border-radius:999px;">Concluído</span>
+        </div>
+        <div style="background:#fff;border:2px solid #EAD2BE;border-radius:20px;padding:20px 22px;box-shadow:0 12px 28px rgba(194,96,47,.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-family:'Manrope',sans-serif;font-size:11px;font-weight:800;color:#b5907c;letter-spacing:.06em;">CHAMADO #2041</span>
+            <span style="font-family:'Manrope',sans-serif;font-size:11px;font-weight:800;color:#fff;background:#C2602F;padding:4px 12px;border-radius:999px;">URGENTE</span>
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:17px;color:#636B2F;margin-bottom:4px;">Vazamento na recepção</div>
+          <div style="font-family:'Manrope',sans-serif;font-size:13px;color:#8a93a6;">UBS Central · Saúde · responder em 30 min</div>
+        </div>
+      </div>
+      <!-- phone light orange-forward -->
+      <div style="display:flex;justify-content:center;">
+        <div style="width:264px;background:#636B2F;border-radius:40px;padding:11px;box-shadow:0 26px 50px rgba(194,96,47,.22);">
+          <div style="background:#FBF4ED;border-radius:31px;overflow:hidden;">
+            <div style="background:#C2602F;padding:16px 18px 18px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#ffdcc6;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:9px;">
+                <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#ffd9c4"/><rect x="33" y="58" width="7" height="7" fill="#636B2F"/><rect x="24" y="63" width="7" height="7" fill="#636B2F"/><rect x="29" y="71" width="6" height="6" fill="#636B2F"/><rect x="18" y="69" width="6" height="6" fill="#636B2F"/></svg>
+                <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:16px;color:#fff;">DespachaGov</span>
+              </div>
+            </div>
+            <div style="padding:14px 14px 18px;">
+              <div style="font-family:'Manrope',sans-serif;font-size:11px;font-weight:800;color:#b5907c;letter-spacing:.06em;margin-bottom:10px;">CHAMADOS ATIVOS · 3</div>
+              <div style="background:#fff;border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:0 6px 16px rgba(194,96,47,.14);border:2px solid #C2602F;">
+                <div style="display:inline-block;font-size:9.5px;font-weight:800;color:#fff;background:#C2602F;padding:3px 9px;border-radius:999px;margin-bottom:7px;">ABERTO · 4 MIN</div>
+                <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Vazamento — recepção</div>
+                <div style="font-family:'Manrope',sans-serif;font-size:11px;color:#9a8678;margin-top:2px;">UBS Central · Saúde</div>
+              </div>
+              <div style="background:#fff;border-radius:18px;padding:13px;margin-bottom:10px;">
+                <div style="display:inline-block;font-size:9.5px;font-weight:800;color:#fff;background:#2456A6;padding:3px 9px;border-radius:999px;margin-bottom:7px;">EM CAMPO</div>
+                <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Troca de lâmpadas</div>
+                <div style="font-family:'Manrope',sans-serif;font-size:11px;color:#9a8678;margin-top:2px;">E.M. Vila Nova · Educação</div>
+              </div>
+              <div style="background:#fff;border-radius:18px;padding:13px;">
+                <div style="display:inline-block;font-size:9.5px;font-weight:800;color:#fff;background:#1F9D6B;padding:3px 9px;border-radius:999px;margin-bottom:7px;">CONCLUÍDO</div>
+                <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:#636B2F;">Poda de árvore</div>
+                <div style="font-family:'Manrope',sans-serif;font-size:11px;color:#9a8678;margin-top:2px;">Praça Matriz · Obras</div>
+              </div>
+              <button style="width:100%;margin-top:14px;font-family:'Manrope',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:999px;padding:14px;font-size:13px;font-weight:800;box-shadow:0 10px 20px rgba(194,96,47,.35);">+ Abrir novo chamado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APLICAÇÃO — LANDING + TOGGLE ============ -->
+<section data-screen-label="Aplicação Landing" style="max-width:1180px;margin:0 auto;padding:72px 48px 40px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:14px;">
+    <div><span style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#C2602F;font-weight:700;">04 — Aplicação</span></div>
+    <div style="display:inline-flex;background:#E3E6EC;border-radius:999px;padding:4px;gap:2px;">
+      <button onClick="{{ setLight }}" style="border:none;cursor:pointer;font-family:'Public Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 18px;border-radius:999px;background:{{ lightBtnBg }};color:{{ lightBtnColor }};transition:all .15s;">☀ Claro</button>
+      <button onClick="{{ setDark }}" style="border:none;cursor:pointer;font-family:'Public Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 18px;border-radius:999px;background:{{ darkBtnBg }};color:{{ darkBtnColor }};transition:all .15s;">☾ Escuro</button>
+    </div>
+  </div>
+  <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:40px;letter-spacing:-.02em;margin:0 0 32px;color:#636B2F;">A marca em uso — site institucional</h2>
+
+  <!-- LIGHT landing -->
+  <div style="display:{{ lightDisplay }};border-radius:18px;overflow:hidden;border:1px solid #E3E6EC;box-shadow:0 20px 50px rgba(15,30,61,.1);">
+    <div style="background:#fff;padding:18px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #EEF0F4;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:18px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:26px;font-family:'Public Sans',sans-serif;font-size:14px;font-weight:600;color:#5a6478;">
+        <span>Como funciona</span><span>Secretarias</span><span>Prestadores</span>
+        <button style="font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Acessar painel</button>
+      </div>
+    </div>
+    <div style="background:radial-gradient(120% 120% at 100% 0%, #eef2f9 0%, #fff 60%);padding:64px 50px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#F6E9DE;color:#8A3D18;font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;padding:6px 13px;border-radius:999px;margin-bottom:20px;"><span style="width:7px;height:7px;border-radius:50%;background:#C2602F;animation:dgtrail 1.6s infinite;"></span>Em tempo real</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:46px;line-height:1.05;letter-spacing:-.025em;color:#636B2F;margin:0 0 18px;">Da Secretaria ao campo,<br/>sem WhatsApp e sem planilha.</h1>
+        <p style="font-family:'Public Sans',sans-serif;font-size:17px;line-height:1.6;color:#5a6478;margin:0 0 28px;max-width:480px;">Abriu o chamado, a empresa recebe na hora. O técnico executa, comprova com foto e assinatura. A Secretaria fecha o relatório para prestação de contas.</p>
+        <div style="display:flex;gap:12px;">
+          <button style="font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:7px;padding:15px 28px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 10px 22px rgba(194,96,47,.28);">Solicitar demonstração</button>
+          <button style="font-family:'Public Sans',sans-serif;background:#fff;color:#636B2F;border:1.5px solid #cdd5e2;border-radius:7px;padding:15px 28px;font-size:15px;font-weight:700;cursor:pointer;">Ver como funciona</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div style="width:230px;background:#3C401B;border-radius:32px;padding:9px;box-shadow:0 24px 44px rgba(15,30,61,.3);">
+          <div style="background:#F4F5F8;border-radius:25px;overflow:hidden;">
+            <div style="background:#636B2F;padding:14px;color:#fff;display:flex;align-items:center;gap:7px;">
+              <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/></svg>
+              <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:13px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+            </div>
+            <div style="padding:12px;">
+              <div style="background:#fff;border-left:3px solid #C2602F;border-radius:4px;padding:10px;margin-bottom:8px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#8A3D18;">ABERTO</div><div style="font-size:12px;font-weight:700;color:#636B2F;">Vazamento — UBS</div></div>
+              <div style="background:#fff;border-left:3px solid #2456A6;border-radius:4px;padding:10px;margin-bottom:8px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#1B4286;">EM CAMPO</div><div style="font-size:12px;font-weight:700;color:#636B2F;">Lâmpadas — escola</div></div>
+              <div style="background:#fff;border-left:3px solid #1F9D6B;border-radius:4px;padding:10px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#157A52;">CONCLUÍDO</div><div style="font-size:12px;font-weight:700;color:#636B2F;">Poda — praça</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK landing -->
+  <div style="display:{{ darkDisplay }};border-radius:18px;overflow:hidden;border:1px solid #232c3a;box-shadow:0 20px 50px rgba(0,0,0,.4);">
+    <div style="background:#0e131b;padding:18px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1c2430;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:18px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:26px;font-family:'Public Sans',sans-serif;font-size:14px;font-weight:600;color:#9fb0cc;">
+        <span>Como funciona</span><span>Secretarias</span><span>Prestadores</span>
+        <button style="font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:6px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Acessar painel</button>
+      </div>
+    </div>
+    <div style="background:radial-gradient(120% 120% at 100% 0%, #1b2a4d 0%, #0e131b 60%);padding:64px 50px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(194,96,47,.16);color:#C2602F;font-family:'Public Sans',sans-serif;font-size:12px;font-weight:700;padding:6px 13px;border-radius:999px;margin-bottom:20px;"><span style="width:7px;height:7px;border-radius:50%;background:#C2602F;animation:dgtrail 1.6s infinite;"></span>Em tempo real</div>
+        <h1 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:46px;line-height:1.05;letter-spacing:-.025em;color:#fff;margin:0 0 18px;">Da Secretaria ao campo,<br/>sem WhatsApp e sem planilha.</h1>
+        <p style="font-family:'Public Sans',sans-serif;font-size:17px;line-height:1.6;color:#bcc8de;margin:0 0 28px;max-width:480px;">Abriu o chamado, a empresa recebe na hora. O técnico executa, comprova com foto e assinatura. A Secretaria fecha o relatório para prestação de contas.</p>
+        <div style="display:flex;gap:12px;">
+          <button style="font-family:'Public Sans',sans-serif;background:#C2602F;color:#fff;border:none;border-radius:7px;padding:15px 28px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 10px 22px rgba(194,96,47,.35);">Solicitar demonstração</button>
+          <button style="font-family:'Public Sans',sans-serif;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:15px 28px;font-size:15px;font-weight:700;cursor:pointer;">Ver como funciona</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div style="width:230px;background:#05080d;border-radius:32px;padding:9px;box-shadow:0 24px 44px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);">
+          <div style="background:#0e131b;border-radius:25px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:14px;color:#fff;display:flex;align-items:center;gap:7px;">
+              <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/></svg>
+              <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:13px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+            </div>
+            <div style="padding:12px;">
+              <div style="background:#171f2c;border:1px solid #C2602F;border-radius:8px;padding:10px;margin-bottom:8px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#C2602F;">ABERTO</div><div style="font-size:12px;font-weight:700;color:#fff;">Vazamento — UBS</div></div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:8px;padding:10px;margin-bottom:8px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#7fa8ec;">EM CAMPO</div><div style="font-size:12px;font-weight:700;color:#fff;">Lâmpadas — escola</div></div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:8px;padding:10px;font-family:'Public Sans',sans-serif;"><div style="font-size:9px;font-weight:700;color:#4fd6a0;">CONCLUÍDO</div><div style="font-size:12px;font-weight:700;color:#fff;">Poda — praça</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<section style="max-width:1180px;margin:0 auto;padding:24px 48px 80px;">
+  <div style="border-top:1px solid #DADDE4;padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <svg width="22" height="22" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/></svg>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:15px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span>
+    </div>
+    <span style="font-family:'Public Sans',sans-serif;font-size:13px;color:#8a93a6;">Sistema de identidade visual · 3 direções para escolha · v1</span>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mode: 'light' };
+  renderVals() {
+    const light = this.state.mode === 'light';
+    return {
+      setLight: () => this.setState({ mode: 'light' }),
+      setDark: () => this.setState({ mode: 'dark' }),
+      lightDisplay: light ? 'block' : 'none',
+      darkDisplay: light ? 'none' : 'block',
+      lightBtnBg: light ? '#636B2F' : 'transparent',
+      lightBtnColor: light ? '#ffffff' : '#6B7488',
+      darkBtnBg: light ? 'transparent' : '#636B2F',
+      darkBtnColor: light ? '#6B7488' : '#ffffff',
+    };
+  }
+}
+</script>
+</body>
+</html>

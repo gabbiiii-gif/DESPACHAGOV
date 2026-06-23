@@ -1,0 +1,41 @@
+# deps
+node_modules
+.pnp
+.pnp.js
+
+# build
+dist
+dist-ssr
+*.local
+dev-dist
+
+# env — NUNCA commitar segredos
+.env
+.env.local
+.env.*.local
+
+# supabase
+supabase/.branches
+supabase/.temp
+.supabase
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+
+# test
+coverage
+
+# capacitor (sprints mobile)
+android
+ios
+
+# reference assets (mantidos fora do git do produto)
+"Identidade visual DESPACHAGOV"

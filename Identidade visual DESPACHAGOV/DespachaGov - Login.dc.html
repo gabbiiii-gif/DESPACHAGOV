@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;background:#E7E8EC;-webkit-font-smoothing:antialiased;}
+@keyframes dgfly{0%{transform:translate(-8px,8px) rotate(-4deg);}50%{transform:translate(8px,-8px) rotate(2deg);}100%{transform:translate(-8px,8px) rotate(-4deg);}}
+@keyframes dgbar{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
+@keyframes dgblink{0%,100%{opacity:.25;}50%{opacity:1;}}
+@keyframes dgspin{to{transform:rotate(360deg);}}
+</style>
+</helmet>
+
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:48px;background:#E7E8EC;font-family:'Public Sans',sans-serif;">
+
+  <div style="margin-bottom:34px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:21px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span>
+    </div>
+    <div style="font-size:14px;color:#6B7488;margin-top:8px;">Entrada do sistema — loading (splash) e login · desktop e mobile</div>
+  </div>
+
+  <div style="display:flex;gap:56px;align-items:flex-start;">
+
+    <!-- ============ DESKTOP ============ -->
+    <div style="flex:none;">
+      <div style="font-size:13px;font-weight:800;color:#636B2F;margin:0 0 4px 2px;">Desktop</div>
+      <div style="font-size:12px;color:#8a93a6;margin:0 0 14px 2px;">Splash carrega → login. Clique em "Entrar" para alternar.</div>
+      <div data-screen-label="Login Desktop" style="width:1180px;height:720px;border-radius:6px;overflow:hidden;box-shadow:0 12px 40px rgba(16,40,76,.16);position:relative;background:#fff;">
+
+        <!-- SPLASH desktop -->
+        <sc-if value="{{ deskSplash }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 75% 15%, #3C401B 0%, #131922 55%, #0e131b 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="animation:dgfly 3s ease-in-out infinite;margin-bottom:28px;">
+            <svg width="92" height="92" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/><rect x="21" y="79" width="5" height="5" fill="#C2602F"/><rect x="12" y="81" width="4" height="4" fill="#C2602F"/></svg>
+          </div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:38px;margin-bottom:30px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></div>
+          <div style="width:240px;height:5px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#C2602F,#E0A06B);border-radius:999px;animation:dgbar 1.8s ease-out forwards;"></div></div>
+          <div style="font-size:13px;color:#8696b4;margin-top:18px;">Carregando seu painel…</div>
+        </div>
+        </sc-if>
+
+        <!-- LOGIN desktop -->
+        <sc-if value="{{ deskLogin }}">
+        <div style="position:absolute;inset:0;display:flex;">
+          <!-- left brand -->
+          <div style="width:48%;background:radial-gradient(120% 100% at 80% 10%, #3C401B 0%, #131922 60%, #0e131b 100%);color:#fff;padding:54px 50px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:11px;">
+              <svg width="34" height="34" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg>
+              <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:21px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+            </div>
+            <div>
+              <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:34px;line-height:1.15;letter-spacing:-.02em;margin:0 0 16px;">Da Secretaria ao campo, em tempo real.</h1>
+              <p style="font-size:15px;color:#bcc8de;line-height:1.6;margin:0;max-width:380px;">Abriu o chamado, a empresa recebe na hora. O técnico executa e comprova. Tudo dentro do sistema.</p>
+            </div>
+            <div style="display:flex;gap:22px;font-size:12.5px;color:#8696b4;">
+              <span><strong style="color:#fff;">94%</strong> SLA cumprido</span>
+              <span><strong style="color:#fff;">42</strong> unidades</span>
+              <span><strong style="color:#fff;">8</strong> prestadores</span>
+            </div>
+          </div>
+          <!-- right form -->
+          <div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;padding:50px;">
+            <div style="width:100%;max-width:360px;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:25px;font-weight:800;color:#636B2F;margin-bottom:6px;">Acessar painel</div>
+              <div style="font-size:14px;color:#6B7488;margin-bottom:26px;">Entre com suas credenciais institucionais.</div>
+
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">E-mail institucional</label>
+              <div style="display:flex;align-items:center;gap:9px;border:1px solid #E3E6EC;border-radius:10px;padding:13px 14px;background:#F7F8FB;margin-bottom:16px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                <span style="font-size:14px;color:#636B2F;">carla.mendes@santahelena.gov.br</span>
+              </div>
+              <label style="display:block;font-size:12.5px;font-weight:700;color:#636B2F;margin-bottom:7px;">Senha</label>
+              <div style="display:flex;align-items:center;gap:9px;border:1.5px solid #636B2F;border-radius:10px;padding:13px 14px;background:#fff;margin-bottom:14px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#636B2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span style="font-size:14px;color:#636B2F;letter-spacing:3px;">••••••••</span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#6B7488;"><span style="width:17px;height:17px;border-radius:5px;background:#C2602F;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;">✓</span>Lembrar-me</span>
+                <span style="font-size:13px;color:#2456A6;font-weight:600;cursor:pointer;">Esqueci a senha</span>
+              </div>
+              <button onClick="{{ deskGoSplash }}" style="width:100%;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:11px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(194,96,47,.3);">Entrar</button>
+              <div style="text-align:center;margin-top:22px;font-size:12.5px;color:#9099ab;">Acesso restrito a servidores e prestadores cadastrados</div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- ============ MOBILE ============ -->
+    <div style="flex:none;">
+      <div style="font-size:13px;font-weight:800;color:#636B2F;margin:0 0 4px 2px;">Mobile</div>
+      <div style="font-size:12px;color:#8a93a6;margin:0 0 14px 2px;">Splash → login. Toque em "Entrar".</div>
+      <div data-screen-label="Login Mobile" style="width:330px;background:#3C401B;border-radius:46px;padding:13px;box-shadow:0 26px 56px rgba(15,30,61,.32);">
+        <div style="border-radius:34px;overflow:hidden;height:710px;position:relative;background:#fff;">
+
+          <!-- SPLASH mobile -->
+          <sc-if value="{{ mobSplash }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;background:radial-gradient(120% 80% at 70% 20%, #3C401B 0%, #131922 55%, #0e131b 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;">
+            <div style="display:flex;justify-content:space-between;width:100%;position:absolute;top:18px;padding:0 22px;font-size:11px;color:#8696b4;"><span>9:41</span><span>5G ▪ 100%</span></div>
+            <div style="animation:dgfly 3s ease-in-out infinite;margin-bottom:24px;">
+              <svg width="78" height="78" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/><rect x="21" y="79" width="5" height="5" fill="#C2602F"/></svg>
+            </div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:30px;margin-bottom:28px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></div>
+            <div style="width:170px;height:4px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#C2602F,#E0A06B);border-radius:999px;animation:dgbar 1.8s ease-out forwards;"></div></div>
+            <div style="position:absolute;bottom:38px;font-size:12px;color:#7e8aa1;">Prefeitura de Santa Helena</div>
+          </div>
+          </sc-if>
+
+          <!-- LOGIN mobile -->
+          <sc-if value="{{ mobLogin }}">
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+            <div style="background:radial-gradient(120% 100% at 80% 0%, #3C401B 0%, #131922 70%);color:#fff;padding:48px 26px 34px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#8696b4;margin-bottom:30px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="animation:dgfly 4s ease-in-out infinite;display:inline-block;margin-bottom:16px;">
+                <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg>
+              </div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:800;">Bem-vindo de volta</div>
+              <div style="font-size:13px;color:#bcc8de;margin-top:4px;">Acesse o sistema da sua secretaria</div>
+            </div>
+            <div style="flex:1;background:#fff;border-radius:26px 26px 0 0;margin-top:-18px;padding:28px 24px;">
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:7px;">E-mail institucional</label>
+              <div style="display:flex;align-items:center;gap:9px;border:1px solid #E3E6EC;border-radius:11px;padding:13px 14px;background:#F7F8FB;margin-bottom:15px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                <span style="font-size:13px;color:#636B2F;">carla.mendes@…gov.br</span>
+              </div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:7px;">Senha</label>
+              <div style="display:flex;align-items:center;gap:9px;border:1.5px solid #636B2F;border-radius:11px;padding:13px 14px;background:#fff;margin-bottom:14px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#636B2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span style="font-size:14px;color:#636B2F;letter-spacing:3px;">••••••••</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+              <div style="text-align:right;margin-bottom:22px;"><span style="font-size:12.5px;color:#2456A6;font-weight:600;">Esqueci a senha</span></div>
+              <button onClick="{{ mobGoSplash }}" style="width:100%;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(194,96,47,.32);">Entrar</button>
+              <div style="display:flex;align-items:center;gap:10px;margin:20px 0;"><div style="flex:1;height:1px;background:#E3E6EC;"></div><span style="font-size:11px;color:#9099ab;">ou</span><div style="flex:1;height:1px;background:#E3E6EC;"></div></div>
+              <button style="width:100%;font-family:inherit;background:#fff;color:#636B2F;border:1.5px solid #E3E6EC;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#636B2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Acesso gov.br
+              </button>
+              <div style="text-align:center;margin-top:20px;font-size:11.5px;color:#9099ab;">Acesso restrito a usuários cadastrados</div>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  state = { desk: 'splash', mob: 'splash' };
+  componentDidMount() {
+    this._t1 = setTimeout(() => this.setState({ desk: 'login' }), 2200);
+    this._t2 = setTimeout(() => this.setState({ mob: 'login' }), 2200);
+  }
+  componentWillUnmount() { clearTimeout(this._t1); clearTimeout(this._t2); }
+  renderVals() {
+    return {
+      deskSplash: this.state.desk === 'splash',
+      deskLogin: this.state.desk === 'login',
+      mobSplash: this.state.mob === 'splash',
+      mobLogin: this.state.mob === 'login',
+      // "Entrar" replays the loading splash, then returns to login
+      deskGoSplash: () => { this.setState({ desk: 'splash' }); clearTimeout(this._t1); this._t1 = setTimeout(() => this.setState({ desk: 'login' }), 2000); },
+      mobGoSplash: () => { this.setState({ mob: 'splash' }); clearTimeout(this._t2); this._t2 = setTimeout(() => this.setState({ mob: 'login' }), 2000); },
+    };
+  }
+}
+</script>
+</body>
+</html>

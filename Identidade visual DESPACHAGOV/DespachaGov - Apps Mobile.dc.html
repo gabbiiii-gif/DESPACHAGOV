@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;-webkit-font-smoothing:antialiased;}
+.dglabel{font-family:'Public Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;color:#3a4considerable;margin:0 0 4px 2px;}
+.scr::-webkit-scrollbar{width:0;}
+</style>
+</helmet>
+
+<div style="width:max-content;min-width:100%;min-height:100vh;box-sizing:border-box;padding:48px;background:#E7E8EC;font-family:'Public Sans',sans-serif;">
+
+  <div style="margin-bottom:34px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="28" height="28" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:21px;"><span style="color:#C2602F;">Despacha</span><span style="color:#636B2F;">Gov</span></span>
+    </div>
+    <div style="font-size:14px;color:#6B7488;margin-top:8px;">Apps mobile navegáveis — clique nas abas e botões de cada celular</div>
+  </div>
+
+  <div style="display:flex;gap:64px;align-items:flex-start;">
+
+    <!-- ============ APP 1: SECRETARIA ============ -->
+    <div style="flex:none;">
+      <div style="font-family:'Public Sans',sans-serif;font-size:13px;font-weight:800;color:#636B2F;margin:0 0 4px 2px;">01 · Secretaria</div>
+      <div style="font-size:12px;color:#8a93a6;margin:0 0 14px 2px;">Abrir chamado pelo celular</div>
+      <div data-screen-label="App Secretaria" style="width:330px;background:#3C401B;border-radius:46px;padding:13px;box-shadow:0 26px 56px rgba(15,30,61,.32);">
+        <div style="background:#F1F3F7;border-radius:34px;overflow:hidden;height:710px;display:flex;flex-direction:column;position:relative;">
+
+          <!-- HOME -->
+          <sc-if value="{{ secHome }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:#636B2F;padding:18px 20px 20px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:16px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:11px;"><span style="width:40px;height:40px;border-radius:50%;background:#C2602F;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;">CM</span><div><div style="font-size:11px;color:#9fb0cc;">UBS Central · Saúde</div><div style="font-size:16px;font-weight:800;">Carla Mendes</div></div></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+                <div style="background:#fff;border:1px solid #E3E6EC;border-radius:13px;padding:14px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#C2602F;">2</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;">abertos</div></div>
+                <div style="background:#fff;border:1px solid #E3E6EC;border-radius:13px;padding:14px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#2456A6;">1</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;">em campo</div></div>
+              </div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:10px;">MEUS CHAMADOS</div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #C2602F;border-radius:12px;padding:13px;margin-bottom:10px;"><div style="font-size:10px;font-weight:800;color:#8A3D18;margin-bottom:4px;">ABERTO · há 4 min</div><div style="font-size:14px;font-weight:700;color:#636B2F;">Vazamento na recepção</div><div style="font-size:11.5px;color:#8a93a6;margin-top:2px;">HidroFix Ltda</div></div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #2456A6;border-radius:12px;padding:13px;margin-bottom:10px;"><div style="font-size:10px;font-weight:700;color:#1B4286;margin-bottom:4px;">EM CAMPO · téc. Rian</div><div style="font-size:14px;font-weight:700;color:#636B2F;">Troca de lâmpadas</div><div style="font-size:11.5px;color:#8a93a6;margin-top:2px;">Luz &amp; Cia</div></div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #1F9D6B;border-radius:12px;padding:13px;"><div style="font-size:10px;font-weight:700;color:#157A52;margin-bottom:4px;">CONCLUÍDO · comprovado</div><div style="font-size:14px;font-weight:700;color:#636B2F;">Poda de árvore</div><div style="font-size:11.5px;color:#8a93a6;margin-top:2px;">Verde Poda</div></div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- NOVO CHAMADO -->
+          <sc-if value="{{ secNovo }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:#636B2F;padding:18px 20px 16px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:10px;"><span onClick="{{ secGoHome }}" style="font-size:20px;cursor:pointer;">‹</span><div style="font-size:16px;font-weight:800;">Novo chamado</div></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:6px;">Título do serviço</label>
+              <div style="border:1.5px solid #636B2F;border-radius:10px;padding:12px 13px;font-size:13.5px;color:#636B2F;background:#fff;margin-bottom:14px;">Vazamento na recepção</div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:6px;">Categoria</label>
+              <div style="border:1px solid #E3E6EC;border-radius:10px;padding:12px 13px;font-size:13.5px;color:#636B2F;background:#F7F8FB;margin-bottom:14px;display:flex;justify-content:space-between;">Hidráulica <span style="color:#9099ab;">▾</span></div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:6px;">Prioridade</label>
+              <div style="display:flex;gap:8px;margin-bottom:14px;">
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:9px;font-size:11.5px;font-weight:700;background:#F6E9DE;color:#8A3D18;border:1.5px solid #C2602F;">Urgente</div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:9px;font-size:11.5px;font-weight:700;background:#F7F8FB;color:#6B7488;border:1px solid #E3E6EC;">Alta</div>
+                <div style="flex:1;text-align:center;padding:10px 4px;border-radius:9px;font-size:11.5px;font-weight:700;background:#F7F8FB;color:#6B7488;border:1px solid #E3E6EC;">Normal</div>
+              </div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:6px;">Descrição</label>
+              <div style="border:1px solid #E3E6EC;border-radius:10px;padding:12px 13px;font-size:12.5px;color:#6B7488;background:#fff;line-height:1.5;min-height:62px;margin-bottom:14px;">Água acumulando no piso da recepção, risco para o público.</div>
+              <label style="display:block;font-size:12px;font-weight:700;color:#636B2F;margin-bottom:6px;">Foto</label>
+              <div style="display:flex;gap:8px;margin-bottom:8px;">
+                <div style="width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,#cdd6e3,#e8edf4);display:flex;align-items:center;justify-content:center;color:#8a93a6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg></div>
+                <div style="width:64px;height:64px;border-radius:10px;border:1.5px dashed #C9D0DC;background:#FAFBFC;display:flex;align-items:center;justify-content:center;color:#C2602F;font-size:24px;">+</div>
+              </div>
+            </div>
+            <div style="padding:14px 16px;border-top:1px solid #E3E6EC;background:#fff;">
+              <button onClick="{{ secGoSucesso }}" style="width:100%;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:12px;padding:15px;font-size:14.5px;font-weight:800;box-shadow:0 10px 20px rgba(194,96,47,.32);cursor:pointer;">Despachar chamado →</button>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- SUCESSO -->
+          <sc-if value="{{ secSucesso }}">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:#fff;">
+            <div style="width:88px;height:88px;border-radius:50%;background:rgba(31,157,107,.13);display:flex;align-items:center;justify-content:center;margin-bottom:22px;">
+              <div style="width:60px;height:60px;border-radius:50%;background:#1F9D6B;display:flex;align-items:center;justify-content:center;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#636B2F;margin-bottom:8px;">Chamado despachado!</div>
+            <div style="font-size:14px;color:#6B7488;line-height:1.5;margin-bottom:6px;">A <strong style="color:#636B2F;">HidroFix Ltda</strong> foi notificada na hora.</div>
+            <div style="font-size:13px;color:#8a93a6;margin-bottom:28px;">Chamado #2042 · SLA 30 min</div>
+            <button onClick="{{ secGoHome }}" style="width:100%;font-family:inherit;background:#636B2F;color:#fff;border:none;border-radius:12px;padding:15px;font-size:14px;font-weight:700;cursor:pointer;">Acompanhar chamado</button>
+          </div>
+          </sc-if>
+
+          <!-- FAB -->
+          <sc-if value="{{ secHome }}">
+          <button onClick="{{ secGoNovo }}" style="position:absolute;right:18px;bottom:84px;width:56px;height:56px;border-radius:50%;background:#C2602F;color:#fff;border:none;font-size:28px;font-weight:300;box-shadow:0 12px 26px rgba(194,96,47,.45);cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+          </sc-if>
+
+          <!-- BOTTOM NAV -->
+          <div style="flex:none;display:flex;justify-content:space-around;padding:12px 0 18px;border-top:1px solid #E3E6EC;background:#fff;">
+            <div onClick="{{ secGoHome }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:{{ secNavHome }};"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span style="font-size:9.5px;font-weight:700;">Início</span></div>
+            <div onClick="{{ secGoNovo }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:{{ secNavNovo }};"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span style="font-size:9.5px;font-weight:700;">Abrir</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9099ab;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg><span style="font-size:9.5px;font-weight:600;">Perfil</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ APP 2: TÉCNICO ============ -->
+    <div style="flex:none;">
+      <div style="font-family:'Public Sans',sans-serif;font-size:13px;font-weight:800;color:#636B2F;margin:0 0 4px 2px;">02 · Técnico</div>
+      <div style="font-size:12px;color:#8a93a6;margin:0 0 14px 2px;">Executa e comprova em campo</div>
+      <div data-screen-label="App Técnico" style="width:330px;background:#3C401B;border-radius:46px;padding:13px;box-shadow:0 26px 56px rgba(15,30,61,.32);">
+        <div style="background:#F1F3F7;border-radius:34px;overflow:hidden;height:710px;display:flex;flex-direction:column;position:relative;">
+
+          <!-- ORDENS -->
+          <sc-if value="{{ tecOrdens }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:#636B2F;padding:18px 20px 20px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:16px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:11px;"><span style="width:40px;height:40px;border-radius:50%;background:#2456A6;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">RS</span><div><div style="font-size:11px;color:#9fb0cc;">Técnico · HidroFix</div><div style="font-size:16px;font-weight:800;">Rian Souza</div></div><span style="margin-left:auto;font-size:11px;font-weight:700;color:#636B2F;background:#C2602F;padding:5px 10px;border-radius:999px;">2 hoje</span></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:10px;">ATRIBUÍDAS A VOCÊ</div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #C2602F;border-radius:12px;padding:14px;margin-bottom:11px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:10px;font-weight:800;color:#fff;background:#C2602F;padding:3px 9px;border-radius:999px;">URGENTE</span><span style="font-size:10.5px;color:#8A3D18;font-weight:700;">SLA 22 min</span></div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#636B2F;">Vazamento na recepção</div>
+                <div style="font-size:12px;color:#8a93a6;margin-top:2px;">UBS Central · 1,2 km</div>
+                <button onClick="{{ tecGoExec }}" style="width:100%;margin-top:12px;font-family:inherit;background:#636B2F;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;">Iniciar deslocamento</button>
+              </div>
+              <div style="background:#fff;border:1px solid #E3E6EC;border-left:4px solid #2456A6;border-radius:12px;padding:14px;">
+                <div style="font-size:10px;font-weight:700;color:#1B4286;margin-bottom:6px;">EM CAMPO · iniciado 14:40</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#636B2F;">Troca de lâmpadas</div>
+                <div style="font-size:12px;color:#8a93a6;margin-top:2px;">E.M. Vila Nova · no local</div>
+                <button onClick="{{ tecGoExec }}" style="width:100%;margin-top:12px;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;">Continuar execução →</button>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- EXECUÇÃO / COMPROVAÇÃO -->
+          <sc-if value="{{ tecExec }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:#636B2F;padding:18px 20px 16px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#b9c6df;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:10px;"><span onClick="{{ tecGoOrdens }}" style="font-size:20px;cursor:pointer;">‹</span><div><div style="font-size:10.5px;color:#9fb0cc;">Chamado #2040</div><div style="font-size:15px;font-weight:800;">Comprovar execução</div></div></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">FOTO ANTES / DEPOIS</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div style="aspect-ratio:1;border-radius:11px;background:linear-gradient(135deg,#cdd6e3,#e8edf4);display:flex;align-items:center;justify-content:center;color:#8a93a6;position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg><span style="position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:#fff;background:rgba(16,40,76,.7);padding:2px 6px;border-radius:6px;">antes</span></div>
+                <div style="aspect-ratio:1;border-radius:11px;background:linear-gradient(135deg,#cde3d6,#e6f4ec);display:flex;align-items:center;justify-content:center;color:#1F9D6B;position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5L9 20"/></svg><span style="position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:#fff;background:rgba(31,157,107,.85);padding:2px 6px;border-radius:6px;">depois</span></div>
+              </div>
+              <button style="width:100%;font-family:inherit;background:#fff;color:#636B2F;border:1.5px dashed #C9D0DC;border-radius:10px;padding:11px;font-size:12px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2602F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Tirar foto</button>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">OBSERVAÇÃO</div>
+              <div style="border:1px solid #E3E6EC;border-radius:10px;padding:11px 13px;font-size:12.5px;color:#6B7488;background:#fff;line-height:1.5;margin-bottom:16px;">Trocadas 4 lâmpadas LED 18W. Testado, tudo funcionando.</div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8a93a6;margin-bottom:9px;">ASSINATURA DO RESPONSÁVEL</div>
+              <div style="border:1.5px solid #636B2F;border-radius:12px;background:#fff;height:92px;position:relative;overflow:hidden;margin-bottom:18px;">
+                <svg width="100%" height="92" viewBox="0 0 280 92" preserveAspectRatio="none"><path d="M18 60 C 40 28, 56 28, 70 56 S 100 78, 116 48 S 150 22, 168 54 C 182 76, 196 38, 214 50 C 226 58, 240 46, 256 52" fill="none" stroke="#636B2F" stroke-width="2.4" stroke-linecap="round"/></svg>
+                <span style="position:absolute;bottom:8px;left:14px;font-size:10.5px;color:#9099ab;">Maria Diretora · 15:12</span>
+              </div>
+            </div>
+            <div style="padding:14px 16px;border-top:1px solid #E3E6EC;background:#fff;">
+              <button onClick="{{ tecGoOrdens }}" style="width:100%;font-family:inherit;background:#1F9D6B;color:#fff;border:none;border-radius:12px;padding:15px;font-size:14px;font-weight:800;box-shadow:0 10px 20px rgba(31,157,107,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Concluir &amp; enviar</button>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- BOTTOM NAV -->
+          <div style="flex:none;display:flex;justify-content:space-around;padding:12px 0 18px;border-top:1px solid #E3E6EC;background:#fff;">
+            <div onClick="{{ tecGoOrdens }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:{{ tecNavOrdens }};"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span style="font-size:9.5px;font-weight:700;">Ordens</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9099ab;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span style="font-size:9.5px;font-weight:600;">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9099ab;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/></svg><span style="font-size:9.5px;font-weight:600;">Perfil</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ APP 3: EMPRESA ============ -->
+    <div style="flex:none;">
+      <div style="font-family:'Public Sans',sans-serif;font-size:13px;font-weight:800;color:#636B2F;margin:0 0 4px 2px;">03 · Empresa</div>
+      <div style="font-size:12px;color:#8a93a6;margin:0 0 14px 2px;">Recebe a solicitação e designa técnico</div>
+      <div data-screen-label="App Empresa" style="width:330px;background:#05080d;border-radius:46px;padding:13px;box-shadow:0 26px 56px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);">
+        <div style="background:#0e131b;border-radius:34px;overflow:hidden;height:710px;display:flex;flex-direction:column;position:relative;">
+
+          <!-- SOLICITAÇÕES -->
+          <sc-if value="{{ empSolic }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:18px 20px 20px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#bcc8de;margin-bottom:16px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:10px;"><span style="width:38px;height:38px;border-radius:10px;background:#C2602F;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">HF</span><div><div style="font-size:11px;color:#bcc8de;">HidroFix Ltda</div><div style="font-size:16px;font-weight:800;">Solicitações</div></div><span style="margin-left:auto;width:10px;height:10px;border-radius:50%;background:#C2602F;"></span></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <div style="background:#171f2c;border:1.5px solid #C2602F;border-radius:16px;padding:16px;margin-bottom:13px;box-shadow:0 0 0 4px rgba(194,96,47,.1);">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="width:9px;height:9px;border-radius:50%;background:#C2602F;"></span><span style="font-size:10.5px;font-weight:800;color:#C2602F;letter-spacing:.05em;">NOVA · URGENTE</span><span style="margin-left:auto;font-size:10.5px;color:#8696b4;font-weight:600;">SLA 30 min</span></div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">Vazamento na recepção</div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bcc8de;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>UBS Central · Saúde</div>
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bcc8de;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8696b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Rua das Flores, 120 · 1,2 km</div>
+                </div>
+                <div style="display:flex;gap:9px;">
+                  <button style="flex:1;font-family:inherit;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;">Recusar</button>
+                  <button onClick="{{ empGoDesignar }}" style="flex:1.4;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:800;box-shadow:0 8px 16px rgba(194,96,47,.4);cursor:pointer;">Aceitar</button>
+                </div>
+              </div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8696b4;margin-bottom:9px;">EM ANDAMENTO</div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:13px;margin-bottom:10px;"><div style="font-size:10px;font-weight:700;color:#7fa8ec;margin-bottom:4px;">EM CAMPO · Rian</div><div style="font-size:13.5px;font-weight:700;color:#fff;">Troca de lâmpadas</div><div style="font-size:11px;color:#8696b4;margin-top:2px;">E.M. Vila Nova</div></div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:13px;"><div style="font-size:10px;font-weight:700;color:#4fd6a0;margin-bottom:4px;">CONCLUÍDO · comprovado</div><div style="font-size:13.5px;font-weight:700;color:#fff;">Desentupimento</div><div style="font-size:11px;color:#8696b4;margin-top:2px;">Posto Norte</div></div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- DESIGNAR -->
+          <sc-if value="{{ empDesignar }}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+            <div style="background:linear-gradient(135deg,#636B2F,#7A8340);padding:18px 20px 16px;color:#fff;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#bcc8de;margin-bottom:14px;"><span>9:41</span><span>5G ▪ 100%</span></div>
+              <div style="display:flex;align-items:center;gap:10px;"><span onClick="{{ empGoSolic }}" style="font-size:20px;cursor:pointer;">‹</span><div><div style="font-size:10.5px;color:#bcc8de;">Aceita · #2041</div><div style="font-size:15px;font-weight:800;">Designar técnico</div></div></div>
+            </div>
+            <div class="scr" style="flex:1;overflow:auto;padding:16px;">
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:13px;margin-bottom:14px;"><div style="font-size:13.5px;font-weight:800;color:#fff;">Vazamento na recepção</div><div style="font-size:11.5px;color:#8696b4;margin-top:2px;">UBS Central · urgente · SLA 28 min</div></div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#8696b4;margin-bottom:10px;">TÉCNICOS DISPONÍVEIS</div>
+              <div onClick="{{ empPickCarlos }}" style="background:#171f2c;border:1.5px solid {{ carlosBorder }};border-radius:12px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;"><span style="width:36px;height:36px;border-radius:50%;background:#2456A6;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">CA</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Carlos Aguiar</div><div style="font-size:11px;color:#4fd6a0;">Livre · 0,8 km</div></div><span style="width:22px;height:22px;border-radius:50%;background:{{ carlosCheckBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;">{{ carlosCheck }}</span></div>
+              <div onClick="{{ empPickPaulo }}" style="background:#171f2c;border:1.5px solid {{ pauloBorder }};border-radius:12px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;cursor:pointer;"><span style="width:36px;height:36px;border-radius:50%;background:#636B2F;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">PM</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Paulo Marques</div><div style="font-size:11px;color:#4fd6a0;">Livre · 3,1 km</div></div><span style="width:22px;height:22px;border-radius:50%;background:{{ pauloCheckBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;">{{ pauloCheck }}</span></div>
+              <div style="background:#171f2c;border:1px solid #28344a;border-radius:12px;padding:12px;display:flex;align-items:center;gap:11px;opacity:.6;"><span style="width:36px;height:36px;border-radius:50%;background:#1F9D6B;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">BA</span><div style="flex:1;"><div style="font-size:13.5px;font-weight:700;color:#fff;">Bia Alves</div><div style="font-size:11px;color:#8696b4;">Em campo · volta 16h</div></div></div>
+            </div>
+            <div style="padding:14px 16px;border-top:1px solid #28344a;background:#0e131b;">
+              <button onClick="{{ empGoSolic }}" style="width:100%;font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:12px;padding:15px;font-size:14px;font-weight:800;box-shadow:0 10px 20px rgba(194,96,47,.4);cursor:pointer;">Despachar {{ empPicked }} →</button>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- BOTTOM NAV -->
+          <div style="flex:none;display:flex;justify-content:space-around;padding:12px 0 18px;border-top:1px solid #28344a;background:#0e131b;">
+            <div onClick="{{ empGoSolic }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:{{ empNavSolic }};"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span style="font-size:9.5px;font-weight:700;">Solicitações</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#5a6party;color:#6b7894;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span style="font-size:9.5px;font-weight:600;">Técnicos</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#6b7894;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/></svg><span style="font-size:9.5px;font-weight:600;">Desempenho</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { sec: 'home', tec: 'ordens', emp: 'solic', tecnico: 'carlos' };
+  renderVals() {
+    const active = '#636B2F', idle = '#9099ab';
+    const empActive = '#C2602F', empIdle = '#6b7894';
+    const t = this.state.tecnico;
+    return {
+      // Secretaria
+      secHome: this.state.sec === 'home',
+      secNovo: this.state.sec === 'novo',
+      secSucesso: this.state.sec === 'sucesso',
+      secGoHome: () => this.setState({ sec: 'home' }),
+      secGoNovo: () => this.setState({ sec: 'novo' }),
+      secGoSucesso: () => this.setState({ sec: 'sucesso' }),
+      secNavHome: this.state.sec === 'home' ? active : idle,
+      secNavNovo: (this.state.sec === 'novo' || this.state.sec === 'sucesso') ? active : idle,
+      // Técnico
+      tecOrdens: this.state.tec === 'ordens',
+      tecExec: this.state.tec === 'exec',
+      tecGoOrdens: () => this.setState({ tec: 'ordens' }),
+      tecGoExec: () => this.setState({ tec: 'exec' }),
+      tecNavOrdens: active,
+      // Empresa
+      empSolic: this.state.emp === 'solic',
+      empDesignar: this.state.emp === 'designar',
+      empGoSolic: () => this.setState({ emp: 'solic' }),
+      empGoDesignar: () => this.setState({ emp: 'designar' }),
+      empNavSolic: empActive,
+      empPickCarlos: () => this.setState({ tecnico: 'carlos' }),
+      empPickPaulo: () => this.setState({ tecnico: 'paulo' }),
+      carlosBorder: t === 'carlos' ? '#C2602F' : '#28344a',
+      pauloBorder: t === 'paulo' ? '#C2602F' : '#28344a',
+      carlosCheckBg: t === 'carlos' ? '#C2602F' : 'transparent',
+      pauloCheckBg: t === 'paulo' ? '#C2602F' : 'transparent',
+      carlosCheck: t === 'carlos' ? '✓' : '',
+      pauloCheck: t === 'paulo' ? '✓' : '',
+      empPicked: t === 'carlos' ? 'Carlos' : 'Paulo',
+    };
+  }
+}
+</script>
+</body>
+</html>

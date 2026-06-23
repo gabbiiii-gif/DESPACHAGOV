@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;background:#E7E8EC;-webkit-font-smoothing:antialiased;}
+@media print{.dgchrome{display:none!important;}body{background:#fff;}.dgpage{box-shadow:none!important;margin:0!important;}}
+</style>
+</helmet>
+
+<div style="font-family:'Public Sans',sans-serif;color:#636B2F;min-height:100vh;">
+
+  <!-- TOOLBAR -->
+  <div class="dgchrome" style="position:sticky;top:0;z-index:10;background:#636B2F;color:#fff;display:flex;align-items:center;gap:18px;padding:14px 28px;box-shadow:0 2px 10px rgba(0,0,0,.15);">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#fff"/><path d="M93 11 L60 51 L53 84 Z" fill="#c3d2ec"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-style:italic;font-weight:800;font-size:16px;"><span style="color:#C2602F;">Despacha</span><span style="color:#fff;">Gov</span></span>
+    </div>
+    <span style="font-size:13px;color:#9fb0cc;font-weight:600;">Modelos de relatório · prestação de contas</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <div style="display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:4px;gap:2px;">
+        <button onClick="{{ goMensal }}" style="border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:999px;background:{{ mensalBg }};color:{{ mensalColor }};">Mensal</button>
+        <button onClick="{{ goEscola }}" style="border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:999px;background:{{ escolaBg }};color:{{ escolaColor }};">Por escola</button>
+        <button onClick="{{ goCustom }}" style="border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 16px;border-radius:999px;background:{{ customBg }};color:{{ customColor }};">Personalizado</button>
+      </div>
+      <button onClick="{{ doPrint }}" style="font-family:inherit;background:#C2602F;color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Exportar PDF</button>
+    </div>
+  </div>
+
+  <div style="padding:38px 20px;display:flex;justify-content:center;">
+
+    <!-- ============ MODELO MENSAL ============ -->
+    <sc-if value="{{ isMensal }}" hint-placeholder-val="{{ true }}">
+    <div class="dgpage" data-screen-label="Relatório Mensal" style="width:820px;background:#fff;box-shadow:0 8px 40px rgba(16,40,76,.14);padding:56px 56px 48px;">
+      <!-- header -->
+      <div style="display:flex;justify-content:center;margin-bottom:24px;"><img src="uploads/PREFEITURA-removebg-preview.png" alt="Prefeitura de Altamira — SEMED" style="height:104px;display:block;filter:brightness(0);" /></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #636B2F;padding-bottom:22px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:13px;">
+          <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+          <div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;color:#636B2F;">Prefeitura de Altamira</div>
+            <div style="font-size:12.5px;color:#6B7488;">Secretaria Municipal de Educação</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#C2602F;font-weight:700;">Relatório Mensal</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#636B2F;">Maio / 2026</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#9099ab;margin-bottom:30px;">Emitido em 23/06/2026 · Doc. nº DG-2026-05-EDU</div>
+
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#636B2F;margin:0 0 6px;">Prestação de contas — Manutenção</h1>
+      <p style="font-size:14px;color:#6B7488;line-height:1.6;margin:0 0 30px;">Consolidado dos chamados de manutenção e serviços executados nas unidades da Secretaria de Educação no período de referência.</p>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:34px;">
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#636B2F;">182</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;margin-top:2px;">chamados totais</div></div>
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#157A52;">171</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;margin-top:2px;">concluídos</div></div>
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#636B2F;">3h 12m</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;margin-top:2px;">tempo médio</div></div>
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#157A52;">94%</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;margin-top:2px;">SLA cumprido</div></div>
+      </div>
+
+      <!-- chart por unidade -->
+      <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6B7488;margin-bottom:16px;">Chamados por unidade</div>
+      <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:34px;">
+        <div style="display:flex;align-items:center;gap:12px;"><span style="width:150px;font-size:13px;color:#636B2F;font-weight:600;">E.M. Vila Nova</span><div style="flex:1;height:22px;background:#EEF0F4;border-radius:5px;overflow:hidden;"><div style="width:88%;height:100%;background:linear-gradient(90deg,#7A8340,#636B2F);"></div></div><span style="width:34px;text-align:right;font-size:13px;font-weight:700;color:#636B2F;">48</span></div>
+        <div style="display:flex;align-items:center;gap:12px;"><span style="width:150px;font-size:13px;color:#636B2F;font-weight:600;">E.M. São José</span><div style="flex:1;height:22px;background:#EEF0F4;border-radius:5px;overflow:hidden;"><div style="width:70%;height:100%;background:linear-gradient(90deg,#7A8340,#636B2F);"></div></div><span style="width:34px;text-align:right;font-size:13px;font-weight:700;color:#636B2F;">39</span></div>
+        <div style="display:flex;align-items:center;gap:12px;"><span style="width:150px;font-size:13px;color:#636B2F;font-weight:600;">Creche Girassol</span><div style="flex:1;height:22px;background:#EEF0F4;border-radius:5px;overflow:hidden;"><div style="width:56%;height:100%;background:linear-gradient(90deg,#C2602F,#8A3D18);"></div></div><span style="width:34px;text-align:right;font-size:13px;font-weight:700;color:#636B2F;">31</span></div>
+        <div style="display:flex;align-items:center;gap:12px;"><span style="width:150px;font-size:13px;color:#636B2F;font-weight:600;">E.M. Centro</span><div style="flex:1;height:22px;background:#EEF0F4;border-radius:5px;overflow:hidden;"><div style="width:44%;height:100%;background:linear-gradient(90deg,#7A8340,#636B2F);"></div></div><span style="width:34px;text-align:right;font-size:13px;font-weight:700;color:#636B2F;">24</span></div>
+        <div style="display:flex;align-items:center;gap:12px;"><span style="width:150px;font-size:13px;color:#636B2F;font-weight:600;">Creche Pequenos</span><div style="flex:1;height:22px;background:#EEF0F4;border-radius:5px;overflow:hidden;"><div style="width:73%;height:100%;background:linear-gradient(90deg,#7A8340,#636B2F);"></div></div><span style="width:34px;text-align:right;font-size:13px;font-weight:700;color:#636B2F;">40</span></div>
+      </div>
+
+      <!-- detalhamento -->
+      <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6B7488;margin-bottom:14px;">Detalhamento por categoria</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:34px;">
+        <thead><tr style="border-bottom:2px solid #636B2F;"><th style="text-align:left;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Categoria</th><th style="text-align:right;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Chamados</th><th style="text-align:right;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Concluídos</th><th style="text-align:right;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">SLA</th><th style="text-align:right;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Custo</th></tr></thead>
+        <tbody style="font-size:13px;color:#636B2F;">
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:10px 8px;font-weight:600;">Elétrica</td><td style="text-align:right;padding:10px 8px;">58</td><td style="text-align:right;padding:10px 8px;">56</td><td style="text-align:right;padding:10px 8px;color:#157A52;font-weight:700;">96%</td><td style="text-align:right;padding:10px 8px;">R$ 12.400</td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:10px 8px;font-weight:600;">Hidráulica</td><td style="text-align:right;padding:10px 8px;">44</td><td style="text-align:right;padding:10px 8px;">41</td><td style="text-align:right;padding:10px 8px;color:#157A52;font-weight:700;">93%</td><td style="text-align:right;padding:10px 8px;">R$ 9.800</td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:10px 8px;font-weight:600;">Limpeza</td><td style="text-align:right;padding:10px 8px;">39</td><td style="text-align:right;padding:10px 8px;">38</td><td style="text-align:right;padding:10px 8px;color:#157A52;font-weight:700;">97%</td><td style="text-align:right;padding:10px 8px;">R$ 6.200</td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:10px 8px;font-weight:600;">Serralheria</td><td style="text-align:right;padding:10px 8px;">22</td><td style="text-align:right;padding:10px 8px;">20</td><td style="text-align:right;padding:10px 8px;color:#8A3D18;font-weight:700;">86%</td><td style="text-align:right;padding:10px 8px;">R$ 5.100</td></tr>
+          <tr style="border-bottom:2px solid #636B2F;font-weight:800;"><td style="padding:11px 8px;">Total</td><td style="text-align:right;padding:11px 8px;">182</td><td style="text-align:right;padding:11px 8px;">171</td><td style="text-align:right;padding:11px 8px;color:#157A52;">94%</td><td style="text-align:right;padding:11px 8px;">R$ 33.500</td></tr>
+        </tbody>
+      </table>
+
+      <!-- assinaturas -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:54px;">
+        <div style="text-align:center;"><div style="border-top:1.5px solid #636B2F;padding-top:8px;font-size:12.5px;color:#636B2F;font-weight:700;">Carla Mendes</div><div style="font-size:11.5px;color:#6B7488;">Secretária-chefe de Educação</div></div>
+        <div style="text-align:center;"><div style="border-top:1.5px solid #636B2F;padding-top:8px;font-size:12.5px;color:#636B2F;font-weight:700;">Controladoria Municipal</div><div style="font-size:11.5px;color:#6B7488;">Conferência e validação</div></div>
+      </div>
+      <div style="margin-top:40px;padding-top:14px;border-top:1px solid #E3E6EC;display:flex;justify-content:space-between;font-size:10.5px;color:#9099ab;"><span>DespachaGov · Relatório gerado automaticamente</span><span>Página 1 de 1</span></div>
+    </div>
+    </sc-if>
+
+    <!-- ============ MODELO POR ESCOLA ============ -->
+    <sc-if value="{{ isEscola }}">
+    <div class="dgpage" data-screen-label="Relatório Por Escola" style="width:820px;background:#fff;box-shadow:0 8px 40px rgba(16,40,76,.14);padding:56px 56px 48px;">
+      <div style="display:flex;justify-content:center;margin-bottom:24px;"><img src="uploads/PREFEITURA-removebg-preview.png" alt="Prefeitura de Altamira — SEMED" style="height:104px;display:block;filter:brightness(0);" /></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #636B2F;padding-bottom:22px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:13px;">
+          <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/><rect x="18" y="69" width="6" height="6" fill="#C2602F"/></svg>
+          <div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;color:#636B2F;">Prefeitura de Altamira</div><div style="font-size:12.5px;color:#6B7488;">Secretaria Municipal de Educação</div></div>
+        </div>
+        <div style="text-align:right;"><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#C2602F;font-weight:700;">Relatório por Unidade</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#636B2F;">E.M. Vila Nova</div></div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#9099ab;margin-bottom:28px;">Período: 01–31/05/2026 · Doc. nº DG-2026-05-VN</div>
+
+      <!-- unidade card -->
+      <div style="display:flex;gap:16px;align-items:center;background:#F7F8FB;border:1px solid #E3E6EC;border-radius:12px;padding:18px 20px;margin-bottom:30px;">
+        <span style="width:50px;height:50px;border-radius:12px;background:rgba(11,107,62,.1);color:#2456A6;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+        <div style="flex:1;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:#636B2F;">E.M. Vila Nova</div><div style="font-size:12.5px;color:#6B7488;">Av. Brasil, 880 · Vila Nova · Diretora: Maria Souza</div></div>
+        <div style="text-align:right;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#636B2F;">48</div><div style="font-size:11px;color:#6B7488;">chamados no mês</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#157A52;">45</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;">concluídos</div></div>
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#C2602F;">2</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;">em aberto</div></div>
+        <div style="border:1px solid #E3E6EC;border-radius:10px;padding:16px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#157A52;">96%</div><div style="font-size:11.5px;color:#6B7488;font-weight:600;">SLA cumprido</div></div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6B7488;margin-bottom:14px;">Chamados do período</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:30px;">
+        <thead><tr style="border-bottom:2px solid #636B2F;"><th style="text-align:left;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Data</th><th style="text-align:left;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Serviço</th><th style="text-align:left;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Prestador</th><th style="text-align:right;padding:9px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Status</th></tr></thead>
+        <tbody style="font-size:12.5px;color:#636B2F;">
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">28/05</td><td style="padding:9px 8px;font-weight:600;">Troca de lâmpadas</td><td style="padding:9px 8px;">Luz &amp; Cia</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">24/05</td><td style="padding:9px 8px;font-weight:600;">Reparo de telhado</td><td style="padding:9px 8px;">ConstruJP</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">21/05</td><td style="padding:9px 8px;font-weight:600;">Pintura de mural</td><td style="padding:9px 8px;">Cor &amp; Arte</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">18/05</td><td style="padding:9px 8px;font-weight:600;">Conserto de bebedouro</td><td style="padding:9px 8px;">HidroFix</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">15/05</td><td style="padding:9px 8px;font-weight:600;">Limpeza caixa d'água</td><td style="padding:9px 8px;">AquaClean</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">12/05</td><td style="padding:9px 8px;font-weight:600;">Troca de fechadura</td><td style="padding:9px 8px;">Serralha JP</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11.5px;color:#9099ab;margin-bottom:50px;">Exibindo 6 de 48 chamados. Detalhamento completo com fotos e assinaturas disponível no anexo digital.</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:40px;">
+        <div style="text-align:center;"><div style="border-top:1.5px solid #636B2F;padding-top:8px;font-size:12.5px;color:#636B2F;font-weight:700;">Maria Souza</div><div style="font-size:11.5px;color:#6B7488;">Diretora — E.M. Vila Nova</div></div>
+        <div style="text-align:center;"><div style="border-top:1.5px solid #636B2F;padding-top:8px;font-size:12.5px;color:#636B2F;font-weight:700;">Carla Mendes</div><div style="font-size:11.5px;color:#6B7488;">Secretária-chefe de Educação</div></div>
+      </div>
+      <div style="margin-top:40px;padding-top:14px;border-top:1px solid #E3E6EC;display:flex;justify-content:space-between;font-size:10.5px;color:#9099ab;"><span>DespachaGov · Relatório gerado automaticamente</span><span>Página 1 de 1</span></div>
+    </div>
+    </sc-if>
+
+    <!-- ============ MODELO PERSONALIZADO ============ -->
+    <sc-if value="{{ isCustom }}">
+    <div data-screen-label="Relatório Personalizado" style="width:820px;">
+      <!-- config bar -->
+      <div class="dgchrome" style="background:#fff;border:1px solid #E3E6EC;border-radius:12px;padding:20px 22px;margin-bottom:24px;box-shadow:0 4px 18px rgba(16,40,76,.08);">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#636B2F;margin-bottom:16px;">Configurar período personalizado</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="display:block;font-size:11.5px;font-weight:700;color:#636B2F;margin-bottom:6px;">De</label><div style="border:1px solid #E3E6EC;border-radius:9px;padding:11px 13px;font-size:13px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">10/05/2026 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div></div>
+          <div><label style="display:block;font-size:11.5px;font-weight:700;color:#636B2F;margin-bottom:6px;">Até</label><div style="border:1px solid #E3E6EC;border-radius:9px;padding:11px 13px;font-size:13px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">17/05/2026 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9099ab" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div></div>
+          <div><label style="display:block;font-size:11.5px;font-weight:700;color:#636B2F;margin-bottom:6px;">Secretaria</label><div style="border:1px solid #E3E6EC;border-radius:9px;padding:11px 13px;font-size:13px;color:#636B2F;background:#F7F8FB;display:flex;justify-content:space-between;">Todas <span style="color:#9099ab;">▾</span></div></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:700;color:#fff;background:#636B2F;padding:6px 13px;border-radius:999px;">Status: Todos ✕</span>
+          <span style="font-size:12px;font-weight:700;color:#636B2F;background:#F2F4F8;border:1px solid #E3E6EC;padding:6px 13px;border-radius:999px;">+ Categoria</span>
+          <span style="font-size:12px;font-weight:700;color:#636B2F;background:#F2F4F8;border:1px solid #E3E6EC;padding:6px 13px;border-radius:999px;">+ Prestador</span>
+          <span style="font-size:12px;font-weight:700;color:#636B2F;background:#F2F4F8;border:1px solid #E3E6EC;padding:6px 13px;border-radius:999px;">+ Unidade</span>
+        </div>
+      </div>
+
+      <!-- generated page -->
+      <div class="dgpage" style="background:#fff;box-shadow:0 8px 40px rgba(16,40,76,.14);padding:50px 50px 44px;">
+        <div style="display:flex;justify-content:center;margin-bottom:22px;"><img src="uploads/PREFEITURA-removebg-preview.png" alt="Prefeitura de Altamira — SEMED" style="height:96px;display:block;filter:brightness(0);" /></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #636B2F;padding-bottom:20px;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:13px;"><svg width="42" height="42" viewBox="0 0 100 100" fill="none"><path d="M93 11 L25 45 L60 51 Z" fill="#636B2F"/><path d="M93 11 L60 51 L53 84 Z" fill="#7A8340"/><rect x="33" y="58" width="7" height="7" fill="#C2602F"/><rect x="24" y="63" width="7" height="7" fill="#C2602F"/><rect x="29" y="71" width="6" height="6" fill="#C2602F"/></svg><div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px;color:#636B2F;">Prefeitura de Altamira</div><div style="font-size:12px;color:#6B7488;">Relatório consolidado</div></div></div>
+          <div style="text-align:right;"><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#C2602F;font-weight:700;">Período personalizado</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#636B2F;">10/05 – 17/05/2026</div></div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:#9099ab;margin-bottom:26px;">Filtros: todas as secretarias · todos os status</div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:30px;">
+          <div style="border:1px solid #E3E6EC;border-radius:10px;padding:15px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#636B2F;">63</div><div style="font-size:11px;color:#6B7488;font-weight:600;">chamados</div></div>
+          <div style="border:1px solid #E3E6EC;border-radius:10px;padding:15px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#157A52;">58</div><div style="font-size:11px;color:#6B7488;font-weight:600;">concluídos</div></div>
+          <div style="border:1px solid #E3E6EC;border-radius:10px;padding:15px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#C2602F;">5</div><div style="font-size:11px;color:#6B7488;font-weight:600;">pendentes</div></div>
+          <div style="border:1px solid #E3E6EC;border-radius:10px;padding:15px;"><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#157A52;">92%</div><div style="font-size:11px;color:#6B7488;font-weight:600;">SLA</div></div>
+        </div>
+
+        <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6B7488;margin-bottom:13px;">Volume diário</div>
+        <div style="display:flex;align-items:flex-end;gap:10px;height:120px;margin-bottom:32px;padding-bottom:4px;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:55%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">10</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:78%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">11</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:42%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">12</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:100%;background:linear-gradient(180deg,#C2602F,#8A3D18);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">13</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:63%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">14</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:30%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">15</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:48%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">16</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;"><div style="width:100%;max-width:40px;height:70%;background:linear-gradient(180deg,#2456A6,#636B2F);border-radius:5px 5px 0 0;"></div><span style="font-size:10.5px;color:#6B7488;">17</span></div>
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+          <thead><tr style="border-bottom:2px solid #636B2F;"><th style="text-align:left;padding:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Data</th><th style="text-align:left;padding:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Serviço</th><th style="text-align:left;padding:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Unidade</th><th style="text-align:right;padding:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6B7488;">Status</th></tr></thead>
+          <tbody style="font-size:12.5px;color:#636B2F;">
+            <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">13/05</td><td style="padding:9px 8px;font-weight:600;">Vazamento — recepção</td><td style="padding:9px 8px;">UBS Central</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+            <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">13/05</td><td style="padding:9px 8px;font-weight:600;">Troca de lâmpadas</td><td style="padding:9px 8px;">E.M. Vila Nova</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+            <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">14/05</td><td style="padding:9px 8px;font-weight:600;">Reparo de portão</td><td style="padding:9px 8px;">Posto Norte</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#8A3D18;background:rgba(194,96,47,.13);padding:3px 9px;border-radius:999px;">Pendente</span></td></tr>
+            <tr style="border-bottom:1px solid #EEF0F4;"><td style="padding:9px 8px;color:#6B7488;">16/05</td><td style="padding:9px 8px;font-weight:600;">Poda de árvore</td><td style="padding:9px 8px;">Praça Matriz</td><td style="text-align:right;padding:9px 8px;"><span style="font-size:11px;font-weight:700;color:#157A52;background:rgba(31,157,107,.13);padding:3px 9px;border-radius:999px;">Concluído</span></td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:11.5px;color:#9099ab;margin-bottom:36px;">Exibindo 4 de 63 chamados no período filtrado.</div>
+
+        <div style="margin-top:30px;padding-top:14px;border-top:1px solid #E3E6EC;display:flex;justify-content:space-between;font-size:10.5px;color:#9099ab;"><span>DespachaGov · Período personalizado · gerado em 23/06/2026</span><span>Página 1 de 1</span></div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:920,&quot;height&quot;:1100}}">
+class Component extends DCLogic {
+  state = { tpl: 'mensal' };
+  renderVals() {
+    const t = this.state.tpl;
+    const on = '#C2602F', onC = '#fff', off = 'transparent', offC = '#cdd8ea';
+    return {
+      goMensal: () => this.setState({ tpl: 'mensal' }),
+      goEscola: () => this.setState({ tpl: 'escola' }),
+      goCustom: () => this.setState({ tpl: 'custom' }),
+      doPrint: () => window.print(),
+      isMensal: t === 'mensal',
+      isEscola: t === 'escola',
+      isCustom: t === 'custom',
+      mensalBg: t === 'mensal' ? on : off, mensalColor: t === 'mensal' ? onC : offC,
+      escolaBg: t === 'escola' ? on : off, escolaColor: t === 'escola' ? onC : offC,
+      customBg: t === 'custom' ? on : off, customColor: t === 'custom' ? onC : offC,
+    };
+  }
+}
+</script>
+</body>
+</html>

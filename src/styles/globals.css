@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ─── DespachaGov — Design System (Tailwind v4 CSS-first) ───────────────────
+   Paleta TRAVADA azul/laranja. Os mockups .dc.html usam oliva/terracota —
+   IGNORADOS. Fonte de verdade é este @theme.
+   Uso: bg-azul-principal, text-laranja-acento, border-cinza-borda, etc.
+*/
+@theme {
+  /* PRIMÁRIAS */
+  --color-azul-principal: #2456a6;
+  --color-azul-escuro: #1a3f7a;
+  --color-azul-claro: #4a7bc8;
+
+  /* ACENTO */
+  --color-laranja-acento: #f97316;
+  --color-laranja-vibrante: #fb923c;
+  --color-laranja-suave: #fed7aa;
+
+  /* NEUTROS */
+  --color-cinza-fundo: #f8f9fb;
+  --color-cinza-card: #ffffff;
+  --color-cinza-borda: #e5e7eb;
+  --color-cinza-texto: #374151;
+  --color-cinza-secundario: #6b7488;
+  --color-cinza-desabilitado: #9ca3af;
+
+  /* STATUS */
+  --color-verde-sucesso: #10b981;
+  --color-vermelho-critico: #ef4444;
+  --color-amarelo-atencao: #f59e0b;
+  --color-azul-info: #3b82f6;
+
+  /* TIPOGRAFIA */
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Base */
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-cinza-fundo);
+  color: var(--color-cinza-texto);
+}
+
+/* Wordmark do produto: Plus Jakarta italic bold */
+.dg-wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.025em;
+}
+
+/* Acessibilidade: foco visível (WCAG 2.4.7) */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-azul-principal);
+  outline-offset: 2px;
+}

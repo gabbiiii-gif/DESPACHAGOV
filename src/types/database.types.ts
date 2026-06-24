@@ -55,6 +55,84 @@ export type Database = {
           },
         ]
       }
+      chamado_anexos: {
+        Row: {
+          ator_id: string | null
+          chamado_id: string
+          created_at: string
+          descricao: string | null
+          id: string
+          mime_type: string | null
+          storage_path: string
+          tamanho_bytes: number | null
+          tenant_id: string
+          tipo: string
+        }
+        Insert: {
+          ator_id?: string | null
+          chamado_id: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          mime_type?: string | null
+          storage_path: string
+          tamanho_bytes?: number | null
+          tenant_id: string
+          tipo: string
+        }
+        Update: {
+          ator_id?: string | null
+          chamado_id?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          mime_type?: string | null
+          storage_path?: string
+          tamanho_bytes?: number | null
+          tenant_id?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
+      assinaturas: {
+        Row: {
+          assinatura_dataurl: string
+          chamado_id: string
+          created_at: string
+          geo: string | null
+          id: string
+          ip: string | null
+          signatario_cargo: string | null
+          signatario_cpf: string | null
+          signatario_nome: string
+          tenant_id: string
+        }
+        Insert: {
+          assinatura_dataurl: string
+          chamado_id: string
+          created_at?: string
+          geo?: string | null
+          id?: string
+          ip?: string | null
+          signatario_cargo?: string | null
+          signatario_cpf?: string | null
+          signatario_nome: string
+          tenant_id: string
+        }
+        Update: {
+          assinatura_dataurl?: string
+          chamado_id?: string
+          created_at?: string
+          geo?: string | null
+          id?: string
+          ip?: string | null
+          signatario_cargo?: string | null
+          signatario_cpf?: string | null
+          signatario_nome?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       chamados: {
         Row: {
           ai_categoria: string | null

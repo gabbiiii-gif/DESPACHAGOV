@@ -6,10 +6,11 @@ import { Card, Alert } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { StatusBadge, UrgenciaBadge } from "@/components/chamados/Badges";
 import { Timeline } from "@/components/chamados/Timeline";
+import { ExecucaoChamado } from "@/components/chamados/ExecucaoChamado";
 import { useAuth } from "@/hooks/useAuth";
 import { proximosEstados, type Status } from "@/lib/chamados";
 import { supabase } from "@/services/supabase";
-import { listarTecnicos, type Tecnico } from "@/services/cadastros";
+import { listarTecnicos, listarUnidades, listarEmpresas, type Tecnico, type Unidade, type Empresa } from "@/services/cadastros";
 import {
   listarChamados, listarEventos, designarTecnico, transicionarChamado,
   type Chamado, type ChamadoEvento,
@@ -20,6 +21,8 @@ export function EmpresaChamadosPage() {
   const podeGerir = role === "empresa_admin";
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
+  const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -30,8 +33,13 @@ export function EmpresaChamadosPage() {
   const [processando, setProcessando] = useState(false);
 
   async function carregar() {
-    const [ch, te] = await Promise.all([listarChamados(), empresaId ? listarTecnicos(empresaId) : Promise.resolve([])]);
-    setChamados(ch); setTecnicos(te);
+    const [ch, te, un, em] = await Promise.all([
+      listarChamados(),
+      empresaId ? listarTecnicos(empresaId) : Promise.resolve([]),
+      listarUnidades(),
+      listarEmpresas(),
+    ]);
+    setChamados(ch); setTecnicos(te); setUnidades(un); setEmpresas(em);
   }
 
   useEffect(() => {
@@ -86,6 +94,8 @@ export function EmpresaChamadosPage() {
   }
 
   const nomeTecnico = (id: string | null) => tecnicos.find((t) => t.id === id)?.nome ?? "—";
+  const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
+  const nomeEmpresa = (id: string | null) => empresas.find((e) => e.id === id)?.razao_social ?? undefined;
 
   return (
     <AppShell titulo="Chamados recebidos">
@@ -136,13 +146,25 @@ export function EmpresaChamadosPage() {
               </div>
             )}
 
-            <div className="flex flex-wrap gap-2">
-              {proximosEstados(detalhe.status as Status).map((s) => (
-                <Button key={s} variant={s === "cancelado" ? "outline" : "primary"} onClick={() => void transicionar(s)} loading={processando} className="text-xs">
-                  Marcar “{s}”
-                </Button>
-              ))}
-            </div>
+            {detalhe.status === "em_campo" ? (
+              <ExecucaoChamado
+                chamado={detalhe}
+                contexto={{
+                  unidadeNome: nomeUnidade(detalhe.unidade_id),
+                  empresaNome: nomeEmpresa(detalhe.empresa_id),
+                  tecnicoNome: nomeTecnico(detalhe.tecnico_id),
+                }}
+                onAtualizado={() => void recarregarDetalhe(detalhe.id)}
+              />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {proximosEstados(detalhe.status as Status).map((s) => (
+                  <Button key={s} variant={s === "cancelado" ? "outline" : "primary"} onClick={() => void transicionar(s)} loading={processando} className="text-xs">
+                    Marcar “{s}”
+                  </Button>
+                ))}
+              </div>
+            )}
 
             <hr className="border-cinza-borda" />
             <h3 className="text-sm font-semibold text-cinza-texto">Timeline</h3>

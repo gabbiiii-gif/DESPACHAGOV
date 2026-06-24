@@ -6,8 +6,8 @@ import { Modal } from "@/components/ui/Modal";
 import { StatusBadge, UrgenciaBadge } from "@/components/chamados/Badges";
 import { Timeline } from "@/components/chamados/Timeline";
 import { useAuth } from "@/hooks/useAuth";
-import { proximosEstados, type Status } from "@/lib/chamados";
-import { listarUnidades, listarEmpresas, listarTecnicos, type Unidade, type Empresa, type Tecnico } from "@/services/cadastros";
+import { URGENCIAS, URGENCIA_META, type Status, type Urgencia } from "@/lib/chamados";
+import { listarUnidades, listarEmpresas, type Unidade, type Empresa } from "@/services/cadastros";
 import {
   listarChamados, listarEventos, atribuirChamado, transicionarChamado,
   type Chamado, type ChamadoEvento,
@@ -18,7 +18,6 @@ export function ChamadosPage() {
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<Status | "">("");
@@ -26,13 +25,13 @@ export function ChamadosPage() {
   const [detalhe, setDetalhe] = useState<Chamado | null>(null);
   const [eventos, setEventos] = useState<ChamadoEvento[]>([]);
   const [empresaSel, setEmpresaSel] = useState("");
-  const [tecnicoSel, setTecnicoSel] = useState("");
+  const [urgenciaSel, setUrgenciaSel] = useState<Urgencia | "">("");
   const [acaoErro, setAcaoErro] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);
 
   async function carregarTudo() {
-    const [ch, un, em, te] = await Promise.all([listarChamados(), listarUnidades(), listarEmpresas(), listarTecnicos()]);
-    setChamados(ch); setUnidades(un); setEmpresas(em); setTecnicos(te);
+    const [ch, un, em] = await Promise.all([listarChamados(), listarUnidades(), listarEmpresas()]);
+    setChamados(ch); setUnidades(un); setEmpresas(em);
   }
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export function ChamadosPage() {
     setDetalhe(c);
     setAcaoErro(null);
     setEmpresaSel(c.empresa_id ?? "");
-    setTecnicoSel(c.tecnico_id ?? "");
+    setUrgenciaSel((c.urgencia as Urgencia | null) ?? "");
     setEventos(await listarEventos(c.id));
   }
 
@@ -67,8 +66,9 @@ export function ChamadosPage() {
   async function atribuir() {
     if (!detalhe || !session || !profile) return;
     if (!empresaSel) { setAcaoErro("Selecione a empresa."); return; }
+    if (!urgenciaSel) { setAcaoErro("Defina a urgência."); return; }
     setProcessando(true); setAcaoErro(null);
-    const { error } = await atribuirChamado(detalhe, empresaSel, tecnicoSel || null, { id: session.user.id, nome: profile.nome });
+    const { error } = await atribuirChamado(detalhe, empresaSel, urgenciaSel, { id: session.user.id, nome: profile.nome });
     setProcessando(false);
     if (error) { setAcaoErro(error); return; }
     await recarregarDetalhe(detalhe.id);
@@ -135,32 +135,32 @@ export function ChamadosPage() {
 
             {acaoErro && <Alert tipo="erro">{acaoErro}</Alert>}
 
-            {/* Atribuição */}
+            {/* Triagem: urgência + empresa (técnico é designado pela empresa) */}
             {detalhe.status !== "concluido" && detalhe.status !== "cancelado" && (
               <div className="rounded-lg border border-cinza-borda p-3">
-                <p className="mb-2 text-sm font-semibold text-cinza-texto">Atribuir</p>
+                <p className="mb-2 text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <Select label="Empresa" value={empresaSel} onChange={(e) => { setEmpresaSel(e.target.value); setTecnicoSel(""); }}>
+                  <Select label="Urgência" value={urgenciaSel} onChange={(e) => setUrgenciaSel(e.target.value as Urgencia | "")}>
+                    <option value="">Selecione…</option>
+                    {URGENCIAS.map((u) => <option key={u} value={u}>{URGENCIA_META[u].label}</option>)}
+                  </Select>
+                  <Select label="Empresa" value={empresaSel} onChange={(e) => setEmpresaSel(e.target.value)}>
                     <option value="">Selecione…</option>
                     {empresas.map((e) => <option key={e.id} value={e.id}>{e.razao_social}</option>)}
                   </Select>
-                  <Select label="Técnico (opcional)" value={tecnicoSel} onChange={(e) => setTecnicoSel(e.target.value)}>
-                    <option value="">—</option>
-                    {tecnicos.filter((t) => t.empresa_id === empresaSel).map((t) => <option key={t.id} value={t.id}>{t.nome}</option>)}
-                  </Select>
                 </div>
-                <Button onClick={() => void atribuir()} loading={processando} className="mt-2 w-full">Atribuir empresa</Button>
+                <Button onClick={() => void atribuir()} loading={processando} className="mt-2 w-full">Triar e atribuir</Button>
               </div>
             )}
 
-            {/* Transições de status válidas */}
-            <div className="flex flex-wrap gap-2">
-              {proximosEstados(detalhe.status as Status).map((s) => (
-                <Button key={s} variant={s === "cancelado" ? "outline" : "primary"} onClick={() => void transicionar(s)} loading={processando} className="text-xs">
-                  Marcar “{s}”
+            {/* A secretaria acompanha; em_campo/concluído são da empresa. Só cancela. */}
+            {detalhe.status !== "concluido" && detalhe.status !== "cancelado" && (
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => void transicionar("cancelado")} loading={processando} className="text-xs">
+                  Cancelar chamado
                 </Button>
-              ))}
-            </div>
+              </div>
+            )}
 
             <hr className="border-cinza-borda" />
             <h3 className="text-sm font-semibold text-cinza-texto">Timeline</h3>

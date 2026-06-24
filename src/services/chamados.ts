@@ -9,7 +9,6 @@ export interface AbrirChamadoInput {
   tenant_id: string;
   unidade_id: string;
   equipamento_id?: string | null;
-  urgencia: Urgencia;
   descricao: string;
   solicitante_id: string;
   solicitante_nome: string;
@@ -37,7 +36,7 @@ export async function abrirChamado(input: AbrirChamadoInput): Promise<{ error: s
       tenant_id: input.tenant_id,
       unidade_id: input.unidade_id,
       equipamento_id: input.equipamento_id ?? null,
-      urgencia: input.urgencia,
+      urgencia: null, // definida pela secretaria na triagem
       descricao: input.descricao,
       solicitante_id: input.solicitante_id,
       solicitante_nome: input.solicitante_nome,
@@ -51,23 +50,24 @@ export async function abrirChamado(input: AbrirChamadoInput): Promise<{ error: s
     evento: "aberto",
     ator_id: input.solicitante_id,
     ator_nome: input.solicitante_nome,
-    payload: { urgencia: input.urgencia },
+    payload: {},
   });
   return { error: null, chamado: data };
 }
 
-// Atribui empresa + (opcional) técnico → status "atribuido".
+// Triagem da secretaria: define urgência + empresa → status "atribuido".
+// O técnico é designado depois pela própria empresa (designarTecnico).
 export async function atribuirChamado(
   c: Chamado,
   empresaId: string,
-  tecnicoId: string | null,
+  urgencia: Urgencia,
   ator: { id: string; nome: string },
 ): Promise<{ error: string | null }> {
   const { error } = await supabase
     .from("chamados")
     .update({
       empresa_id: empresaId,
-      tecnico_id: tecnicoId,
+      urgencia,
       status: "atribuido",
       data_atribuicao: new Date().toISOString(),
     })
@@ -75,7 +75,7 @@ export async function atribuirChamado(
   if (error) return { error: error.message };
   await registrarEvento({
     chamado_id: c.id, tenant_id: c.tenant_id, evento: "atribuido",
-    ator_id: ator.id, ator_nome: ator.nome, payload: { empresa_id: empresaId, tecnico_id: tecnicoId },
+    ator_id: ator.id, ator_nome: ator.nome, payload: { empresa_id: empresaId, urgencia },
   });
   return { error: null };
 }
@@ -118,7 +118,7 @@ export interface ChamadoAtivoGeo {
   id: string;
   numero_protocolo: string;
   status: string;
-  urgencia: string;
+  urgencia: string | null;
   unidade_nome: string;
   lat: number;
   lng: number;

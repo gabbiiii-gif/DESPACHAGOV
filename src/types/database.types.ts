@@ -157,7 +157,7 @@ export type Database = {
           tenant_id: string
           unidade_id: string
           updated_at: string
-          urgencia: string
+          urgencia: string | null
         }
         Insert: {
           ai_categoria?: string | null
@@ -182,7 +182,7 @@ export type Database = {
           tenant_id: string
           unidade_id: string
           updated_at?: string
-          urgencia?: string
+          urgencia?: string | null
         }
         Update: {
           ai_categoria?: string | null
@@ -207,7 +207,7 @@ export type Database = {
           tenant_id?: string
           unidade_id?: string
           updated_at?: string
-          urgencia?: string
+          urgencia?: string | null
         }
         Relationships: []
       }

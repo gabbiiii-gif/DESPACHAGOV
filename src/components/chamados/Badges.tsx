@@ -12,7 +12,16 @@ export function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export function UrgenciaBadge({ urgencia }: { urgencia: string }) {
+export function UrgenciaBadge({ urgencia }: { urgencia: string | null }) {
+  // null/vazio = chamado ainda não triado pela secretaria.
+  if (!urgencia) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-cinza-secundario">
+        <span className="inline-block h-2 w-2 rounded-full bg-cinza-secundario" />
+        Aguardando triagem
+      </span>
+    );
+  }
   const meta = URGENCIA_META[urgencia as Urgencia];
   return (
     <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: meta?.cor }}>

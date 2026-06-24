@@ -7,11 +7,12 @@ import { Modal } from "@/components/ui/Modal";
 import { StatusBadge, UrgenciaBadge } from "@/components/chamados/Badges";
 import { Timeline } from "@/components/chamados/Timeline";
 import { useAuth } from "@/hooks/useAuth";
-import { URGENCIAS, URGENCIA_META, type Urgencia } from "@/lib/chamados";
 import { listarUnidades, type Unidade } from "@/services/cadastros";
 import {
   listarChamados, abrirChamado, listarEventos, type Chamado, type ChamadoEvento,
 } from "@/services/chamados";
+import { anexarArquivo } from "@/services/execucao";
+import { validarAnexosAbertura } from "@/lib/anexos";
 
 export function UnidadeChamadosPage() {
   const { tenantId, session, profile } = useAuth();
@@ -23,7 +24,7 @@ export function UnidadeChamadosPage() {
   // form abrir
   const [abrir, setAbrir] = useState(false);
   const [unidadeId, setUnidadeId] = useState("");
-  const [urgencia, setUrgencia] = useState<Urgencia>("media");
+  const [arquivos, setArquivos] = useState<File[]>([]);
   const [descricao, setDescricao] = useState("");
   const [salvando, setSalvando] = useState(false);
 
@@ -56,18 +57,31 @@ export function UnidadeChamadosPage() {
     if (!tenantId || !session || !profile) return;
     if (!unidadeId) { setErro("Selecione a unidade."); return; }
     if (descricao.trim().length < 5) { setErro("Descreva o problema (mín. 5 caracteres)."); return; }
+    const val = validarAnexosAbertura(arquivos);
+    if (!val.ok) { setErro(val.erro ?? "Anexo inválido."); return; }
     setSalvando(true);
-    const { error } = await abrirChamado({
+    const { error, chamado } = await abrirChamado({
       tenant_id: tenantId,
       unidade_id: unidadeId,
-      urgencia,
       descricao: descricao.trim(),
       solicitante_id: session.user.id,
       solicitante_nome: profile.nome,
     });
+    if (error || !chamado) { setSalvando(false); setErro(error ?? "Falha ao abrir."); return; }
+    // Anexa ofício/foto/pdf ao chamado recém-criado.
+    for (const file of arquivos) {
+      const up = await anexarArquivo({
+        tenantId, chamadoId: chamado.id, atorId: session.user.id, tipo: "oficio", file,
+      });
+      if (up.error) {
+        setSalvando(false);
+        setErro(`Chamado criado, mas falhou ao anexar "${file.name}": ${up.error}`);
+        void recarregar();
+        return;
+      }
+    }
     setSalvando(false);
-    if (error) { setErro(error); return; }
-    setAbrir(false); setDescricao(""); setUrgencia("media");
+    setAbrir(false); setDescricao(""); setArquivos([]); setUnidadeId("");
     void recarregar();
   }
 
@@ -116,20 +130,19 @@ export function UnidadeChamadosPage() {
           </Select>
 
           <div>
-            <span className="mb-1.5 block text-sm font-medium text-cinza-texto">2. Urgência</span>
-            <div className="grid grid-cols-4 gap-2">
-              {URGENCIAS.map((u) => (
-                <button
-                  key={u}
-                  type="button"
-                  onClick={() => setUrgencia(u)}
-                  className={`rounded-lg border px-2 py-2 text-xs font-semibold ${urgencia === u ? "border-transparent text-white" : "border-cinza-borda text-cinza-texto"}`}
-                  style={urgencia === u ? { background: URGENCIA_META[u].cor } : undefined}
-                >
-                  {URGENCIA_META[u].label}
-                </button>
-              ))}
-            </div>
+            <span className="mb-1.5 block text-sm font-medium text-cinza-texto">2. Ofício / foto (1 a 3 — PNG, JPG ou PDF)</span>
+            <input
+              type="file"
+              multiple
+              accept=".png,.jpg,.jpeg,application/pdf"
+              onChange={(e) => setArquivos(Array.from(e.target.files ?? []).slice(0, 3))}
+              className="block w-full text-sm text-cinza-texto file:mr-3 file:rounded-lg file:border-0 file:bg-azul-principal file:px-3 file:py-2 file:text-white"
+            />
+            {arquivos.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-cinza-secundario">
+                {arquivos.map((f) => <li key={f.name}>{f.name} ({Math.ceil(f.size / 1024)} KB)</li>)}
+              </ul>
+            )}
           </div>
 
           <div>

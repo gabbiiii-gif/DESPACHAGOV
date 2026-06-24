@@ -92,7 +92,7 @@ export function ExecucaoChamado({
         protocolo: chamado.numero_protocolo,
         unidade: contexto.unidadeNome,
         descricao: chamado.descricao,
-        urgencia: chamado.urgencia,
+        urgencia: chamado.urgencia ?? "—",
         empresa: contexto.empresaNome,
         tecnico: contexto.tecnicoNome,
         aberturaISO: chamado.data_solicitacao,

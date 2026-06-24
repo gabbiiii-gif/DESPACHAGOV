@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
         method: "POST",
         headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: "DespachaGov <nao-responder@despachagov.com.br>",
+          from: "DespachaGov <nao-responder@despachagov.com>",
           to: [adminEmail],
           subject: "Seu acesso ao DespachaGov",
           html: `<div style="font-family:sans-serif"><h2 style="color:#2456A6">DespachaGov</h2><p>Olá, ${adminNome}.</p><p>Defina sua senha de acesso:</p><p><a href="${actionLink}">Definir senha</a></p></div>`,

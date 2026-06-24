@@ -80,6 +80,21 @@ export async function atribuirChamado(
   return { error: null };
 }
 
+// Empresa designa um técnico ao chamado (sem mudar o status).
+export async function designarTecnico(
+  c: Chamado,
+  tecnicoId: string,
+  ator: { id: string; nome: string },
+): Promise<{ error: string | null }> {
+  const { error } = await supabase.from("chamados").update({ tecnico_id: tecnicoId }).eq("id", c.id);
+  if (error) return { error: error.message };
+  await registrarEvento({
+    chamado_id: c.id, tenant_id: c.tenant_id, evento: "tecnico_designado",
+    ator_id: ator.id, ator_nome: ator.nome, payload: { tecnico_id: tecnicoId },
+  });
+  return { error: null };
+}
+
 // Transição genérica de status com carimbo de data + evento.
 export async function transicionarChamado(
   c: Chamado,

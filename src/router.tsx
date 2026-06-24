@@ -14,6 +14,7 @@ import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
 import { MapaPage } from "./pages/secretaria/MapaPage";
 import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
+import { EmpresaChamadosPage } from "./pages/empresa/EmpresaChamadosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const SECRETARIA_ROLES = ["admin_secretaria", "gestor_secretaria"] as const;
@@ -51,7 +52,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/empresa",
-    element: <ProtectedRoute roles={["empresa_admin"]}><PlaceholderDashboard titulo="Empresa prestadora" proximo="Inbox de chamados e atribuição de técnico chegam no Sprint 3." /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["empresa_admin", "tecnico_empresa"]}><EmpresaChamadosPage /></ProtectedRoute>,
   },
   {
     path: "/tecnico",

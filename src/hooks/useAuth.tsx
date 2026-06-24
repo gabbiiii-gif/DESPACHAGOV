@@ -9,6 +9,7 @@ interface AuthState {
   profile: UserProfile | null;
   role: Role | null;
   tenantId: string | null;
+  empresaId: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     role,
     tenantId: profile?.tenant_id ?? null,
+    empresaId: profile?.empresa_id ?? null,
     loading,
     signIn,
     signOut,

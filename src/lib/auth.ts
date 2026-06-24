@@ -22,9 +22,9 @@ export function homeRouteForRole(role: Role): string {
     case "responsavel_unidade":
       return "/unidade";
     case "empresa_admin":
+    case "tecnico_empresa":
       return "/empresa";
     case "tecnico_secretaria":
-    case "tecnico_empresa":
       return "/tecnico";
     default:
       return "/";

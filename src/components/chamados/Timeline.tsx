@@ -4,6 +4,7 @@ import type { ChamadoEvento } from "@/services/chamados";
 const EVENTO_LABEL: Record<string, string> = {
   aberto: "Chamado aberto",
   atribuido: "Atribuído à empresa",
+  tecnico_designado: "Técnico designado",
   em_campo: "Técnico em campo",
   concluido: "Concluído",
   cancelado: "Cancelado",

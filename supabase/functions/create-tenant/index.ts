@@ -87,6 +87,7 @@ Deno.serve(async (req) => {
   const { data: link } = await admin.auth.admin.generateLink({
     type: "recovery",
     email: adminEmail,
+    options: { redirectTo: "https://www.despachagov.com/redefinir-senha" },
   });
   const actionLink = link?.properties?.action_link ?? null;
 

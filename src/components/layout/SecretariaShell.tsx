@@ -9,11 +9,13 @@ const NAV = [
   { to: "/secretaria/empresas", label: "Empresas" },
   { to: "/secretaria/equipamentos", label: "Equipamentos" },
   { to: "/secretaria/contratos", label: "Contratos" },
+  { to: "/secretaria/usuarios", label: "Usuários", adminOnly: true },
 ];
 
 // Casca da área da Secretaria: nav (sidebar no desktop, topo no mobile) + Outlet.
 export function SecretariaShell() {
-  const { profile, signOut } = useAuth();
+  const { profile, role, signOut } = useAuth();
+  const nav = NAV.filter((n) => !n.adminOnly || role === "admin_secretaria");
   return (
     <div className="min-h-dvh sm:flex">
       <aside className="border-b border-cinza-borda bg-cinza-card sm:w-60 sm:border-b-0 sm:border-r">
@@ -25,7 +27,7 @@ export function SecretariaShell() {
           </span>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-2 pb-2 sm:flex-col sm:overflow-visible sm:px-3">
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}

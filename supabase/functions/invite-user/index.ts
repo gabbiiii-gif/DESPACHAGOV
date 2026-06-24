@@ -1,6 +1,7 @@
 // Edge Function: invite-user
 // admin_secretaria convida usuário para o PRÓPRIO tenant (claim do JWT).
-// Cria usuário no Auth com app_metadata {role, tenant_id} + perfil + convite.
+// Papéis de secretaria (gestor/responsável/técnico interno) e de empresa
+// (empresa_admin/tecnico_empresa, exigem empresa_id do mesmo tenant).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const cors = {
@@ -11,20 +12,15 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const ROLES_PERMITIDAS = new Set([
-  "gestor_secretaria",
-  "responsavel_unidade",
-  "tecnico_secretaria",
-]);
+const ROLES_SECRETARIA = new Set(["gestor_secretaria", "responsavel_unidade", "tecnico_secretaria"]);
+const ROLES_EMPRESA = new Set(["empresa_admin", "tecnico_empresa"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
   const url = Deno.env.get("SUPABASE_URL")!;
-  const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
-    auth: { persistSession: false },
-  });
+  const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
   const token = req.headers.get("Authorization")?.replace("Bearer ", "") ?? "";
   const { data: u, error: uErr } = await admin.auth.getUser(token);
@@ -43,14 +39,26 @@ Deno.serve(async (req) => {
   const nome = String(body.nome ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();
   const role = String(body.role ?? "");
-  if (!nome || !email || !ROLES_PERMITIDAS.has(role)) {
+  const empresaId = body.empresa_id ? String(body.empresa_id) : null;
+  const isEmpresa = ROLES_EMPRESA.has(role);
+  if (!nome || !email || (!ROLES_SECRETARIA.has(role) && !isEmpresa)) {
     return json({ error: "campos inválidos" }, 400);
   }
+  if (isEmpresa && !empresaId) return json({ error: "empresa_id obrigatório p/ papel de empresa" }, 400);
+
+  // Garante que a empresa pertence ao tenant do admin.
+  if (empresaId) {
+    const { data: emp } = await admin.from("empresas").select("id").eq("id", empresaId).eq("tenant_id", tenantId).maybeSingle();
+    if (!emp) return json({ error: "empresa inválida" }, 400);
+  }
+
+  const appMetadata: Record<string, unknown> = { role, tenant_id: tenantId };
+  if (empresaId) appMetadata.empresa_id = empresaId;
 
   const { data: created, error: cErr } = await admin.auth.admin.createUser({
     email,
     email_confirm: true,
-    app_metadata: { role, tenant_id: tenantId },
+    app_metadata: appMetadata,
   });
   if (cErr || !created.user) return json({ error: `auth: ${cErr?.message ?? "falhou"}` }, 400);
 
@@ -60,13 +68,18 @@ Deno.serve(async (req) => {
     role,
     nome,
     email,
+    empresa_id: empresaId,
   });
   if (pErr) {
     await admin.auth.admin.deleteUser(created.user.id);
     return json({ error: `perfil: ${pErr.message}` }, 400);
   }
 
-  const { data: link } = await admin.auth.admin.generateLink({ type: "recovery", email });
+  const { data: link } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: { redirectTo: "https://www.despachagov.com/redefinir-senha" },
+  });
   const actionLink = link?.properties?.action_link ?? null;
 
   let emailSent = false;

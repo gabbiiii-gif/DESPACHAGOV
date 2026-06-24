@@ -11,6 +11,7 @@ import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
 import { ContratosPage } from "./pages/secretaria/ContratosPage";
 import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
+import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
       { path: "empresas", element: <EmpresasPage /> },
       { path: "equipamentos", element: <EquipamentosPage /> },
       { path: "contratos", element: <ContratosPage /> },
+      { path: "usuarios", element: <UsuariosPage /> },
     ],
   },
 

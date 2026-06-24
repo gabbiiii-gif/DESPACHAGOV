@@ -12,7 +12,7 @@ export async function enviarEmail(opts: {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "DespachaGov <nao-responder@despachagov.com.br>",
+        from: "DespachaGov <nao-responder@despachagov.com>",
         to: [opts.to],
         subject: opts.subject,
         html: opts.html,

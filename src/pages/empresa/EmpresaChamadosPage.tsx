@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Card, Alert } from "@/components/ui/Card";
@@ -98,7 +97,8 @@ export function EmpresaChamadosPage() {
   const nomeEmpresa = (id: string | null) => empresas.find((e) => e.id === id)?.razao_social ?? undefined;
 
   return (
-    <AppShell titulo="Chamados recebidos">
+    <div>
+      <h1 className="mb-5 font-display text-2xl font-bold text-cinza-texto">Chamados recebidos</h1>
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
       <p className="mb-3 flex items-center gap-1.5 text-xs text-cinza-secundario">
         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-verde-sucesso" /> atualizando em tempo real
@@ -172,6 +172,6 @@ export function EmpresaChamadosPage() {
           </div>
         )}
       </Modal>
-    </AppShell>
+    </div>
   );
 }

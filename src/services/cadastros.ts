@@ -14,6 +14,18 @@ export async function listarTecnicos(empresaId?: string): Promise<Tecnico[]> {
   if (error) throw new Error(error.message);
   return data ?? [];
 }
+export async function criarTecnico(row: TablesInsert<"tecnicos">) {
+  const { error } = await supabase.from("tecnicos").insert(row);
+  return { error: error?.message ?? null };
+}
+export async function atualizarTecnico(id: string, patch: TablesUpdate<"tecnicos">) {
+  const { error } = await supabase.from("tecnicos").update(patch).eq("id", id);
+  return { error: error?.message ?? null };
+}
+export async function inativarTecnico(id: string) {
+  const { error } = await supabase.from("tecnicos").update({ ativo: false }).eq("id", id);
+  return { error: error?.message ?? null };
+}
 
 // ─── Unidades ────────────────────────────────────────────────────────────────
 export async function listarUnidades(): Promise<Unidade[]> {

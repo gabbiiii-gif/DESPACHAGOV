@@ -43,6 +43,15 @@ export const contratoSchema = z.object({
 });
 export type ContratoForm = z.infer<typeof contratoSchema>;
 
+export const tecnicoSchema = z.object({
+  nome: z.string().min(2, "Nome obrigatório"),
+  cpf: z.string().optional(),
+  telefone: z.string().optional(),
+  email: z.string().email("E-mail inválido").optional().or(z.literal("")),
+  especialidade: z.string().optional(),
+});
+export type TecnicoForm = z.infer<typeof tecnicoSchema>;
+
 // ─── CSV de unidades (import em massa) ───────────────────────────────────────
 export interface LinhaUnidadeCsv {
   nome: string;

@@ -1,5 +1,5 @@
 // Edge Function: notify-event
-// Disparada por Database Webhook em INSERT de chamado_eventos.
+// Disparada por trigger pg_net em INSERT de chamado_eventos.
 // Resolve destinatários (service_role), deduplica e envia e-mail via Resend.
 //
 // Self-contained por convenção do projeto (como create-tenant/invite-user):
@@ -102,7 +102,22 @@ async function enviarEmail(to: string, subject: string, html: string): Promise<{
 // ─── Handler ─────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("method", { status: 405 });
-  if (req.headers.get("x-notify-secret") !== Deno.env.get("NOTIFY_WEBHOOK_SECRET")) {
+
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    { auth: { persistSession: false } },
+  );
+
+  // Secret esperado: env NOTIFY_WEBHOOK_SECRET tem prioridade; senão lê de
+  // public.notify_config (usado pelo trigger pg_net). service_role ignora RLS.
+  let esperado = Deno.env.get("NOTIFY_WEBHOOK_SECRET") ?? null;
+  if (!esperado) {
+    const { data } = await admin.from("notify_config").select("webhook_secret").eq("id", 1).maybeSingle();
+    esperado = (data?.webhook_secret as string | undefined) ?? null;
+  }
+  const recebido = req.headers.get("x-notify-secret");
+  if (!esperado || !recebido || recebido !== esperado) {
     return new Response("unauthorized", { status: 401 });
   }
 
@@ -125,12 +140,6 @@ Deno.serve(async (req) => {
   if (papeis.length === 0 || !chamadoId || !eventoId) {
     return new Response(JSON.stringify({ ok: true, enviados: 0 }), { status: 200 });
   }
-
-  const admin = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    { auth: { persistSession: false } },
-  );
 
   // Carrega chamado + nome da unidade.
   const { data: chamado } = await admin

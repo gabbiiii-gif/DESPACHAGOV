@@ -14,6 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      chamado_eventos: {
+        Row: {
+          ator_id: string | null
+          ator_nome: string | null
+          chamado_id: string
+          created_at: string
+          evento: string
+          id: string
+          payload: Json
+          tenant_id: string
+        }
+        Insert: {
+          ator_id?: string | null
+          ator_nome?: string | null
+          chamado_id: string
+          created_at?: string
+          evento: string
+          id?: string
+          payload?: Json
+          tenant_id: string
+        }
+        Update: {
+          ator_id?: string | null
+          ator_nome?: string | null
+          chamado_id?: string
+          created_at?: string
+          evento?: string
+          id?: string
+          payload?: Json
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chamado_eventos_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chamados: {
+        Row: {
+          ai_categoria: string | null
+          ai_urgencia_sugerida: string | null
+          categoria: string | null
+          contrato_id: string | null
+          created_at: string
+          data_atendimento: string | null
+          data_atribuicao: string | null
+          data_conclusao: string | null
+          data_solicitacao: string
+          descricao: string
+          empresa_id: string | null
+          equipamento_id: string | null
+          id: string
+          numero_protocolo: string
+          sla_horas: number | null
+          solicitante_id: string | null
+          solicitante_nome: string | null
+          status: string
+          tecnico_id: string | null
+          tenant_id: string
+          unidade_id: string
+          updated_at: string
+          urgencia: string
+        }
+        Insert: {
+          ai_categoria?: string | null
+          ai_urgencia_sugerida?: string | null
+          categoria?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          data_atendimento?: string | null
+          data_atribuicao?: string | null
+          data_conclusao?: string | null
+          data_solicitacao?: string
+          descricao: string
+          empresa_id?: string | null
+          equipamento_id?: string | null
+          id?: string
+          numero_protocolo?: string
+          sla_horas?: number | null
+          solicitante_id?: string | null
+          solicitante_nome?: string | null
+          status?: string
+          tecnico_id?: string | null
+          tenant_id: string
+          unidade_id: string
+          updated_at?: string
+          urgencia?: string
+        }
+        Update: {
+          ai_categoria?: string | null
+          ai_urgencia_sugerida?: string | null
+          categoria?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          data_atendimento?: string | null
+          data_atribuicao?: string | null
+          data_conclusao?: string | null
+          data_solicitacao?: string
+          descricao?: string
+          empresa_id?: string | null
+          equipamento_id?: string | null
+          id?: string
+          numero_protocolo?: string
+          sla_horas?: number | null
+          solicitante_id?: string | null
+          solicitante_nome?: string | null
+          status?: string
+          tecnico_id?: string | null
+          tenant_id?: string
+          unidade_id?: string
+          updated_at?: string
+          urgencia?: string
+        }
+        Relationships: []
+      }
       contratos: {
         Row: {
           created_at: string
@@ -57,22 +176,7 @@ export type Database = {
           vigencia_fim?: string | null
           vigencia_inicio?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "contratos_empresa_id_fkey"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contratos_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       empresas: {
         Row: {
@@ -111,15 +215,7 @@ export type Database = {
           tenant_id?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "empresas_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       equipamentos: {
         Row: {
@@ -166,13 +262,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "equipamentos_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "equipamentos_unidade_id_fkey"
             columns: ["unidade_id"]
             isOneToOne: false
@@ -209,15 +298,7 @@ export type Database = {
           user_id?: string
           versao_termo?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "lgpd_consents_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tecnicos: {
         Row: {
@@ -265,13 +346,6 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tecnicos_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -367,15 +441,7 @@ export type Database = {
           updated_at?: string
           zona?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "unidades_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users: {
         Row: {
@@ -384,12 +450,14 @@ export type Database = {
           cpf: string | null
           created_at: string
           email: string
+          empresa_id: string | null
           id: string
           matricula: string | null
           nome: string
           role: Database["public"]["Enums"]["user_role"]
           telefone: string | null
           tenant_id: string | null
+          unidade_id: string | null
           updated_at: string
         }
         Insert: {
@@ -398,12 +466,14 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           email: string
+          empresa_id?: string | null
           id: string
           matricula?: string | null
           nome: string
           role: Database["public"]["Enums"]["user_role"]
           telefone?: string | null
           tenant_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -412,23 +482,17 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           email?: string
+          empresa_id?: string | null
           id?: string
           matricula?: string | null
           nome?: string
           role?: Database["public"]["Enums"]["user_role"]
           telefone?: string | null
           tenant_id?: string | null
+          unidade_id?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "users_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -436,6 +500,7 @@ export type Database = {
     }
     Functions: {
       current_app_role: { Args: never; Returns: string }
+      current_empresa_id: { Args: never; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       is_superadmin: { Args: never; Returns: boolean }
     }

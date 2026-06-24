@@ -10,6 +10,8 @@ import { UnidadesPage } from "./pages/secretaria/UnidadesPage";
 import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
 import { ContratosPage } from "./pages/secretaria/ContratosPage";
+import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
+import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const SECRETARIA_ROLES = ["admin_secretaria", "gestor_secretaria"] as const;
@@ -30,7 +32,8 @@ export const router = createBrowserRouter([
     path: "/secretaria",
     element: <ProtectedRoute roles={[...SECRETARIA_ROLES]}><SecretariaShell /></ProtectedRoute>,
     children: [
-      { index: true, element: <Navigate to="/secretaria/unidades" replace /> },
+      { index: true, element: <Navigate to="/secretaria/chamados" replace /> },
+      { path: "chamados", element: <ChamadosPage /> },
       { path: "unidades", element: <UnidadesPage /> },
       { path: "empresas", element: <EmpresasPage /> },
       { path: "equipamentos", element: <EquipamentosPage /> },
@@ -40,7 +43,7 @@ export const router = createBrowserRouter([
 
   {
     path: "/unidade",
-    element: <ProtectedRoute roles={["responsavel_unidade"]}><PlaceholderDashboard titulo="Minha Unidade" proximo="Abertura de chamados em 3 cliques chega no Sprint 3." /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["responsavel_unidade"]}><UnidadeChamadosPage /></ProtectedRoute>,
   },
   {
     path: "/empresa",

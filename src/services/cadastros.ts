@@ -5,6 +5,15 @@ export type Unidade = Tables<"unidades">;
 export type Empresa = Tables<"empresas">;
 export type Equipamento = Tables<"equipamentos">;
 export type Contrato = Tables<"contratos">;
+export type Tecnico = Tables<"tecnicos">;
+
+export async function listarTecnicos(empresaId?: string): Promise<Tecnico[]> {
+  let q = supabase.from("tecnicos").select("*").eq("ativo", true).order("nome");
+  if (empresaId) q = q.eq("empresa_id", empresaId);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
 
 // ─── Unidades ────────────────────────────────────────────────────────────────
 export async function listarUnidades(): Promise<Unidade[]> {

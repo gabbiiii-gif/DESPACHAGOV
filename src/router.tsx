@@ -11,6 +11,7 @@ import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
 import { ContratosPage } from "./pages/secretaria/ContratosPage";
 import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
+import { MapaPage } from "./pages/secretaria/MapaPage";
 import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/secretaria/chamados" replace /> },
       { path: "chamados", element: <ChamadosPage /> },
+      { path: "mapa", element: <MapaPage /> },
       { path: "unidades", element: <UnidadesPage /> },
       { path: "empresas", element: <EmpresasPage /> },
       { path: "equipamentos", element: <EquipamentosPage /> },

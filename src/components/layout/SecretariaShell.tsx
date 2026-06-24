@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
   { to: "/secretaria/chamados", label: "Chamados" },
+  { to: "/secretaria/mapa", label: "Mapa ao vivo" },
   { to: "/secretaria/unidades", label: "Unidades" },
   { to: "/secretaria/empresas", label: "Empresas" },
   { to: "/secretaria/equipamentos", label: "Equipamentos" },

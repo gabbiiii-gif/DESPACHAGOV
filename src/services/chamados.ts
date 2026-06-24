@@ -99,6 +99,41 @@ export async function transicionarChamado(
   return { error: null };
 }
 
+export interface ChamadoAtivoGeo {
+  id: string;
+  numero_protocolo: string;
+  status: string;
+  urgencia: string;
+  unidade_nome: string;
+  lat: number;
+  lng: number;
+}
+
+// Chamados em andamento (não concluídos/cancelados) com coordenadas da unidade.
+// Base do mapa ao vivo: some quando o chamado é finalizado.
+export async function listarChamadosAtivosComGeo(): Promise<ChamadoAtivoGeo[]> {
+  const { data, error } = await supabase
+    .from("chamados")
+    .select("id, numero_protocolo, status, urgencia, unidades!inner(nome, lat, lng)")
+    .in("status", ["aberto", "atribuido", "em_campo"]);
+  if (error) throw new Error(error.message);
+  type Row = {
+    id: string; numero_protocolo: string; status: string; urgencia: string;
+    unidades: { nome: string; lat: number | null; lng: number | null } | null;
+  };
+  return ((data ?? []) as unknown as Row[])
+    .filter((r) => r.unidades?.lat != null && r.unidades?.lng != null)
+    .map((r) => ({
+      id: r.id,
+      numero_protocolo: r.numero_protocolo,
+      status: r.status,
+      urgencia: r.urgencia,
+      unidade_nome: r.unidades!.nome,
+      lat: r.unidades!.lat as number,
+      lng: r.unidades!.lng as number,
+    }));
+}
+
 export async function listarEventos(chamadoId: string): Promise<ChamadoEvento[]> {
   const { data, error } = await supabase
     .from("chamado_eventos")

@@ -56,6 +56,17 @@ body {
   letter-spacing: -0.025em;
 }
 
+/* Leaflet: confina os z-index altos dos panes ao container do mapa,
+   evitando que sobreponham header (z-10) e modais (z-50). */
+.leaflet-container {
+  z-index: 0;
+}
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 1;
+}
+
 /* Acessibilidade: foco visível (WCAG 2.4.7) */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-azul-principal);

@@ -51,5 +51,5 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
     if (pontos.length) map.fitBounds(pontos, { padding: [40, 40], maxZoom: 14 });
   }, [unidades]);
 
-  return <div ref={ref} className="h-72 w-full rounded-xl border border-cinza-borda" aria-label="Mapa de unidades" />;
+  return <div ref={ref} className="relative z-0 isolate h-72 w-full overflow-hidden rounded-xl border border-cinza-borda" aria-label="Mapa de unidades" />;
 }

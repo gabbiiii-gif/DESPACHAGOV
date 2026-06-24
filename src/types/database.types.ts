@@ -14,6 +14,173 @@ export type Database = {
   }
   public: {
     Tables: {
+      contratos: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          id: string
+          numero_processo: string | null
+          objeto: string | null
+          pdf_url: string | null
+          status: string
+          tenant_id: string
+          updated_at: string
+          valor: number | null
+          vigencia_fim: string | null
+          vigencia_inicio: string | null
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          numero_processo?: string | null
+          objeto?: string | null
+          pdf_url?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string
+          valor?: number | null
+          vigencia_fim?: string | null
+          vigencia_inicio?: string | null
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          numero_processo?: string | null
+          objeto?: string | null
+          pdf_url?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+          valor?: number | null
+          vigencia_fim?: string | null
+          vigencia_inicio?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      empresas: {
+        Row: {
+          ativo: boolean
+          cnpj: string | null
+          created_at: string
+          email: string | null
+          especialidades: string[]
+          id: string
+          razao_social: string
+          telefone: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          especialidades?: string[]
+          id?: string
+          razao_social: string
+          telefone?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          especialidades?: string[]
+          id?: string
+          razao_social?: string
+          telefone?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "empresas_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamentos: {
+        Row: {
+          ativo: boolean
+          btu: number | null
+          created_at: string
+          id: string
+          marca: string | null
+          modelo: string | null
+          numero_serie: string | null
+          qr_code_url: string | null
+          tenant_id: string
+          tipo: string
+          unidade_id: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          btu?: number | null
+          created_at?: string
+          id?: string
+          marca?: string | null
+          modelo?: string | null
+          numero_serie?: string | null
+          qr_code_url?: string | null
+          tenant_id: string
+          tipo: string
+          unidade_id: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          btu?: number | null
+          created_at?: string
+          id?: string
+          marca?: string | null
+          modelo?: string | null
+          numero_serie?: string | null
+          qr_code_url?: string | null
+          tenant_id?: string
+          tipo?: string
+          unidade_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamentos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamentos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lgpd_consents: {
         Row: {
           aceito_em: string
@@ -45,6 +212,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lgpd_consents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tecnicos: {
+        Row: {
+          ativo: boolean
+          cpf: string | null
+          created_at: string
+          email: string | null
+          empresa_id: string
+          especialidade: string | null
+          id: string
+          nome: string
+          telefone: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          empresa_id: string
+          especialidade?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          empresa_id?: string
+          especialidade?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tecnicos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tecnicos_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -96,6 +320,62 @@ export type Database = {
           valor_mensal?: number | null
         }
         Relationships: []
+      }
+      unidades: {
+        Row: {
+          ativo: boolean
+          bairro: string | null
+          codigo_inep: string | null
+          created_at: string
+          endereco: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          nome: string
+          responsavel: string | null
+          tenant_id: string
+          updated_at: string
+          zona: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          bairro?: string | null
+          codigo_inep?: string | null
+          created_at?: string
+          endereco?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          nome: string
+          responsavel?: string | null
+          tenant_id: string
+          updated_at?: string
+          zona?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          bairro?: string | null
+          codigo_inep?: string | null
+          created_at?: string
+          endereco?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          nome?: string
+          responsavel?: string | null
+          tenant_id?: string
+          updated_at?: string
+          zona?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unidades_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {

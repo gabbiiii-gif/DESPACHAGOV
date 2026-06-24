@@ -2,7 +2,7 @@
 // Produção: semed-altamira.despachagov.com.br → "semed-altamira".
 // Dev: localhost (sem subdomínio) → null; suporta override ?tenant=slug.
 
-const BASE_HOSTS = ["despachagov.com.br", "localhost", "127.0.0.1"];
+const BASE_HOSTS = ["despachagov.com", "despachagov.com.br", "localhost", "127.0.0.1"];
 const RESERVADOS = new Set(["www", "app", "admin", "api"]);
 
 export function resolverSubdomain(

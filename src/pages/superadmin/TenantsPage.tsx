@@ -24,6 +24,7 @@ export function TenantsPage() {
   const [aberto, setAberto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
+  const [conviteLink, setConviteLink] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
   async function recarregar() {
@@ -65,13 +66,15 @@ export function TenantsPage() {
       return;
     }
     setSalvando(true);
-    const { error } = await criarTenant(parsed.data);
+    setConviteLink(null);
+    const { error, emailSent, actionLink } = await criarTenant(parsed.data);
     setSalvando(false);
     if (error) {
       setErro(error);
       return;
     }
-    setOk("Secretaria criada. Convite enviado ao administrador.");
+    setOk(emailSent ? "Secretaria criada. Convite enviado por e-mail." : "Secretaria criada.");
+    if (!emailSent && actionLink) setConviteLink(actionLink);
     setAberto(false);
     e.currentTarget.reset();
     void recarregar();
@@ -88,6 +91,29 @@ export function TenantsPage() {
 
       {ok && <div className="mb-4"><Alert tipo="sucesso">{ok}</Alert></div>}
       {erro && <div className="mb-4"><Alert tipo="erro">{erro}</Alert></div>}
+      {conviteLink && (
+        <div className="mb-4">
+          <Alert tipo="info">
+            <p className="font-medium">E-mail não configurado (Resend). Repasse este link de convite ao administrador:</p>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                readOnly
+                value={conviteLink}
+                onFocus={(e) => e.currentTarget.select()}
+                className="w-full rounded border border-cinza-borda bg-white px-2 py-1 text-xs text-cinza-texto"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="shrink-0 px-3 py-1 text-xs"
+                onClick={() => void navigator.clipboard.writeText(conviteLink)}
+              >
+                Copiar
+              </Button>
+            </div>
+          </Alert>
+        </div>
+      )}
 
       {aberto && (
         <Card className="mb-6">

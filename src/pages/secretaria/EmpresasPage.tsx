@@ -5,7 +5,7 @@ import { Card, Alert } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { useAuth } from "@/hooks/useAuth";
 import { empresaSchema } from "@/lib/cadastros";
-import { listarEmpresas, criarEmpresa, excluirEmpresa, type Empresa } from "@/services/cadastros";
+import { listarEmpresas, criarEmpresa, excluirEmpresa, listarTecnicos, type Empresa, type Tecnico } from "@/services/cadastros";
 
 export function EmpresasPage() {
   const { tenantId } = useAuth();
@@ -14,6 +14,10 @@ export function EmpresasPage() {
   const [modal, setModal] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  // Visualização dos técnicos (funcionários) de uma empresa.
+  const [verEmpresa, setVerEmpresa] = useState<Empresa | null>(null);
+  const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
+  const [carregandoTec, setCarregandoTec] = useState(false);
 
   async function recarregar() {
     try { setEmpresas(await listarEmpresas(tenantId ?? undefined)); }
@@ -60,6 +64,15 @@ export function EmpresasPage() {
     if (error) setErro(error); else void recarregar();
   }
 
+  async function abrirTecnicos(empresa: Empresa) {
+    setVerEmpresa(empresa);
+    setTecnicos([]);
+    setCarregandoTec(true);
+    try { setTecnicos(await listarTecnicos(empresa.id)); }
+    catch (e) { setErro(e instanceof Error ? e.message : "Erro"); }
+    finally { setCarregandoTec(false); }
+  }
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -87,6 +100,7 @@ export function EmpresasPage() {
                   <td className="px-4 py-2.5 text-cinza-secundario">{e.cnpj ?? "—"}</td>
                   <td className="px-4 py-2.5 text-cinza-secundario">{e.especialidades.join(", ") || "—"}</td>
                   <td className="px-4 py-2.5 text-right">
+                    <button onClick={() => void abrirTecnicos(e)} className="mr-3 text-xs text-azul-principal hover:underline">Técnicos</button>
                     <button onClick={() => void remover(e.id)} className="text-xs text-vermelho-critico hover:underline">Excluir</button>
                   </td>
                 </tr>
@@ -105,6 +119,23 @@ export function EmpresasPage() {
           <div className="sm:col-span-2"><Input name="especialidades" label="Especialidades (separadas por vírgula)" placeholder="climatização, elétrica" /></div>
           <div className="sm:col-span-2"><Button type="submit" loading={salvando} className="w-full">Salvar</Button></div>
         </form>
+      </Modal>
+
+      <Modal aberto={!!verEmpresa} titulo={verEmpresa ? `Técnicos — ${verEmpresa.razao_social}` : ""} onClose={() => setVerEmpresa(null)}>
+        {carregandoTec ? (
+          <p className="text-cinza-secundario">Carregando…</p>
+        ) : tecnicos.length === 0 ? (
+          <p className="text-cinza-secundario">Nenhum técnico cadastrado por esta empresa.</p>
+        ) : (
+          <ul className="divide-y divide-cinza-borda">
+            {tecnicos.map((t) => (
+              <li key={t.id} className="py-2">
+                <p className="text-sm font-medium text-cinza-texto">{t.nome}</p>
+                <p className="text-xs text-cinza-secundario">{[t.especialidade, t.telefone, t.email].filter(Boolean).join(" · ") || "—"}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </Modal>
     </div>
   );

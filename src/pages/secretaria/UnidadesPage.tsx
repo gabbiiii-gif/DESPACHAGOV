@@ -11,6 +11,7 @@ import { unidadeSchema, normalizarLinhaUnidade } from "@/lib/cadastros";
 import {
   listarUnidades, criarUnidade, criarUnidadesLote, excluirUnidade, type Unidade,
 } from "@/services/cadastros";
+import { geocodeEndereco } from "@/services/geocode";
 
 export function UnidadesPage() {
   const { tenantId } = useAuth();
@@ -21,6 +22,33 @@ export function UnidadesPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [latStr, setLatStr] = useState("");
+  const [lngStr, setLngStr] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  // Geocoding: monta a busca com nome + endereço + bairro e preenche lat/lng.
+  async function onGeocode() {
+    if (!formRef.current) return;
+    const fd = new FormData(formRef.current);
+    const q = ["nome", "endereco", "bairro"]
+      .map((k) => String(fd.get(k) ?? "").trim())
+      .filter(Boolean)
+      .join(", ");
+    if (!q) { setErro("Preencha nome/endereço para buscar as coordenadas."); return; }
+    setErro(null);
+    setGeoLoading(true);
+    try {
+      const r = await geocodeEndereco(q);
+      if (!r) { setErro("Coordenadas não encontradas. Refine o endereço."); return; }
+      setLatStr(String(r.lat));
+      setLngStr(String(r.lng));
+    } catch {
+      setErro("Falha ao buscar coordenadas.");
+    } finally {
+      setGeoLoading(false);
+    }
+  }
 
   async function recarregar() {
     try {
@@ -124,7 +152,7 @@ export function UnidadesPage() {
         <div className="flex gap-2">
           <input ref={fileRef} type="file" accept=".csv" onChange={onCsv} className="hidden" id="csv-unidades" />
           <Button variant="outline" onClick={() => fileRef.current?.click()}>Importar CSV</Button>
-          <Button variant="acento" onClick={() => { setMsg(null); setModal(true); }}>Nova unidade</Button>
+          <Button variant="acento" onClick={() => { setMsg(null); setLatStr(""); setLngStr(""); setModal(true); }}>Nova unidade</Button>
         </div>
       </div>
 
@@ -172,7 +200,7 @@ export function UnidadesPage() {
       )}
 
       <Modal aberto={modal} titulo="Nova unidade" onClose={() => setModal(false)}>
-        <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <form ref={formRef} onSubmit={onSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2"><Input name="nome" label="Nome" placeholder="EMEF Tancredo Neves" /></div>
           <Input name="codigo_inep" label="Código INEP" />
           <Input name="responsavel" label="Responsável" />
@@ -184,8 +212,13 @@ export function UnidadesPage() {
             <option value="rural">Rural</option>
           </Select>
           <div />
-          <Input name="lat" label="Latitude" placeholder="-3.2031" />
-          <Input name="lng" label="Longitude" placeholder="-52.2095" />
+          <Input name="lat" label="Latitude" placeholder="-3.2031" value={latStr} onChange={(ev) => setLatStr(ev.target.value)} />
+          <Input name="lng" label="Longitude" placeholder="-52.2095" value={lngStr} onChange={(ev) => setLngStr(ev.target.value)} />
+          <div className="sm:col-span-2">
+            <Button type="button" variant="outline" onClick={() => void onGeocode()} loading={geoLoading} className="w-full">
+              Buscar coordenadas pelo endereço
+            </Button>
+          </div>
           <div className="sm:col-span-2"><Button type="submit" loading={salvando} className="w-full">Salvar</Button></div>
         </form>
       </Modal>

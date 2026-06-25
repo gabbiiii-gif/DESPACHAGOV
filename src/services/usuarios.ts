@@ -4,8 +4,10 @@ import type { Role } from "@/lib/permissions";
 
 export type Usuario = Tables<"users">;
 
-export async function listarUsuariosTenant(): Promise<Usuario[]> {
-  const { data, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
+export async function listarUsuariosTenant(tenantId?: string): Promise<Usuario[]> {
+  let q = supabase.from("users").select("*").order("created_at", { ascending: false });
+  if (tenantId) q = q.eq("tenant_id", tenantId);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
 }

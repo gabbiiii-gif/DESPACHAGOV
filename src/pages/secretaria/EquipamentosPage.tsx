@@ -24,7 +24,7 @@ export function EquipamentosPage() {
 
   async function recarregar() {
     try {
-      const [eq, un] = await Promise.all([listarEquipamentos(), listarUnidades()]);
+      const [eq, un] = await Promise.all([listarEquipamentos(tenantId ?? undefined), listarUnidades(tenantId ?? undefined)]);
       setEquipamentos(eq); setUnidades(un);
     } catch (e) { setErro(e instanceof Error ? e.message : "Erro"); }
     finally { setCarregando(false); }
@@ -34,7 +34,7 @@ export function EquipamentosPage() {
     let ativo = true;
     void (async () => {
       try {
-        const [eq, un] = await Promise.all([listarEquipamentos(), listarUnidades()]);
+        const [eq, un] = await Promise.all([listarEquipamentos(tenantId ?? undefined), listarUnidades(tenantId ?? undefined)]);
         if (ativo) { setEquipamentos(eq); setUnidades(un); }
       } catch (e) { if (ativo) setErro(e instanceof Error ? e.message : "Erro"); }
       finally { if (ativo) setCarregando(false); }

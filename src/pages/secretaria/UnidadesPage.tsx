@@ -24,7 +24,7 @@ export function UnidadesPage() {
 
   async function recarregar() {
     try {
-      setUnidades(await listarUnidades());
+      setUnidades(await listarUnidades(tenantId ?? undefined));
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Erro ao carregar");
     } finally {
@@ -36,7 +36,7 @@ export function UnidadesPage() {
     let ativo = true;
     void (async () => {
       try {
-        const d = await listarUnidades();
+        const d = await listarUnidades(tenantId ?? undefined);
         if (ativo) setUnidades(d);
       } catch (e) {
         if (ativo) setErro(e instanceof Error ? e.message : "Erro ao carregar");

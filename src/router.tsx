@@ -6,6 +6,7 @@ import { HomeRedirect } from "./pages/HomeRedirect";
 import { PlaceholderDashboard } from "./pages/PlaceholderDashboard";
 import { TenantsPage } from "./pages/superadmin/TenantsPage";
 import { SecretariaShell } from "./components/layout/SecretariaShell";
+import { SuperadminTenantScope } from "./components/layout/SuperadminTenantScope";
 import { UnidadesPage } from "./pages/secretaria/UnidadesPage";
 import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
@@ -31,6 +32,17 @@ export const router = createBrowserRouter([
   {
     path: "/superadmin",
     element: <ProtectedRoute roles={["superadmin"]}><TenantsPage /></ProtectedRoute>,
+  },
+  {
+    path: "/superadmin/secretaria/:tenantId",
+    element: <ProtectedRoute roles={["superadmin"]}><SuperadminTenantScope /></ProtectedRoute>,
+    children: [
+      { index: true, element: <Navigate to="unidades" replace /> },
+      { path: "unidades", element: <UnidadesPage /> },
+      { path: "empresas", element: <EmpresasPage /> },
+      { path: "equipamentos", element: <EquipamentosPage /> },
+      { path: "contratos", element: <ContratosPage /> },
+    ],
   },
 
   {

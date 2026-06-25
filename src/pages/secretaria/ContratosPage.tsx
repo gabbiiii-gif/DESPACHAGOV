@@ -26,7 +26,7 @@ export function ContratosPage() {
 
   async function recarregar() {
     try {
-      const [c, e] = await Promise.all([listarContratos(), listarEmpresas()]);
+      const [c, e] = await Promise.all([listarContratos(tenantId ?? undefined), listarEmpresas(tenantId ?? undefined)]);
       setContratos(c); setEmpresas(e);
     } catch (err) { setErro(err instanceof Error ? err.message : "Erro"); }
     finally { setCarregando(false); }
@@ -36,7 +36,7 @@ export function ContratosPage() {
     let ativo = true;
     void (async () => {
       try {
-        const [c, e] = await Promise.all([listarContratos(), listarEmpresas()]);
+        const [c, e] = await Promise.all([listarContratos(tenantId ?? undefined), listarEmpresas(tenantId ?? undefined)]);
         if (ativo) { setContratos(c); setEmpresas(e); }
       } catch (err) { if (ativo) setErro(err instanceof Error ? err.message : "Erro"); }
       finally { if (ativo) setCarregando(false); }

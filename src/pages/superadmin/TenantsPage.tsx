@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
@@ -19,6 +20,7 @@ const schema = z.object({
 });
 
 export function TenantsPage() {
+  const navigate = useNavigate();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [aberto, setAberto] = useState(false);
@@ -146,11 +148,12 @@ export function TenantsPage() {
                 <th className="px-4 py-2.5 font-medium">Subdomínio</th>
                 <th className="px-4 py-2.5 font-medium">Município/UF</th>
                 <th className="px-4 py-2.5 font-medium">Status</th>
+                <th className="px-4 py-2.5"></th>
               </tr>
             </thead>
             <tbody>
               {tenants.length === 0 && (
-                <tr><td colSpan={4} className="px-4 py-6 text-center text-cinza-secundario">Nenhuma Secretaria cadastrada.</td></tr>
+                <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza-secundario">Nenhuma Secretaria cadastrada.</td></tr>
               )}
               {tenants.map((t) => (
                 <tr key={t.id} className="border-t border-cinza-borda">
@@ -159,6 +162,11 @@ export function TenantsPage() {
                   <td className="px-4 py-2.5 text-cinza-secundario">{[t.municipio, t.estado].filter(Boolean).join("/") || "—"}</td>
                   <td className="px-4 py-2.5">
                     <span className="rounded-full bg-verde-sucesso/10 px-2 py-0.5 text-xs font-medium text-verde-sucesso">{t.status}</span>
+                  </td>
+                  <td className="px-4 py-2.5 text-right">
+                    <Button variant="outline" className="px-3 py-1 text-xs" onClick={() => navigate(`/superadmin/secretaria/${t.id}/unidades`)}>
+                      Gerenciar
+                    </Button>
                   </td>
                 </tr>
               ))}

@@ -16,7 +16,7 @@ export function EmpresasPage() {
   const [salvando, setSalvando] = useState(false);
 
   async function recarregar() {
-    try { setEmpresas(await listarEmpresas()); }
+    try { setEmpresas(await listarEmpresas(tenantId ?? undefined)); }
     catch (e) { setErro(e instanceof Error ? e.message : "Erro"); }
     finally { setCarregando(false); }
   }
@@ -24,7 +24,7 @@ export function EmpresasPage() {
   useEffect(() => {
     let ativo = true;
     void (async () => {
-      try { const d = await listarEmpresas(); if (ativo) setEmpresas(d); }
+      try { const d = await listarEmpresas(tenantId ?? undefined); if (ativo) setEmpresas(d); }
       catch (e) { if (ativo) setErro(e instanceof Error ? e.message : "Erro"); }
       finally { if (ativo) setCarregando(false); }
     })();

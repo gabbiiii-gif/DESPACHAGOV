@@ -16,6 +16,8 @@ interface AuthState {
   enviarResetSenha: (email: string) => Promise<{ error: string | null }>;
   definirNovaSenha: (senha: string) => Promise<{ error: string | null }>;
   recarregarPerfil: () => Promise<void>;
+  // Superadmin: tenant "em foco" para gerir cadastros de uma secretaria.
+  setFocoTenant: (id: string | null) => void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -24,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [focoTenantId, setFocoTenantId] = useState<string | null>(null);
 
   const carregarPerfil = useCallback(async (uid: string) => {
     const { data } = await supabase.from("users").select("*").eq("id", uid).maybeSingle();
@@ -76,13 +79,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session) await carregarPerfil(session.user.id);
   }, [session, carregarPerfil]);
 
+  const setFocoTenant = useCallback((id: string | null) => setFocoTenantId(id), []);
+
   const role = (profile?.role ?? null) as Role | null;
 
   const value: AuthState = {
     session,
     profile,
     role,
-    tenantId: profile?.tenant_id ?? null,
+    // Superadmin sem tenant próprio opera no tenant em foco.
+    tenantId: profile?.tenant_id ?? focoTenantId,
     empresaId: profile?.empresa_id ?? null,
     loading,
     signIn,
@@ -90,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     enviarResetSenha,
     definirNovaSenha,
     recarregarPerfil,
+    setFocoTenant,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

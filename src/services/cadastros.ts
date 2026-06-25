@@ -28,8 +28,10 @@ export async function inativarTecnico(id: string) {
 }
 
 // ─── Unidades ────────────────────────────────────────────────────────────────
-export async function listarUnidades(): Promise<Unidade[]> {
-  const { data, error } = await supabase.from("unidades").select("*").order("nome");
+export async function listarUnidades(tenantId?: string): Promise<Unidade[]> {
+  let q = supabase.from("unidades").select("*").order("nome");
+  if (tenantId) q = q.eq("tenant_id", tenantId);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
 }
@@ -51,8 +53,10 @@ export async function excluirUnidade(id: string) {
 }
 
 // ─── Empresas ────────────────────────────────────────────────────────────────
-export async function listarEmpresas(): Promise<Empresa[]> {
-  const { data, error } = await supabase.from("empresas").select("*").order("razao_social");
+export async function listarEmpresas(tenantId?: string): Promise<Empresa[]> {
+  let q = supabase.from("empresas").select("*").order("razao_social");
+  if (tenantId) q = q.eq("tenant_id", tenantId);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
 }
@@ -66,8 +70,10 @@ export async function excluirEmpresa(id: string) {
 }
 
 // ─── Equipamentos ────────────────────────────────────────────────────────────
-export async function listarEquipamentos(): Promise<Equipamento[]> {
-  const { data, error } = await supabase.from("equipamentos").select("*").order("created_at", { ascending: false });
+export async function listarEquipamentos(tenantId?: string): Promise<Equipamento[]> {
+  let q = supabase.from("equipamentos").select("*").order("created_at", { ascending: false });
+  if (tenantId) q = q.eq("tenant_id", tenantId);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
 }
@@ -81,8 +87,10 @@ export async function excluirEquipamento(id: string) {
 }
 
 // ─── Contratos ───────────────────────────────────────────────────────────────
-export async function listarContratos(): Promise<Contrato[]> {
-  const { data, error } = await supabase.from("contratos").select("*").order("created_at", { ascending: false });
+export async function listarContratos(tenantId?: string): Promise<Contrato[]> {
+  let q = supabase.from("contratos").select("*").order("created_at", { ascending: false });
+  if (tenantId) q = q.eq("tenant_id", tenantId);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
 }

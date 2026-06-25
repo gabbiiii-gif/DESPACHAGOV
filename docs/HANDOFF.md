@@ -52,3 +52,10 @@ Superadmin: `biel.atm11@gmail.com`. 4 tenants de teste (semed/sesma/semma/semaf-
 - TS `exactOptionalPropertyTypes`: campos opcionais em Insert/props precisam de `| undefined` explícito.
 - eslint react-hooks v7 `set-state-in-effect`: usar IIFE async com guard `ativo`, setState só após `await`.
 - Path do projeto tem espaços/acentos/OneDrive — usar caminhos absolutos.
+
+## Geocoding (lat/lng no cadastro de unidade) — setup Google p/ fazer depois
+O botão "Buscar coordenadas pelo endereço" usa **Google Geocoding** se `VITE_GOOGLE_MAPS_API_KEY` existir; senão cai no **Nominatim** (grátis, sem chave). Pra ligar o Google:
+1. Google Cloud Console → ativar **Geocoding API**.
+2. Criar chave e **restringir por HTTP referrer**: `https://www.despachagov.com/*` (+ `http://localhost:*` p/ dev).
+3. **Cota dura em 10.000/mês** (Geocoding → Quotas) → estoura = falha, não cobra. + alerta de orçamento.
+4. Pôr `VITE_GOOGLE_MAPS_API_KEY=<chave>` no `.env.local` e nas env vars da Vercel; `vercel deploy --prod`.

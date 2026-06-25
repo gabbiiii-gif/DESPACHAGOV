@@ -19,12 +19,10 @@ Selects de cadastro não filtram por tenant (dependem de RLS). Para superadmin (
 - `listarUnidades`, `listarEmpresas`, `listarEquipamentos`, `listarContratos`,
   `listarUsuariosTenant` (cadastros.ts / usuarios.ts).
 
-## Usuários (convite) — ADIADO p/ próximo passo
-Hoje `invite-user` exige `role === admin_secretaria` e usa `tenant_id` do claim → superadmin
-não consegue. Estender (aceitar superadmin + `tenant_id` no body) é mudança de **segurança na
-edge function** + redeploy → merece passe próprio. **Não entra neste commit.** O modo
-superadmin cobre Unidades/Empresas/Equipamentos/Contratos; Usuários segue só pela secretaria
-até a extensão de `invite-user`.
+## Usuários (convite) — FEITO
+`invite-user` estendido: aceita `superadmin` (além de `admin_secretaria`); superadmin informa
+`tenant_id` alvo no body, admin_secretaria usa o claim. `convidarUsuario` passa `tenant_id`.
+UsuariosPage entra no escopo superadmin (nav + rota). Redeploy `invite-user` v5 (verify_jwt=true).
 
 ## Frontend
 - `SuperadminSecretariaShell` — nav p/ `/superadmin/secretaria/:tenantId/{unidades,empresas,equipamentos,contratos,usuarios}` + banner "Gerenciando «nome» — modo superadmin" + voltar.

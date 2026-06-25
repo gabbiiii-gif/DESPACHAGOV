@@ -26,9 +26,10 @@ Deno.serve(async (req) => {
   const { data: u, error: uErr } = await admin.auth.getUser(token);
   if (uErr || !u.user) return json({ error: "não autenticado" }, 401);
   const meta = u.user.app_metadata as Record<string, unknown>;
-  if (meta?.role !== "admin_secretaria") return json({ error: "apenas admin_secretaria" }, 403);
-  const tenantId = meta?.tenant_id as string | undefined;
-  if (!tenantId) return json({ error: "sem tenant" }, 400);
+  const callerRole = meta?.role;
+  if (callerRole !== "admin_secretaria" && callerRole !== "superadmin") {
+    return json({ error: "sem permissão" }, 403);
+  }
 
   let body: Record<string, unknown>;
   try {
@@ -36,6 +37,16 @@ Deno.serve(async (req) => {
   } catch {
     return json({ error: "json inválido" }, 400);
   }
+
+  // admin_secretaria usa o próprio tenant (claim); superadmin informa o tenant alvo.
+  let tenantId: string | undefined;
+  if (callerRole === "superadmin") {
+    tenantId = body.tenant_id ? String(body.tenant_id) : undefined;
+    if (!tenantId) return json({ error: "tenant_id obrigatório p/ superadmin" }, 400);
+  } else {
+    tenantId = meta?.tenant_id as string | undefined;
+  }
+  if (!tenantId) return json({ error: "sem tenant" }, 400);
   const nome = String(body.nome ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();
   const role = String(body.role ?? "");

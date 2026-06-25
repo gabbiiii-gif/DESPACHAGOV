@@ -6,6 +6,7 @@ import { Select } from "@/components/ui/Select";
 import { Card, Alert } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import type { Role } from "@/lib/permissions";
+import { useAuth } from "@/hooks/useAuth";
 import { listarEmpresas, type Empresa } from "@/services/cadastros";
 import { listarUsuariosTenant, convidarUsuario, type Usuario } from "@/services/usuarios";
 
@@ -31,6 +32,7 @@ const schema = z.object({
 });
 
 export function UsuariosPage() {
+  const { tenantId } = useAuth();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -42,19 +44,19 @@ export function UsuariosPage() {
   const [salvando, setSalvando] = useState(false);
 
   async function recarregar() {
-    const [us, em] = await Promise.all([listarUsuariosTenant(), listarEmpresas()]);
+    const [us, em] = await Promise.all([listarUsuariosTenant(tenantId ?? undefined), listarEmpresas(tenantId ?? undefined)]);
     setUsuarios(us); setEmpresas(em);
   }
 
   useEffect(() => {
     let ativo = true;
     void (async () => {
-      try { const [us, em] = await Promise.all([listarUsuariosTenant(), listarEmpresas()]); if (ativo) { setUsuarios(us); setEmpresas(em); } }
+      try { const [us, em] = await Promise.all([listarUsuariosTenant(tenantId ?? undefined), listarEmpresas(tenantId ?? undefined)]); if (ativo) { setUsuarios(us); setEmpresas(em); } }
       catch (e) { if (ativo) setErro(e instanceof Error ? e.message : "Erro"); }
       finally { if (ativo) setCarregando(false); }
     })();
     return () => { ativo = false; };
-  }, []);
+  }, [tenantId]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -70,6 +72,7 @@ export function UsuariosPage() {
       email: parsed.data.email,
       role: parsed.data.role,
       empresa_id: parsed.data.empresa_id || null,
+      tenant_id: tenantId,
     });
     setSalvando(false);
     if (error) { setErro(error); return; }

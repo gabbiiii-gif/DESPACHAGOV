@@ -6,12 +6,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/services/supabase";
 
 // Superadmin gerindo os cadastros de UMA secretaria (tenant em foco).
-const ITENS = ["unidades", "empresas", "equipamentos", "contratos"] as const;
+const ITENS = ["unidades", "empresas", "equipamentos", "contratos", "usuarios"] as const;
 const LABEL: Record<string, string> = {
   unidades: "Unidades",
   empresas: "Empresas",
   equipamentos: "Equipamentos",
   contratos: "Contratos",
+  usuarios: "Usuários",
 };
 
 export function SuperadminTenantScope() {

@@ -17,6 +17,8 @@ export interface ConvidarUsuarioInput {
   email: string;
   role: Role;
   empresa_id?: string | null;
+  // Superadmin informa o tenant alvo; admin_secretaria usa o próprio (ignorado pela função).
+  tenant_id?: string | null;
 }
 
 export interface ResultadoConvite {

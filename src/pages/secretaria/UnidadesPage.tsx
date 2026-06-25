@@ -45,7 +45,7 @@ export function UnidadesPage() {
       }
     })();
     return () => { ativo = false; };
-  }, []);
+  }, [tenantId]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

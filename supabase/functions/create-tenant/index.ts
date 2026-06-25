@@ -50,7 +50,6 @@ Deno.serve(async (req) => {
       cnpj: body.cnpj ? String(body.cnpj) : null,
       municipio: body.municipio ? String(body.municipio) : null,
       estado: body.estado ? String(body.estado).toUpperCase().slice(0, 2) : null,
-      valor_mensal: body.valor_mensal != null ? Number(body.valor_mensal) : null,
       contrato_vigencia_inicio: body.contrato_vigencia_inicio ? String(body.contrato_vigencia_inicio) : null,
       contrato_vigencia_fim: body.contrato_vigencia_fim ? String(body.contrato_vigencia_fim) : null,
     })

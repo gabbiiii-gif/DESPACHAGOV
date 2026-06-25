@@ -16,7 +16,6 @@ export interface NovoTenantInput {
   municipio?: string | undefined;
   estado?: string | undefined;
   subdomain: string;
-  valor_mensal?: number | undefined;
   contrato_vigencia_inicio?: string | undefined;
   contrato_vigencia_fim?: string | undefined;
   admin_nome: string;

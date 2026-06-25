@@ -42,7 +42,7 @@ export function ContratosPage() {
       finally { if (ativo) setCarregando(false); }
     })();
     return () => { ativo = false; };
-  }, []);
+  }, [tenantId]);
 
   const nomeEmpresa = (id: string | null) => empresas.find((e) => e.id === id)?.razao_social ?? "—";
 

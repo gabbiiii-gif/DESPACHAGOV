@@ -441,7 +441,6 @@ export type Database = {
           status: string
           subdomain: string
           updated_at: string
-          valor_mensal: number | null
         }
         Insert: {
           cnpj?: string | null
@@ -455,7 +454,6 @@ export type Database = {
           status?: string
           subdomain: string
           updated_at?: string
-          valor_mensal?: number | null
         }
         Update: {
           cnpj?: string | null
@@ -469,7 +467,6 @@ export type Database = {
           status?: string
           subdomain?: string
           updated_at?: string
-          valor_mensal?: number | null
         }
         Relationships: []
       }

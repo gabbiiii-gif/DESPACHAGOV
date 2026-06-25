@@ -29,7 +29,7 @@ export function EmpresasPage() {
       finally { if (ativo) setCarregando(false); }
     })();
     return () => { ativo = false; };
-  }, []);
+  }, [tenantId]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

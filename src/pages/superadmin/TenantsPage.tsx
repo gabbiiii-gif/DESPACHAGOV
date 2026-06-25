@@ -14,7 +14,6 @@ const schema = z.object({
   municipio: z.string().optional(),
   estado: z.string().length(2, "UF com 2 letras").optional().or(z.literal("")),
   cnpj: z.string().optional(),
-  valor_mensal: z.coerce.number().nonnegative().optional(),
   admin_nome: z.string().min(3, "Nome do administrador"),
   admin_email: z.string().email("E-mail do administrador inválido"),
 });
@@ -125,7 +124,6 @@ export function TenantsPage() {
             <Input name="municipio" label="Município" placeholder="Altamira" />
             <Input name="estado" label="UF" placeholder="PA" maxLength={2} />
             <Input name="cnpj" label="CNPJ" placeholder="00.000.000/0001-00" />
-            <Input name="valor_mensal" label="Mensalidade (R$)" type="number" step="0.01" placeholder="0,00" />
             <Input name="admin_nome" label="Administrador — nome" placeholder="Fulano de Tal" />
             <Input name="admin_email" label="Administrador — e-mail" type="email" placeholder="admin@secretaria.gov.br" />
             <div className="sm:col-span-2">

@@ -40,7 +40,7 @@ export function EquipamentosPage() {
       finally { if (ativo) setCarregando(false); }
     })();
     return () => { ativo = false; };
-  }, []);
+  }, [tenantId]);
 
   const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
 

@@ -149,6 +149,21 @@ export async function listarChamadosAtivosComGeo(): Promise<ChamadoAtivoGeo[]> {
     }));
 }
 
+import type { SugestaoTriagem } from "@/lib/aiTriagem";
+
+// Chama a Edge Function ai-agent: sugere urgência + categoria do chamado.
+export async function sugerirTriagem(
+  chamadoId: string,
+): Promise<{ sugestao: SugestaoTriagem | null; error: string | null }> {
+  const { data, error } = await supabase.functions.invoke("ai-agent", {
+    body: { chamado_id: chamadoId },
+  });
+  if (error) return { sugestao: null, error: error.message };
+  const r = data as { sugestao?: SugestaoTriagem; error?: string };
+  if (r.error || !r.sugestao) return { sugestao: null, error: r.error ?? "Falha na IA" };
+  return { sugestao: r.sugestao, error: null };
+}
+
 export async function listarEventos(chamadoId: string): Promise<ChamadoEvento[]> {
   const { data, error } = await supabase
     .from("chamado_eventos")

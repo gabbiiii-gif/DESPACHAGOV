@@ -5,7 +5,8 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, Alert } from "@/components/ui/Card";
-import { listarTenants, criarTenant } from "@/services/tenants";
+import { Modal } from "@/components/ui/Modal";
+import { listarTenants, criarTenant, deletarTenant } from "@/services/tenants";
 import type { Tenant } from "@/lib/auth";
 
 const schema = z.object({
@@ -27,6 +28,25 @@ export function TenantsPage() {
   const [ok, setOk] = useState<string | null>(null);
   const [conviteLink, setConviteLink] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  // Exclusão (irreversível): confirmação por digitação do subdomínio.
+  const [excluir, setExcluir] = useState<Tenant | null>(null);
+  const [confirmacao, setConfirmacao] = useState("");
+  const [excluindo, setExcluindo] = useState(false);
+
+  function abrirExcluir(t: Tenant) {
+    setExcluir(t); setConfirmacao(""); setErro(null); setOk(null);
+  }
+
+  async function confirmarExcluir() {
+    if (!excluir || confirmacao.trim() !== excluir.subdomain) return;
+    setExcluindo(true);
+    const { error } = await deletarTenant(excluir.id);
+    setExcluindo(false);
+    if (error) { setErro(error); return; }
+    setOk(`Secretaria "${excluir.nome_secretaria}" excluída.`);
+    setExcluir(null);
+    void recarregar();
+  }
 
   async function recarregar() {
     try {
@@ -162,9 +182,14 @@ export function TenantsPage() {
                     <span className="rounded-full bg-verde-sucesso/10 px-2 py-0.5 text-xs font-medium text-verde-sucesso">{t.status}</span>
                   </td>
                   <td className="px-4 py-2.5 text-right">
-                    <Button variant="outline" className="px-3 py-1 text-xs" onClick={() => navigate(`/superadmin/secretaria/${t.id}/unidades`)}>
-                      Gerenciar
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" className="px-3 py-1 text-xs" onClick={() => navigate(`/superadmin/secretaria/${t.id}/unidades`)}>
+                        Gerenciar
+                      </Button>
+                      <Button variant="outline" className="px-3 py-1 text-xs text-vermelho-critico" onClick={() => abrirExcluir(t)}>
+                        Excluir
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -172,6 +197,40 @@ export function TenantsPage() {
           </table>
         </div>
       )}
+
+      {/* Exclusão irreversível — confirmação por digitação do subdomínio. */}
+      <Modal aberto={!!excluir} titulo="Excluir Secretaria" onClose={() => setExcluir(null)}>
+        {excluir && (
+          <div className="flex flex-col gap-3">
+            <Alert tipo="erro">
+              Ação <b>irreversível</b>. Remove a Secretaria <b>{excluir.nome_secretaria}</b> e todos os dados
+              vinculados: usuários, unidades, empresas, equipamentos, contratos, chamados e anexos.
+            </Alert>
+            <label htmlFor="confirma-sub" className="text-sm text-cinza-texto">
+              Para confirmar, digite o subdomínio <code className="rounded bg-cinza-fundo px-1.5 py-0.5">{excluir.subdomain}</code>:
+            </label>
+            <input
+              id="confirma-sub"
+              value={confirmacao}
+              onChange={(e) => setConfirmacao(e.target.value)}
+              placeholder={excluir.subdomain}
+              className="w-full rounded-lg border border-cinza-borda px-3.5 py-2.5 text-sm focus:border-azul-principal focus:outline-none"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setExcluir(null)} className="text-xs">Cancelar</Button>
+              <Button
+                variant="acento"
+                onClick={() => void confirmarExcluir()}
+                loading={excluindo}
+                disabled={confirmacao.trim() !== excluir.subdomain}
+                className="text-xs"
+              >
+                Excluir definitivamente
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </AppShell>
   );
 }

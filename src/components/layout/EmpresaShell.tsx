@@ -45,9 +45,12 @@ export function EmpresaShell() {
       <div className="flex-1">
         <header className="flex items-center justify-between border-b border-cinza-borda bg-cinza-card px-4 py-3 sm:px-6">
           <span className="text-sm text-cinza-secundario">{profile?.nome}</span>
-          <Button variant="outline" onClick={() => void signOut()} className="px-3 py-1.5 text-xs">
-            Sair
-          </Button>
+          <div className="flex items-center gap-3">
+            <NavLink to="/conta/privacidade" className="text-xs font-medium text-cinza-secundario hover:text-azul-principal">Meus dados</NavLink>
+            <Button variant="outline" onClick={() => void signOut()} className="px-3 py-1.5 text-xs">
+              Sair
+            </Button>
+          </div>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
           <Outlet />

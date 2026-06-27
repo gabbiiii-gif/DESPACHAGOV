@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +19,9 @@ export function AppShell({ titulo, children }: { titulo: string; children: React
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden text-sm text-cinza-secundario sm:inline">{profile?.nome}</span>
+          <Link to="/conta/privacidade" className="text-xs font-medium text-cinza-secundario hover:text-azul-principal">
+            Meus dados
+          </Link>
           <Button variant="outline" onClick={() => void signOut()} className="px-3 py-1.5 text-xs">
             Sair
           </Button>

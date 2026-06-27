@@ -18,6 +18,7 @@ import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
 import { EmpresaShell } from "./components/layout/EmpresaShell";
 import { EmpresaChamadosPage } from "./pages/empresa/EmpresaChamadosPage";
+import { ContratoPage } from "./pages/empresa/ContratoPage";
 import { TecnicosPage } from "./pages/empresa/TecnicosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
@@ -73,6 +74,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/empresa/chamados" replace /> },
       { path: "chamados", element: <EmpresaChamadosPage /> },
+      { path: "contrato", element: <ContratoPage /> },
       { path: "tecnicos", element: <ProtectedRoute roles={["empresa_admin"]}><TecnicosPage /></ProtectedRoute> },
     ],
   },

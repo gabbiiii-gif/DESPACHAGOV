@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
   { to: "/empresa/chamados", label: "Chamados" },
+  { to: "/empresa/contrato", label: "Meu contrato" },
   { to: "/empresa/tecnicos", label: "Técnicos", adminOnly: true },
 ];
 

@@ -12,6 +12,7 @@ import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
 import { ContratosPage } from "./pages/secretaria/ContratosPage";
 import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
+import { PainelPage } from "./pages/secretaria/PainelPage";
 import { MapaPage } from "./pages/secretaria/MapaPage";
 import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
@@ -50,7 +51,8 @@ export const router = createBrowserRouter([
     path: "/secretaria",
     element: <ProtectedRoute roles={[...SECRETARIA_ROLES]}><SecretariaShell /></ProtectedRoute>,
     children: [
-      { index: true, element: <Navigate to="/secretaria/chamados" replace /> },
+      { index: true, element: <Navigate to="/secretaria/painel" replace /> },
+      { path: "painel", element: <PainelPage /> },
       { path: "chamados", element: <ChamadosPage /> },
       { path: "mapa", element: <MapaPage /> },
       { path: "unidades", element: <UnidadesPage /> },

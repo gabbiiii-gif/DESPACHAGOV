@@ -11,7 +11,7 @@ Verde local: `npm run build` ✓, `eslint .` ✓, `vitest run` 39 passed (8 file
 
 Pós-sprint-4 já no ar (ver `docs/sprints/sprint-5.md`): e-mail transacional por evento (`notify-event`), abertura sem urgência + anexo obrigatório + triagem, empresa cadastra próprios técnicos, superadmin gere cadastros dentro de um tenant, **PWA offline na abertura** (outbox IndexedDB + sync ao reconectar).
 
-Sprints 5 e **6 concluídos** (local). Sprint 6 = painel Secretaria (KPIs + Recharts + relatórios CSV/PDF em `/secretaria/painel`). Push nativo excluído pelo owner. Próximo: Sprint 7 (Agente IA).
+Sprints 5–6 concluídos (5–6 no ar; deploy de 7 pendente). **Sprint 7 código pronto (local)**: agente de triagem IA (`ai-agent`, Claude Sonnet, rate-limit 500/tenant/mês via migration 0012) + exclusão de Secretaria pelo superadmin (`delete-tenant`). Falta deploy: migration 0012 + Edge Functions `ai-agent`/`delete-tenant`. Push nativo excluído pelo owner.
 
 ## Stack / decisões travadas
 - React 19 + Vite 6 + TS estrito + Tailwind v4 (CSS-first, `@theme`) + PWA. Supabase (Postgres+Auth+Realtime+Storage+Edge Functions). Leaflet, Recharts (sprint 6), qrcode, papaparse, html2pdf.js.
@@ -48,7 +48,7 @@ Superadmin: `biel.atm11@gmail.com`. 4 tenants de teste (semed/sesma/semma/semaf-
 ## Próximos sprints (ordem)
 - **5** ✓ concluído: e-mail transacional por evento + PWA offline na abertura. Push nativo (Capacitor/FCM) excluído pelo owner.
 - **6** ✓ concluído (local): painel Secretaria — KPIs + Recharts + relatórios PDF/CSV em `/secretaria/painel`.
-- **7**: Agente IA (Edge Function `ai-agent`, Claude Sonnet; campos `ai_urgencia_sugerida`/`ai_categoria` já existem).
+- **7** código pronto (local; falta deploy): Agente IA (`ai-agent`, Claude Sonnet, on-demand na triagem) + exclusão de Secretaria (`delete-tenant`). Migration 0012 (rate-limit) + deploy das functions pendentes.
 - **8** (crítico p/ faturamento): relatórios mensais + `sla_log` + painel "Meu Contrato".
 - **9** LGPD/segurança · **10** Beta SEMED Altamira.
 

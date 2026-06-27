@@ -1,7 +1,12 @@
 // Domínio puro do agente de triagem por IA. Sem rede: categorias, schema de
 // saída estruturada, prompt e validação. Importado pelo front (vitest) e pela
-// Edge Function ai-agent (Deno) via cross-import.
-import { URGENCIAS, type Urgencia } from "./chamados";
+// Edge Function ai-agent (Deno) via cross-import — por isso é autossuficiente
+// (só import de tipo, que o bundler do Deno apaga; nenhum import de valor).
+import type { Urgencia } from "./chamados";
+
+// Espelha URGENCIAS de ./chamados como valor local (mantém o bundle da Edge
+// Function sem dependências). Tipado como Urgencia p/ travar a paridade.
+const URGENCIAS: readonly Urgencia[] = ["baixa", "media", "alta", "critica"];
 
 export const CATEGORIAS = [
   "eletrica",

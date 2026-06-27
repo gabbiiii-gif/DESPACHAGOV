@@ -4,6 +4,8 @@ import { RecoverPage } from "./pages/RecoverPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { HomeRedirect } from "./pages/HomeRedirect";
 import { PlaceholderDashboard } from "./pages/PlaceholderDashboard";
+import { PoliticaPrivacidadePage } from "./pages/PoliticaPrivacidadePage";
+import { PrivacidadePage } from "./pages/conta/PrivacidadePage";
 import { TenantsPage } from "./pages/superadmin/TenantsPage";
 import { SecretariaShell } from "./components/layout/SecretariaShell";
 import { SuperadminTenantScope } from "./components/layout/SuperadminTenantScope";
@@ -28,8 +30,10 @@ export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/recuperar-senha", element: <RecoverPage /> },
   { path: "/redefinir-senha", element: <ResetPasswordPage /> },
+  { path: "/politica-privacidade", element: <PoliticaPrivacidadePage /> },
 
   { path: "/", element: <ProtectedRoute><HomeRedirect /></ProtectedRoute> },
+  { path: "/conta/privacidade", element: <ProtectedRoute><PrivacidadePage /></ProtectedRoute> },
 
   {
     path: "/superadmin",

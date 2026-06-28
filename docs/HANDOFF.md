@@ -58,10 +58,22 @@ Superadmin: `biel.atm11@gmail.com`. 4 tenants de teste (semed/sesma/semma/semaf-
 - eslint react-hooks v7 `set-state-in-effect`: usar IIFE async com guard `ativo`, setState só após `await`.
 - Path do projeto tem espaços/acentos/OneDrive — usar caminhos absolutos.
 
-## Geocoding (lat/lng no cadastro de unidade)
-O botão "Buscar coordenadas pelo endereço" usa **Google Geocoding** se `VITE_GOOGLE_MAPS_API_KEY` existir; senão cai no **Nominatim** (grátis, sem chave).
-- **Chave já configurada no `.env.local`** (2026-06-27). Como `VITE_*` vai embutida no bundle do front, a chave **é pública por natureza** — a proteção real é restrição + cota (abaixo). Falta replicar na Vercel.
-- Pendências p/ produção segura:
-  1. **Restringir por HTTP referrer** no Google Cloud Console: `https://www.despachagov.com/*` (+ `http://localhost:*` p/ dev) e limitar à **Geocoding API**.
-  2. **Cota dura em 10.000/mês** (Geocoding → Quotas) → estoura = falha, não cobra. + alerta de orçamento.
-  3. Pôr `VITE_GOOGLE_MAPS_API_KEY` nas env vars da Vercel; `vercel deploy --prod`.
+## Geocoding (lat/lng no cadastro de unidade) — PROXY server-side
+O botão "Buscar coordenadas pelo endereço" chama a Edge Function **`geocode`** (proxy do
+Google, chave server-side fora do bundle); se vazio, cai no **Nominatim** (grátis, sem chave).
+`src/services/geocode.ts` → `supabase.functions.invoke("geocode")` → Nominatim fallback.
+
+Estado (2026-06-27): function deployada. Falta **2 passos do owner** p/ Google funcionar:
+1. **Setar o secret**: `supabase secrets set GOOGLE_MAPS_API_KEY=<chave> --project-ref evdjijvxllhrlkkhrcdi` (classifier bloqueou eu setar; é teu).
+2. **Mudar a restrição da chave** no Google Cloud Console de **HTTP referrer → "Nenhuma" (ou IP)** — o Geocoding web service **rejeita chaves referrer-restricted** (erro `REQUEST_DENIED`), mesmo server-side. Como agora a chave é secret (não vai no bundle), restrição "Nenhuma" é segura. Manter limite à **Geocoding API** + **cota 10k/mês**.
+
+Enquanto isso, geocoding funciona via Nominatim. A `VITE_GOOGLE_MAPS_API_KEY` saiu do front (pode remover da Vercel).
+
+## Mudança de escopo (2026-06-27, pedido do owner)
+- **Técnicos não são usuários do app** (nem interno nem de empresa). A empresa cadastra técnicos
+  como **registros** (aba "Técnicos" → tabela `tecnicos`) só p/ indicar o responsável pelo serviço.
+  Quem **designa o técnico, envia execução (fotos/assinatura) e atualiza status = `empresa_admin`**.
+  Rota `/tecnico` removida; papéis `tecnico_*` caem em `/sem-acesso` se logarem; convite (UsuariosPage)
+  não oferece mais técnico. Enum `user_role` mantém os papéis (sem migration); só o app parou de usá-los.
+- **Módulos Contratos e Equipamentos removidos** da UI (nav + rotas + páginas deletadas). Tabelas/serviços
+  permanecem no banco/código (dead) — reativar é só re-add das páginas/rotas.

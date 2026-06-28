@@ -10,24 +10,24 @@ import { useAuth } from "@/hooks/useAuth";
 import { listarEmpresas, type Empresa } from "@/services/cadastros";
 import { listarUsuariosTenant, convidarUsuario, type Usuario } from "@/services/usuarios";
 
+// Técnicos não são usuários do app — a empresa os cadastra como registros
+// (aba "Técnicos"). Aqui só papéis com login.
 const ROLE_LABEL: Record<string, string> = {
   admin_secretaria: "Admin da Secretaria",
   gestor_secretaria: "Gestor da Secretaria",
   responsavel_unidade: "Responsável de Unidade",
-  tecnico_secretaria: "Técnico interno",
   empresa_admin: "Admin de Empresa",
-  tecnico_empresa: "Técnico de Empresa",
 };
 
 const ROLES_CONVIDAVEIS: Role[] = [
-  "gestor_secretaria", "responsavel_unidade", "tecnico_secretaria", "empresa_admin", "tecnico_empresa",
+  "gestor_secretaria", "responsavel_unidade", "empresa_admin",
 ];
-const ROLES_EMPRESA = new Set<Role>(["empresa_admin", "tecnico_empresa"]);
+const ROLES_EMPRESA = new Set<Role>(["empresa_admin"]);
 
 const schema = z.object({
   nome: z.string().min(3, "Informe o nome"),
   email: z.string().email("E-mail inválido"),
-  role: z.enum(["gestor_secretaria", "responsavel_unidade", "tecnico_secretaria", "empresa_admin", "tecnico_empresa"]),
+  role: z.enum(["gestor_secretaria", "responsavel_unidade", "empresa_admin"]),
   empresa_id: z.string().optional(),
 });
 

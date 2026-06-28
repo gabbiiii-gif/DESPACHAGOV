@@ -9,8 +9,6 @@ const NAV = [
   { to: "/secretaria/mapa", label: "Mapa ao vivo" },
   { to: "/secretaria/unidades", label: "Unidades" },
   { to: "/secretaria/empresas", label: "Empresas" },
-  { to: "/secretaria/equipamentos", label: "Equipamentos" },
-  { to: "/secretaria/contratos", label: "Contratos" },
   { to: "/secretaria/usuarios", label: "Usuários", adminOnly: true },
 ];
 

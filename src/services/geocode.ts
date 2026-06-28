@@ -1,34 +1,25 @@
 // Geocoding de endereços → lat/lng.
-// Usa Google Geocoding se VITE_GOOGLE_MAPS_API_KEY estiver definido (mais
-// preciso); senão cai no Nominatim (OpenStreetMap, sem chave).
+// Tenta o Google via Edge Function `geocode` (a chave fica server-side, fora do
+// bundle); se não houver resultado, cai no Nominatim (OpenStreetMap, sem chave).
 // Uso esperado: pontual (botão no cadastro), não em massa.
+import { supabase } from "./supabase";
 
 export async function geocodeEndereco(query: string): Promise<{ lat: number; lng: number } | null> {
   const q = query.trim();
   if (!q) return null;
-  const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
-  if (key) {
-    try {
-      const r = await geocodeGoogle(q, key);
-      if (r) return r;
-    } catch {
-      // ignora e cai no fallback
+  // 1) Google via proxy server-side (não expõe a chave).
+  try {
+    const { data } = await supabase.functions.invoke<{ lat?: number; lng?: number } | null>("geocode", {
+      body: { q },
+    });
+    if (data && typeof data.lat === "number" && typeof data.lng === "number") {
+      return { lat: data.lat, lng: data.lng };
     }
+  } catch {
+    // ignora e cai no fallback
   }
+  // 2) Fallback Nominatim (grátis, sem chave).
   return geocodeNominatim(q);
-}
-
-async function geocodeGoogle(q: string, key: string): Promise<{ lat: number; lng: number } | null> {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?language=pt-BR&region=br&address=${encodeURIComponent(q)}&key=${key}`;
-  const resp = await fetch(url);
-  if (!resp.ok) return null;
-  const data = (await resp.json()) as {
-    status: string;
-    results: Array<{ geometry: { location: { lat: number; lng: number } } }>;
-  };
-  if (data.status !== "OK") return null;
-  const loc = data.results[0]?.geometry.location;
-  return loc ? { lat: loc.lat, lng: loc.lng } : null;
 }
 
 async function geocodeNominatim(q: string): Promise<{ lat: number; lng: number } | null> {

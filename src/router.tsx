@@ -3,7 +3,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RecoverPage } from "./pages/RecoverPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { HomeRedirect } from "./pages/HomeRedirect";
-import { PlaceholderDashboard } from "./pages/PlaceholderDashboard";
+import { SemAcessoPage } from "./pages/SemAcessoPage";
 import { PoliticaPrivacidadePage } from "./pages/PoliticaPrivacidadePage";
 import { PrivacidadePage } from "./pages/conta/PrivacidadePage";
 import { TenantsPage } from "./pages/superadmin/TenantsPage";
@@ -11,8 +11,6 @@ import { SecretariaShell } from "./components/layout/SecretariaShell";
 import { SuperadminTenantScope } from "./components/layout/SuperadminTenantScope";
 import { UnidadesPage } from "./pages/secretaria/UnidadesPage";
 import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
-import { EquipamentosPage } from "./pages/secretaria/EquipamentosPage";
-import { ContratosPage } from "./pages/secretaria/ContratosPage";
 import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
 import { PainelPage } from "./pages/secretaria/PainelPage";
 import { MapaPage } from "./pages/secretaria/MapaPage";
@@ -33,6 +31,7 @@ export const router = createBrowserRouter([
   { path: "/politica-privacidade", element: <PoliticaPrivacidadePage /> },
 
   { path: "/", element: <ProtectedRoute><HomeRedirect /></ProtectedRoute> },
+  { path: "/sem-acesso", element: <ProtectedRoute><SemAcessoPage /></ProtectedRoute> },
   { path: "/conta/privacidade", element: <ProtectedRoute><PrivacidadePage /></ProtectedRoute> },
 
   {
@@ -46,8 +45,6 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="unidades" replace /> },
       { path: "unidades", element: <UnidadesPage /> },
       { path: "empresas", element: <EmpresasPage /> },
-      { path: "equipamentos", element: <EquipamentosPage /> },
-      { path: "contratos", element: <ContratosPage /> },
       { path: "usuarios", element: <UsuariosPage /> },
     ],
   },
@@ -62,8 +59,6 @@ export const router = createBrowserRouter([
       { path: "mapa", element: <MapaPage /> },
       { path: "unidades", element: <UnidadesPage /> },
       { path: "empresas", element: <EmpresasPage /> },
-      { path: "equipamentos", element: <EquipamentosPage /> },
-      { path: "contratos", element: <ContratosPage /> },
       { path: "usuarios", element: <UsuariosPage /> },
     ],
   },
@@ -74,16 +69,12 @@ export const router = createBrowserRouter([
   },
   {
     path: "/empresa",
-    element: <ProtectedRoute roles={["empresa_admin", "tecnico_empresa"]}><EmpresaShell /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["empresa_admin"]}><EmpresaShell /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="/empresa/chamados" replace /> },
       { path: "chamados", element: <EmpresaChamadosPage /> },
       { path: "contrato", element: <ContratoPage /> },
-      { path: "tecnicos", element: <ProtectedRoute roles={["empresa_admin"]}><TecnicosPage /></ProtectedRoute> },
+      { path: "tecnicos", element: <TecnicosPage /> },
     ],
-  },
-  {
-    path: "/tecnico",
-    element: <ProtectedRoute roles={["tecnico_empresa", "tecnico_secretaria"]}><PlaceholderDashboard titulo="Execução em campo" proximo="App do técnico com fotos e assinatura chega no Sprint 4." /></ProtectedRoute>,
   },
 ]);

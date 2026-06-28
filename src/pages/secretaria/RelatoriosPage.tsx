@@ -30,6 +30,14 @@ function limitesMes(mes: string): { de: string; ate: string } {
   const ultimo = new Date(a!, m!, 0).getDate();
   return { de: `${mes}-01`, ate: `${mes}-${String(ultimo).padStart(2, "0")}` };
 }
+// Evita "Rua RUA CUMARU": só prefixa o tipo se o logradouro já não começar com ele.
+function montarLogradouro(tipo: string | null | undefined, logradouro: string | null | undefined): string {
+  const log = (logradouro ?? "").trim();
+  const t = (tipo ?? "").trim();
+  if (!log) return t;
+  if (!t) return log;
+  return log.toLowerCase().startsWith(t.toLowerCase()) ? log : `${t} ${log}`;
+}
 
 export function RelatoriosPage() {
   const { tenantId, profile } = useAuth();
@@ -86,8 +94,12 @@ export function RelatoriosPage() {
       } as const;
     }
     if (tipo === "unidade") {
-      const endereco = u ? [u.logradouro_tipo, u.logradouro, u.numero].filter(Boolean).join(" ") : "";
-      const info = [endereco, u?.bairro, u?.diretora_nome ? `Diretora: ${u.diretora_nome}` : ""].filter(Boolean).join(" · ");
+      const logr = montarLogradouro(u?.logradouro_tipo, u?.logradouro);
+      const endereco = [logr, u?.numero].filter(Boolean).join(", ");
+      const diretora = u?.diretora_nome
+        ? `Diretora: ${u.diretora_nome}${u.diretora_telefone ? ` (${u.diretora_telefone})` : ""}`
+        : "";
+      const info = [endereco, u?.bairro, diretora].filter(Boolean).join(" · ");
       return {
         tipo, titulo: "Relatório por unidade",
         subtitulo: "Detalhamento dos chamados de manutenção da unidade no período selecionado.",

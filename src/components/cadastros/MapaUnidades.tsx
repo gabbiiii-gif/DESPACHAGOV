@@ -31,20 +31,34 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
       maxZoom: 19,
     });
 
-    // Camada satélite (Esri World Imagery — grátis, sem chave) + rótulos de
-    // ruas/lugares por cima, igual ao modo híbrido do Google Maps.
-    const satImagem = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      { attribution: "Imagery © Esri, Maxar, Earthstar Geographics", maxZoom: 19 },
-    );
-    const satRotulos = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-      { maxZoom: 19 },
-    );
-    const satelite = L.layerGroup([satImagem, satRotulos]);
+    // Satélite do Google (lyrs=y = híbrido: imagem + ruas/rótulos). Melhor
+    // cobertura em Altamira/Amazônia que o Esri.
+    const satelite = L.tileLayer("https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+      subdomains: ["mt0", "mt1", "mt2", "mt3"],
+      attribution: "Imagery © Google",
+      maxZoom: 20,
+    });
 
-    satelite.addTo(map); // satélite por padrão
-    L.control.layers({ "Satélite": satelite, "Ruas": ruas }, undefined, { position: "topright" }).addTo(map);
+    // Esri World Imagery (grátis, sem chave) — alternativa; cobertura irregular
+    // no interior da Amazônia.
+    const satEsri = L.layerGroup([
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: "Imagery © Esri, Maxar, Earthstar Geographics",
+        maxZoom: 19,
+        maxNativeZoom: 17,
+      }),
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 19,
+        maxNativeZoom: 17,
+      }),
+    ]);
+
+    satelite.addTo(map); // satélite (Google) por padrão
+    L.control.layers(
+      { "Satélite": satelite, "Satélite (Esri)": satEsri, "Ruas": ruas },
+      undefined,
+      { position: "topright" },
+    ).addTo(map);
 
     layerRef.current = L.layerGroup().addTo(map);
     mapRef.current = map;

@@ -1,36 +1,56 @@
 import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { Loader } from "@googlemaps/js-api-loader";
 import { supabase } from "@/services/supabase";
 import { listarChamadosAtivosComGeo, type ChamadoAtivoGeo } from "@/services/chamados";
 import { URGENCIA_META, STATUS_META, type Urgencia, type Status } from "@/lib/chamados";
 
-const CENTRO_ALTAMIRA: [number, number] = [-3.2031, -52.2095];
+const CENTRO_ALTAMIRA = { lat: -3.2031, lng: -52.2095 };
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+
+// Normaliza qualquer cor CSS (inclusive var(--...) e oklch) para rgb(), que o
+// Google Maps aceita em ícones.
+function corCss(valor: string): string {
+  const el = document.createElement("span");
+  el.style.color = valor;
+  document.body.appendChild(el);
+  const c = getComputedStyle(el).color;
+  el.remove();
+  return c || "#2563eb";
+}
 
 // Mapa ao vivo: plota chamados em andamento na localização da unidade.
 // Atualiza via Supabase Realtime — quando o chamado é concluído/cancelado,
 // sai da lista de ativos e o ponto some.
 export function MapaChamados({ tenantId }: { tenantId: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const layerRef = useRef<L.LayerGroup | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const infoRef = useRef<google.maps.InfoWindow | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
+  const [pronto, setPronto] = useState(false);
   const [ativos, setAtivos] = useState<ChamadoAtivoGeo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Init do mapa.
+  // Init do mapa (SDK do Google).
   useEffect(() => {
-    if (!ref.current || mapRef.current) return;
-    const map = L.map(ref.current).setView(CENTRO_ALTAMIRA, 12);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-      maxZoom: 19,
-    }).addTo(map);
-    layerRef.current = L.layerGroup().addTo(map);
-    mapRef.current = map;
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
+    if (!API_KEY) return;
+    let cancelado = false;
+    const loader = new Loader({ apiKey: API_KEY, version: "weekly" });
+    Promise.all([loader.importLibrary("maps"), loader.importLibrary("marker")])
+      .then(() => {
+        if (cancelado || !ref.current || mapRef.current) return;
+        mapRef.current = new google.maps.Map(ref.current, {
+          center: CENTRO_ALTAMIRA,
+          zoom: 12,
+          mapTypeId: "hybrid",
+          mapTypeControl: true,
+          streetViewControl: true,
+          fullscreenControl: true,
+        });
+        infoRef.current = new google.maps.InfoWindow();
+        setPronto(true);
+      })
+      .catch(() => { if (!cancelado) setErro("Falha ao carregar o Google Maps."); });
+    return () => { cancelado = true; };
   }, []);
 
   // Carga inicial + assinatura Realtime (refetch a cada mudança no tenant).
@@ -63,23 +83,55 @@ export function MapaChamados({ tenantId }: { tenantId: string }) {
 
   // Redesenha os marcadores quando a lista muda.
   useEffect(() => {
-    const layer = layerRef.current;
     const map = mapRef.current;
-    if (!layer || !map) return;
-    layer.clearLayers();
-    const pontos: [number, number][] = [];
+    if (!pronto || !map) return;
+
+    markersRef.current.forEach((m) => m.setMap(null));
+    markersRef.current = [];
+
+    const bounds = new google.maps.LatLngBounds();
     for (const c of ativos) {
-      const cor = URGENCIA_META[c.urgencia as Urgencia]?.cor ?? "var(--color-azul-info)";
-      const ll: [number, number] = [c.lat, c.lng];
-      pontos.push(ll);
-      L.circleMarker(ll, { radius: 9, color: "#fff", weight: 2, fillColor: cor, fillOpacity: 0.95 })
-        .bindPopup(
-          `<strong>${c.unidade_nome}</strong><br>${c.numero_protocolo}<br>${STATUS_META[c.status as Status]?.label ?? c.status} · ${URGENCIA_META[c.urgencia as Urgencia]?.label ?? c.urgencia}`,
-        )
-        .addTo(layer);
+      const cor = corCss(URGENCIA_META[c.urgencia as Urgencia]?.cor ?? "var(--color-azul-info)");
+      const pos = { lat: c.lat, lng: c.lng };
+      const marker = new google.maps.Marker({
+        position: pos,
+        map,
+        title: c.unidade_nome,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 9,
+          fillColor: cor,
+          fillOpacity: 0.95,
+          strokeColor: "#fff",
+          strokeWeight: 2,
+        },
+      });
+      marker.addListener("click", () => {
+        const div = document.createElement("div");
+        const t = document.createElement("strong");
+        t.textContent = c.unidade_nome;
+        div.appendChild(t);
+        const det = `${c.numero_protocolo} · ${STATUS_META[c.status as Status]?.label ?? c.status} · ${URGENCIA_META[c.urgencia as Urgencia]?.label ?? c.urgencia}`;
+        div.appendChild(document.createElement("br"));
+        div.appendChild(document.createTextNode(det));
+        infoRef.current?.setContent(div);
+        infoRef.current?.open(map, marker);
+      });
+      markersRef.current.push(marker);
+      bounds.extend(pos);
     }
-    if (pontos.length) map.fitBounds(pontos, { padding: [50, 50], maxZoom: 14 });
-  }, [ativos]);
+
+    if (ativos.length === 1) {
+      map.setCenter(bounds.getCenter());
+      map.setZoom(15);
+    } else if (ativos.length > 1) {
+      map.fitBounds(bounds, 56);
+    }
+  }, [ativos, pronto]);
+
+  const aviso = !API_KEY
+    ? "Mapa indisponível: defina VITE_GOOGLE_MAPS_API_KEY no ambiente."
+    : erro;
 
   return (
     <div>
@@ -89,8 +141,13 @@ export function MapaChamados({ tenantId }: { tenantId: string }) {
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-verde-sucesso" /> tempo real
         </span>
       </div>
-      {erro && <p className="mb-2 text-sm text-vermelho-critico">{erro}</p>}
-      <div ref={ref} className="relative z-0 isolate h-[28rem] w-full overflow-hidden rounded-xl border border-cinza-borda" aria-label="Mapa ao vivo de chamados" />
+      {aviso ? (
+        <div className="flex h-[35rem] w-full items-center justify-center rounded-xl border border-cinza-borda bg-cinza-fundo p-4 text-center text-sm text-cinza-secundario">
+          {aviso}
+        </div>
+      ) : (
+        <div ref={ref} className="relative z-0 isolate h-[35rem] w-full overflow-hidden rounded-xl border border-cinza-borda" aria-label="Mapa ao vivo de chamados" />
+      )}
     </div>
   );
 }

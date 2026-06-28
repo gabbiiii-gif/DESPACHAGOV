@@ -79,11 +79,11 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
     : erro;
   if (aviso) {
     return (
-      <div className="flex h-72 w-full items-center justify-center rounded-xl border border-cinza-borda bg-cinza-fundo p-4 text-center text-sm text-cinza-secundario sm:h-80 lg:h-96">
+      <div className="flex h-[22.5rem] w-full items-center justify-center rounded-xl border border-cinza-borda bg-cinza-fundo p-4 text-center text-sm text-cinza-secundario sm:h-[25rem] lg:h-[30rem]">
         {aviso}
       </div>
     );
   }
 
-  return <div ref={ref} className="relative z-0 isolate h-72 w-full overflow-hidden rounded-xl border border-cinza-borda sm:h-80 lg:h-96" aria-label="Mapa de unidades" />;
+  return <div ref={ref} className="relative z-0 isolate h-[22.5rem] w-full overflow-hidden rounded-xl border border-cinza-borda sm:h-[25rem] lg:h-[30rem]" aria-label="Mapa de unidades" />;
 }

@@ -105,7 +105,7 @@ export function UsuariosPage() {
 
       {carregando ? <p className="text-cinza-secundario">Carregando…</p> : (
         <Card className="overflow-x-auto p-0">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-cinza-fundo text-left text-cinza-secundario">
               <tr>
                 <th className="px-4 py-2.5 font-medium">Nome</th>

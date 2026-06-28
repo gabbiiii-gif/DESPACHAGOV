@@ -3,7 +3,7 @@ import { NavLink, Outlet, useParams, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
-import { useEntrada } from "@/hooks/useEntrada";
+import { PageTransition } from "@/components/visual/PageTransition";
 import { supabase } from "@/services/supabase";
 
 // Superadmin gerindo os cadastros de UMA secretaria (tenant em foco).
@@ -17,7 +17,6 @@ const LABEL: Record<string, string> = {
 export function SuperadminTenantScope() {
   const { tenantId: param } = useParams();
   const { tenantId, setFocoTenant, signOut } = useAuth();
-  const mainRef = useEntrada<HTMLElement>();
   const navigate = useNavigate();
   const [nome, setNome] = useState<string | null>(null);
 
@@ -87,8 +86,8 @@ export function SuperadminTenantScope() {
             </Button>
           </div>
         </header>
-        <main key={param} ref={mainRef} className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-          <Outlet />
+        <main key={param} className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <PageTransition><Outlet /></PageTransition>
         </main>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import {
   Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -8,6 +9,8 @@ import { Card, Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import { listarChamados, type Chamado } from "@/services/chamados";
 import { listarUnidades, listarEmpresas, type Unidade, type Empresa } from "@/services/cadastros";
+import { listarUsuariosTenant } from "@/services/usuarios";
+import { passosOnboarding, onboardingCompleto, progressoOnboarding } from "@/lib/onboarding";
 import { STATUS, STATUS_META, URGENCIAS, URGENCIA_META } from "@/lib/chamados";
 import {
   contarPorStatus, contarPorUrgencia, taxaConclusao, tempoMedioConclusaoHoras, serieMensal,
@@ -35,6 +38,7 @@ export function PainelPage() {
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [nUsuarios, setNUsuarios] = useState(0);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -42,12 +46,13 @@ export function PainelPage() {
     let ativo = true;
     void (async () => {
       try {
-        const [ch, un, emp] = await Promise.all([
+        const [ch, un, emp, us] = await Promise.all([
           listarChamados(),
           listarUnidades(tenantId ?? undefined),
           listarEmpresas(tenantId ?? undefined),
+          listarUsuariosTenant(tenantId ?? undefined),
         ]);
-        if (ativo) { setChamados(ch); setUnidades(un); setEmpresas(emp); }
+        if (ativo) { setChamados(ch); setUnidades(un); setEmpresas(emp); setNUsuarios(us.length); }
       } catch (e) {
         if (ativo) setErro(e instanceof Error ? e.message : "Erro");
       } finally {
@@ -68,6 +73,7 @@ export function PainelPage() {
 
   const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
   const nomeEmpresa = (id: string | null) => (id ? empresas.find((e) => e.id === id)?.razao_social ?? "—" : "—");
+  const contagens = { unidades: unidades.length, empresas: empresas.length, usuarios: nUsuarios };
 
   function exportarCsv() {
     const linhas = linhasRelatorio(chamados, nomeUnidade, nomeEmpresa);
@@ -104,6 +110,32 @@ export function PainelPage() {
       </div>
 
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
+
+      {!carregando && !onboardingCompleto(contagens) && (
+        <Card className="mb-4 border-azul-principal/30 bg-azul-principal/5">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold text-cinza-texto">Primeiros passos</h2>
+            <span className="text-xs text-cinza-secundario">
+              {progressoOnboarding(contagens).feitos}/{progressoOnboarding(contagens).total} concluídos
+            </span>
+          </div>
+          <ul className="space-y-2">
+            {passosOnboarding(contagens).map((p) => (
+              <li key={p.chave} className="flex items-start gap-2.5 text-sm">
+                <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${p.concluido ? "bg-verde-sucesso text-white" : "border border-cinza-borda text-cinza-secundario"}`}>
+                  {p.concluido ? "✓" : ""}
+                </span>
+                <div>
+                  <Link to={p.to} className={`font-medium ${p.concluido ? "text-cinza-secundario line-through" : "text-azul-principal hover:underline"}`}>
+                    {p.titulo}
+                  </Link>
+                  <p className="text-xs text-cinza-secundario">{p.descricao}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {carregando ? (
         <p className="text-cinza-secundario">Carregando…</p>

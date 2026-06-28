@@ -10,6 +10,18 @@ export async function listarTenants(): Promise<Tenant[]> {
   return data ?? [];
 }
 
+// Exclusão de tenant roda na Edge Function (service_role: remove usuários do Auth
+// e dispara o cascade dos dados públicos). Apenas superadmin.
+export async function deletarTenant(tenantId: string): Promise<{ error: string | null }> {
+  const { data, error } = await supabase.functions.invoke<{ ok: boolean; error?: string }>(
+    "delete-tenant",
+    { body: { tenant_id: tenantId } },
+  );
+  if (error) return { error: error.message };
+  if (!data?.ok) return { error: data?.error ?? "Falha ao excluir" };
+  return { error: null };
+}
+
 export interface NovoTenantInput {
   nome_secretaria: string;
   cnpj?: string | undefined;

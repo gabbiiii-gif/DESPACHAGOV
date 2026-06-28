@@ -11,7 +11,7 @@ Verde local: `npm run build` ✓, `eslint .` ✓, `vitest run` 39 passed (8 file
 
 Pós-sprint-4 já no ar (ver `docs/sprints/sprint-5.md`): e-mail transacional por evento (`notify-event`), abertura sem urgência + anexo obrigatório + triagem, empresa cadastra próprios técnicos, superadmin gere cadastros dentro de um tenant, **PWA offline na abertura** (outbox IndexedDB + sync ao reconectar).
 
-Sprints 5 e **6 concluídos** (local). Sprint 6 = painel Secretaria (KPIs + Recharts + relatórios CSV/PDF em `/secretaria/painel`). Push nativo excluído pelo owner. Próximo: Sprint 7 (Agente IA).
+Sprints 5–7 **no ar** (deploy 2026-06-27): Sprint 7 = agente de triagem IA (`ai-agent`, Claude Sonnet, rate-limit 500/tenant/mês, migrations 0012/0013) + exclusão de Secretaria pelo superadmin (`delete-tenant`). ⚠️ **`ANTHROPIC_API_KEY` não está nos secrets** → `ai-agent` retorna 503 até `supabase secrets set ANTHROPIC_API_KEY=…`. Push nativo excluído pelo owner.
 
 ## Stack / decisões travadas
 - React 19 + Vite 6 + TS estrito + Tailwind v4 (CSS-first, `@theme`) + PWA. Supabase (Postgres+Auth+Realtime+Storage+Edge Functions). Leaflet, Recharts (sprint 6), qrcode, papaparse, html2pdf.js.
@@ -19,7 +19,7 @@ Sprints 5 e **6 concluídos** (local). Sprint 6 = painel Secretaria (KPIs + Rech
 - Urgência: `baixa/media/alta/critica`. Status chamado: `aberto→atribuido→em_campo→concluido` + `cancelado`.
 
 ## Infra
-- **Supabase**: projeto `evdjijvxllhrlkkhrcdi` (sa-east-1). Migrations até `0011`. Edge Functions `create-tenant`, `invite-user` (v5), `notify-event` (`verify_jwt=false`, secret `NOTIFY_WEBHOOK_SECRET`). Database Webhook em `chamado_eventos` (INSERT) → `notify-event`. Buckets privados `contratos`, `chamado-anexos`.
+- **Supabase**: projeto `evdjijvxllhrlkkhrcdi` (sa-east-1). Migrations até `0013`. Edge Functions `create-tenant`, `invite-user` (v5), `notify-event` (`verify_jwt=false`), `ai-agent` (verify_jwt=true; precisa `ANTHROPIC_API_KEY`), `delete-tenant` (verify_jwt=true, superadmin). Database Webhook em `chamado_eventos` (INSERT) → `notify-event`. Buckets privados `contratos`, `chamado-anexos`.
 - **Vercel**: projeto `despachagov`, deploy `vercel deploy --prod --yes`. Domínio www.despachagov.com (apex 308→www).
 - **Resend**: domínio `despachagov.com` verificado; Custom SMTP do Supabase Auth aponta pro Resend; templates na paleta azul/laranja (`scripts/apply-email-templates.mjs`).
 - **GitHub**: `gabbiiii-gif/DESPACHAGOV` (privado).
@@ -48,19 +48,32 @@ Superadmin: `biel.atm11@gmail.com`. 4 tenants de teste (semed/sesma/semma/semaf-
 ## Próximos sprints (ordem)
 - **5** ✓ concluído: e-mail transacional por evento + PWA offline na abertura. Push nativo (Capacitor/FCM) excluído pelo owner.
 - **6** ✓ concluído (local): painel Secretaria — KPIs + Recharts + relatórios PDF/CSV em `/secretaria/painel`.
-- **7**: Agente IA (Edge Function `ai-agent`, Claude Sonnet; campos `ai_urgencia_sugerida`/`ai_categoria` já existem).
-- **8** (crítico p/ faturamento): relatórios mensais + `sla_log` + painel "Meu Contrato".
-- **9** LGPD/segurança · **10** Beta SEMED Altamira.
+- **7** código pronto (local; falta deploy): Agente IA (`ai-agent`, Claude Sonnet, on-demand na triagem) + exclusão de Secretaria (`delete-tenant`). Migration 0012 (rate-limit) + deploy das functions pendentes.
+- **8** ✓ (local): SLA (`src/lib/sla.ts`) + painel "Meu Contrato" da empresa (`/empresa/contrato`, KPIs + gráfico + CSV). `sla_log` persistido ficou como melhoria futura (hoje calcula on-the-fly de `chamados`).
+- **9** ✓ (local): tela "Meus dados" (`/conta/privacidade`, export JSON portabilidade) + Política pública (`/politica-privacidade`) + headers de segurança no `vercel.json` (HSTS/nosniff/frame-deny/referrer/permissions). Exclusão = mediada pelo admin (futuro: self-service); CSP estrita = futuro.
+- **10** ✓ (local): onboarding "Primeiros passos" no painel (checklist unidades→empresas→equipe) + `invite-user` rejeita papéis de técnico (defesa server-side). Roadmap 0–10 entregue.
 
 ## Gotchas
 - TS `exactOptionalPropertyTypes`: campos opcionais em Insert/props precisam de `| undefined` explícito.
 - eslint react-hooks v7 `set-state-in-effect`: usar IIFE async com guard `ativo`, setState só após `await`.
 - Path do projeto tem espaços/acentos/OneDrive — usar caminhos absolutos.
 
-## Geocoding (lat/lng no cadastro de unidade)
-O botão "Buscar coordenadas pelo endereço" usa **Google Geocoding** se `VITE_GOOGLE_MAPS_API_KEY` existir; senão cai no **Nominatim** (grátis, sem chave).
-- **Chave já configurada no `.env.local`** (2026-06-27). Como `VITE_*` vai embutida no bundle do front, a chave **é pública por natureza** — a proteção real é restrição + cota (abaixo). Falta replicar na Vercel.
-- Pendências p/ produção segura:
-  1. **Restringir por HTTP referrer** no Google Cloud Console: `https://www.despachagov.com/*` (+ `http://localhost:*` p/ dev) e limitar à **Geocoding API**.
-  2. **Cota dura em 10.000/mês** (Geocoding → Quotas) → estoura = falha, não cobra. + alerta de orçamento.
-  3. Pôr `VITE_GOOGLE_MAPS_API_KEY` nas env vars da Vercel; `vercel deploy --prod`.
+## Geocoding (lat/lng no cadastro de unidade) — PROXY server-side
+O botão "Buscar coordenadas pelo endereço" chama a Edge Function **`geocode`** (proxy do
+Google, chave server-side fora do bundle); se vazio, cai no **Nominatim** (grátis, sem chave).
+`src/services/geocode.ts` → `supabase.functions.invoke("geocode")` → Nominatim fallback.
+
+Estado (2026-06-27): function deployada. Falta **2 passos do owner** p/ Google funcionar:
+1. **Setar o secret**: `supabase secrets set GOOGLE_MAPS_API_KEY=<chave> --project-ref evdjijvxllhrlkkhrcdi` (classifier bloqueou eu setar; é teu).
+2. **Mudar a restrição da chave** no Google Cloud Console de **HTTP referrer → "Nenhuma" (ou IP)** — o Geocoding web service **rejeita chaves referrer-restricted** (erro `REQUEST_DENIED`), mesmo server-side. Como agora a chave é secret (não vai no bundle), restrição "Nenhuma" é segura. Manter limite à **Geocoding API** + **cota 10k/mês**.
+
+Enquanto isso, geocoding funciona via Nominatim. A `VITE_GOOGLE_MAPS_API_KEY` saiu do front (pode remover da Vercel).
+
+## Mudança de escopo (2026-06-27, pedido do owner)
+- **Técnicos não são usuários do app** (nem interno nem de empresa). A empresa cadastra técnicos
+  como **registros** (aba "Técnicos" → tabela `tecnicos`) só p/ indicar o responsável pelo serviço.
+  Quem **designa o técnico, envia execução (fotos/assinatura) e atualiza status = `empresa_admin`**.
+  Rota `/tecnico` removida; papéis `tecnico_*` caem em `/sem-acesso` se logarem; convite (UsuariosPage)
+  não oferece mais técnico. Enum `user_role` mantém os papéis (sem migration); só o app parou de usá-los.
+- **Módulos Contratos e Equipamentos removidos** da UI (nav + rotas + páginas deletadas). Tabelas/serviços
+  permanecem no banco/código (dead) — reativar é só re-add das páginas/rotas.

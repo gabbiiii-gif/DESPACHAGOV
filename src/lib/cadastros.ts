@@ -1,17 +1,51 @@
 // Schemas Zod + helpers puros dos cadastros base (Sprint 2).
 import { z } from "zod";
 
+export const LOGRADOURO_TIPOS = [
+  "Rua", "Avenida", "Travessa", "Alameda", "Rodovia", "Estrada", "Praça", "Quadra", "Outro",
+] as const;
+
 export const unidadeSchema = z.object({
-  nome: z.string().min(2, "Nome obrigatório"),
+  nome: z.string().min(2, "Nome da escola obrigatório"),
   codigo_inep: z.string().optional(),
-  endereco: z.string().optional(),
+  email: z.string().email("E-mail inválido").optional().or(z.literal("")),
+  // Contatos da escola
+  diretora_nome: z.string().optional(),
+  diretora_telefone: z.string().optional(),
+  secretaria_nome: z.string().optional(),
+  secretaria_telefone: z.string().optional(),
+  coordenadora_nome: z.string().optional(),
+  coordenadora_telefone: z.string().optional(),
+  // Endereço estruturado (geocodificação precisa)
+  logradouro_tipo: z.string().optional(),
+  logradouro: z.string().optional(),
+  numero: z.string().optional(),
   bairro: z.string().optional(),
+  cep: z.string().optional(),
+  cidade: z.string().optional(),
   zona: z.enum(["urbana", "rural"]).optional(),
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),
-  responsavel: z.string().optional(),
 });
 export type UnidadeForm = z.infer<typeof unidadeSchema>;
+
+// Monta o endereço de busca p/ geocoding a partir dos campos estruturados.
+export interface EnderecoUnidade {
+  logradouro_tipo?: string | null;
+  logradouro?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cep?: string | null;
+  cidade?: string | null;
+  nome?: string | null;
+}
+export function enderecoParaGeocode(u: EnderecoUnidade): string {
+  const rua = [u.logradouro_tipo, u.logradouro].map((p) => (p ?? "").trim()).filter(Boolean).join(" ");
+  const linha1 = [rua, (u.numero ?? "").trim()].filter(Boolean).join(", ");
+  const partes = [linha1, u.bairro, u.cidade, u.cep].map((p) => (p ?? "").trim()).filter(Boolean);
+  const base = partes.join(", ");
+  return base ? `${base}, Brasil` : (u.nome ?? "").trim();
+}
 
 export const empresaSchema = z.object({
   razao_social: z.string().min(2, "Razão social obrigatória"),

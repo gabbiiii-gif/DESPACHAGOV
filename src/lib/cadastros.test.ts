@@ -24,3 +24,22 @@ describe("normalizarLinhaUnidade", () => {
     }
   });
 });
+
+import { enderecoParaGeocode } from "./cadastros";
+
+describe("enderecoParaGeocode", () => {
+  it("monta endereço estruturado com Brasil no fim", () => {
+    const q = enderecoParaGeocode({
+      logradouro_tipo: "Rua", logradouro: "das Flores", numero: "123",
+      bairro: "Centro", cidade: "Altamira", cep: "68370-000",
+    });
+    expect(q).toBe("Rua das Flores, 123, Centro, Altamira, 68370-000, Brasil");
+  });
+  it("ignora campos vazios", () => {
+    expect(enderecoParaGeocode({ logradouro_tipo: "Avenida", logradouro: "Brasil", cidade: "Altamira" }))
+      .toBe("Avenida Brasil, Altamira, Brasil");
+  });
+  it("cai no nome quando não há endereço", () => {
+    expect(enderecoParaGeocode({ nome: "EMEF Teste" })).toBe("EMEF Teste");
+  });
+});

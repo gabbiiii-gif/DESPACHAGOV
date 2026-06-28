@@ -13,6 +13,7 @@ import {
   SUGESTAO_SCHEMA,
   validarSugestao,
 } from "../../../src/lib/aiTriagem.ts";
+import { comCaptura, logErro } from "../_shared/erros.ts";
 
 const LIMITE_MENSAL = 500;
 const MODELO = "claude-sonnet-4-6";
@@ -30,7 +31,7 @@ function json(obj: unknown, status: number): Response {
   });
 }
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("ai-agent", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -101,7 +102,10 @@ Deno.serve(async (req) => {
       messages: [{ role: "user", content: promptUsuario(chamado.descricao as string) }],
     }),
   });
-  if (!resp.ok) return json({ error: `IA HTTP ${resp.status}` }, 502);
+  if (!resp.ok) {
+    await logErro({ fonte: "ai-agent", nivel: "warn", tenant_id: tenantId, mensagem: `Anthropic HTTP ${resp.status}`, contexto: { chamadoId } });
+    return json({ error: `IA HTTP ${resp.status}` }, 502);
+  }
 
   const data = (await resp.json()) as { content?: Array<{ type: string; text?: string }> };
   const bloco = (data.content ?? []).find((b) => b.type === "text");
@@ -120,4 +124,4 @@ Deno.serve(async (req) => {
     .eq("id", chamadoId);
 
   return json({ ok: true, sugestao }, 200);
-});
+}));

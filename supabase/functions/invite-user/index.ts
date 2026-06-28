@@ -4,6 +4,7 @@
 // empresa_id do mesmo tenant). Técnicos NÃO são usuários do app — a empresa os
 // cadastra como registros (tabela tecnicos); papéis tecnico_* são rejeitados aqui.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { comCaptura } from "../_shared/erros.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -16,7 +17,7 @@ const json = (b: unknown, status = 200) =>
 const ROLES_SECRETARIA = new Set(["gestor_secretaria", "responsavel_unidade"]);
 const ROLES_EMPRESA = new Set(["empresa_admin"]);
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("invite-user", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -113,4 +114,4 @@ Deno.serve(async (req) => {
   }
 
   return json({ ok: true, user_id: created.user.id, email_sent: emailSent, action_link: emailSent ? null : actionLink });
-});
+}));

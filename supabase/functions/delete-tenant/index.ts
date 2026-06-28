@@ -6,6 +6,7 @@
 // Obs.: arquivos no Storage (buckets contratos/chamado-anexos) NÃO são cobertos
 // pelo cascade — limpeza de Storage fica como melhoria futura.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { comCaptura } from "../_shared/erros.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -15,7 +16,7 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("delete-tenant", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -57,4 +58,4 @@ Deno.serve(async (req) => {
   }
 
   return json({ ok: true, usuarios_removidos: usuariosRemovidos });
-});
+}));

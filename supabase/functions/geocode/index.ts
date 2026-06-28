@@ -2,6 +2,8 @@
 // Proxy server-side do Google Geocoding. A chave (GOOGLE_MAPS_API_KEY) fica como
 // secret do projeto — NÃO vai no bundle do front. verify_jwt=true: só usuário
 // autenticado geocodifica. Retorna { lat, lng } ou null (front cai no Nominatim).
+import { comCaptura, logErro } from "../_shared/erros.ts";
+
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -10,7 +12,7 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("geocode", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -39,7 +41,8 @@ Deno.serve(async (req) => {
     if (data.status !== "OK") return json(null);
     const loc = data.results?.[0]?.geometry.location;
     return json(loc ? { lat: loc.lat, lng: loc.lng } : null);
-  } catch {
+  } catch (e) {
+    await logErro({ fonte: "geocode", nivel: "warn", mensagem: e instanceof Error ? e.message : "fetch falhou" });
     return json(null);
   }
-});
+}));

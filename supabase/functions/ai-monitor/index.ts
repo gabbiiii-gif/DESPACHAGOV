@@ -10,6 +10,7 @@ import {
   validarAnalise,
   type ErroRegistro,
 } from "../../../src/lib/monitor.ts";
+import { comCaptura, logErro } from "../_shared/erros.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -21,7 +22,7 @@ const json = (b: unknown, status = 200) =>
 
 const MODELO = "claude-sonnet-4-6";
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("ai-monitor", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -63,7 +64,10 @@ Deno.serve(async (req) => {
       messages: [{ role: "user", content: promptErros(grupos) }],
     }),
   });
-  if (!resp.ok) return json({ error: `IA HTTP ${resp.status}` }, 502);
+  if (!resp.ok) {
+    await logErro({ fonte: "ai-monitor", nivel: "warn", mensagem: `Anthropic HTTP ${resp.status}` });
+    return json({ error: `IA HTTP ${resp.status}` }, 502);
+  }
 
   const data = (await resp.json()) as { content?: Array<{ type: string; text?: string }> };
   const bloco = (data.content ?? []).find((b) => b.type === "text");
@@ -77,4 +81,4 @@ Deno.serve(async (req) => {
   if (!analise) return json({ error: "resposta da IA inválida" }, 502);
 
   return json({ ok: true, total: erros.length, analise });
-});
+}));

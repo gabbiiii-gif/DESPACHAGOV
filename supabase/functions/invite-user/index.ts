@@ -1,7 +1,8 @@
 // Edge Function: invite-user
 // admin_secretaria convida usuário para o PRÓPRIO tenant (claim do JWT).
-// Papéis de secretaria (gestor/responsável/técnico interno) e de empresa
-// (empresa_admin/tecnico_empresa, exigem empresa_id do mesmo tenant).
+// Papéis de secretaria (gestor/responsável) e de empresa (empresa_admin, exige
+// empresa_id do mesmo tenant). Técnicos NÃO são usuários do app — a empresa os
+// cadastra como registros (tabela tecnicos); papéis tecnico_* são rejeitados aqui.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const cors = {
@@ -12,8 +13,8 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const ROLES_SECRETARIA = new Set(["gestor_secretaria", "responsavel_unidade", "tecnico_secretaria"]);
-const ROLES_EMPRESA = new Set(["empresa_admin", "tecnico_empresa"]);
+const ROLES_SECRETARIA = new Set(["gestor_secretaria", "responsavel_unidade"]);
+const ROLES_EMPRESA = new Set(["empresa_admin"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });

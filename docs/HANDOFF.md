@@ -51,7 +51,7 @@ Superadmin: `biel.atm11@gmail.com`. 4 tenants de teste (semed/sesma/semma/semaf-
 - **7** código pronto (local; falta deploy): Agente IA (`ai-agent`, Claude Sonnet, on-demand na triagem) + exclusão de Secretaria (`delete-tenant`). Migration 0012 (rate-limit) + deploy das functions pendentes.
 - **8** ✓ (local): SLA (`src/lib/sla.ts`) + painel "Meu Contrato" da empresa (`/empresa/contrato`, KPIs + gráfico + CSV). `sla_log` persistido ficou como melhoria futura (hoje calcula on-the-fly de `chamados`).
 - **9** ✓ (local): tela "Meus dados" (`/conta/privacidade`, export JSON portabilidade) + Política pública (`/politica-privacidade`) + headers de segurança no `vercel.json` (HSTS/nosniff/frame-deny/referrer/permissions). Exclusão = mediada pelo admin (futuro: self-service); CSP estrita = futuro.
-- **10** Beta SEMED Altamira.
+- **10** ✓ (local): onboarding "Primeiros passos" no painel (checklist unidades→empresas→equipe) + `invite-user` rejeita papéis de técnico (defesa server-side). Roadmap 0–10 entregue.
 
 ## Gotchas
 - TS `exactOptionalPropertyTypes`: campos opcionais em Insert/props precisam de `| undefined` explícito.

@@ -225,15 +225,11 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
         </>
       )}
 
-      {/* assinaturas */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 50, marginTop: 44 }}>
-        <div style={{ textAlign: "center" }}>
+      {/* assinatura */}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 50 }}>
+        <div style={{ textAlign: "center", width: 320 }}>
           <div style={{ borderTop: `1.5px solid ${C.oliva}`, paddingTop: 8, fontSize: 12.5, color: C.oliva, fontWeight: 700 }}>{secretariaNome}</div>
           <div style={{ fontSize: 11.5, color: C.cinza }}>Secretaria de Educação</div>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ borderTop: `1.5px solid ${C.oliva}`, paddingTop: 8, fontSize: 12.5, color: C.oliva, fontWeight: 700 }}>Controladoria Municipal</div>
-          <div style={{ fontSize: 11.5, color: C.cinza }}>Conferência e validação</div>
         </div>
       </div>
       <div style={{ marginTop: 36, paddingTop: 14, borderTop: `1px solid ${C.borda}`, display: "flex", justifyContent: "space-between", fontSize: 10.5, color: C.cinzaClaro }}>

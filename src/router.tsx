@@ -14,6 +14,7 @@ import { UnidadesPage } from "./pages/secretaria/UnidadesPage";
 import { EmpresasPage } from "./pages/secretaria/EmpresasPage";
 import { ChamadosPage } from "./pages/secretaria/ChamadosPage";
 import { PainelPage } from "./pages/secretaria/PainelPage";
+import { RelatoriosPage } from "./pages/secretaria/RelatoriosPage";
 import { MapaPage } from "./pages/secretaria/MapaPage";
 import { UsuariosPage } from "./pages/secretaria/UsuariosPage";
 import { UnidadeChamadosPage } from "./pages/unidade/UnidadeChamadosPage";
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/secretaria/painel" replace /> },
       { path: "painel", element: <PainelPage /> },
+      { path: "relatorios", element: <RelatoriosPage /> },
       { path: "chamados", element: <ChamadosPage /> },
       { path: "mapa", element: <MapaPage /> },
       { path: "unidades", element: <UnidadesPage /> },

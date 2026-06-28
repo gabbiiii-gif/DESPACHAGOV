@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 import { supabase } from "@/services/supabase";
 import { listarChamadosAtivosComGeo, type ChamadoAtivoGeo } from "@/services/chamados";
-import { URGENCIA_META, STATUS_META, type Urgencia, type Status } from "@/lib/chamados";
+import { URGENCIA_META, type Urgencia } from "@/lib/chamados";
 
 const CENTRO_ALTAMIRA = { lat: -3.2031, lng: -52.2095 };
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
 
-// Normaliza qualquer cor CSS (inclusive var(--...) e oklch) para rgb(), que o
-// Google Maps aceita em ícones.
+type OverlayCtor = new (pos: google.maps.LatLng, cor: string, c: ChamadoAtivoGeo) => google.maps.OverlayView;
+
+// Normaliza qualquer cor CSS (inclusive var(--...) e oklch) para rgb().
 function corCss(valor: string): string {
   const el = document.createElement("span");
   el.style.color = valor;
@@ -18,14 +19,87 @@ function corCss(valor: string): string {
   return c || "#2563eb";
 }
 
+// CSS dos pinos pulsantes + tooltip — injetado uma vez.
+function garantirCss() {
+  if (document.getElementById("dg-mapa-css")) return;
+  const s = document.createElement("style");
+  s.id = "dg-mapa-css";
+  s.textContent = `
+.dg-pin{position:absolute;transform:translate(-50%,-50%);width:16px;height:16px}
+.dg-pin-dot{position:absolute;inset:0;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+.dg-pin-pulse{position:absolute;inset:0;border-radius:9999px;animation:dg-pulse 1.6s ease-out infinite}
+@keyframes dg-pulse{0%{transform:scale(1);opacity:.65}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+.dg-tip{position:absolute;left:50%;bottom:150%;transform:translateX(-50%);display:none;background:#fff;color:#1f2937;border:1px solid #e5e7eb;border-radius:10px;padding:8px 11px;font-size:12px;line-height:1.4;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:50;pointer-events:none;min-width:170px;max-width:240px}
+.dg-tip strong{display:block;margin-bottom:2px;color:#111827}
+.dg-tip .dg-tip-l{color:#6b7280}
+.dg-pin:hover{z-index:60}
+.dg-pin:hover .dg-tip{display:block}
+@media (prefers-reduced-motion: reduce){.dg-pin-pulse{animation:none}}
+`;
+  document.head.appendChild(s);
+}
+
+function linha(rotulo: string, valor: string): HTMLDivElement {
+  const d = document.createElement("div");
+  const r = document.createElement("span");
+  r.className = "dg-tip-l";
+  r.textContent = `${rotulo}: `;
+  d.appendChild(r);
+  d.appendChild(document.createTextNode(valor));
+  return d;
+}
+
+// Cria a classe do overlay (precisa do google.maps já carregado).
+function criarOverlayCtor(): OverlayCtor {
+  return class PulseOverlay extends google.maps.OverlayView {
+    private pos: google.maps.LatLng;
+    private el: HTMLDivElement;
+    constructor(pos: google.maps.LatLng, cor: string, c: ChamadoAtivoGeo) {
+      super();
+      this.pos = pos;
+      const wrap = document.createElement("div");
+      wrap.className = "dg-pin";
+      const pulse = document.createElement("div");
+      pulse.className = "dg-pin-pulse";
+      pulse.style.background = cor;
+      const dot = document.createElement("div");
+      dot.className = "dg-pin-dot";
+      dot.style.background = cor;
+      const tip = document.createElement("div");
+      tip.className = "dg-tip";
+      const titulo = document.createElement("strong");
+      titulo.textContent = c.unidade_nome;
+      tip.appendChild(titulo);
+      tip.appendChild(linha("Diretora", c.diretora_nome ?? "—"));
+      tip.appendChild(linha("Contato", c.diretora_telefone ?? "—"));
+      tip.appendChild(linha("Urgência", URGENCIA_META[c.urgencia as Urgencia]?.label ?? c.urgencia ?? "—"));
+      wrap.append(pulse, dot, tip);
+      this.el = wrap;
+    }
+    onAdd() {
+      this.getPanes()?.overlayMouseTarget.appendChild(this.el);
+    }
+    draw() {
+      const p = this.getProjection()?.fromLatLngToDivPixel(this.pos);
+      if (p) {
+        this.el.style.left = `${p.x}px`;
+        this.el.style.top = `${p.y}px`;
+      }
+    }
+    onRemove() {
+      this.el.remove();
+    }
+  };
+}
+
 // Mapa ao vivo: plota chamados em andamento na localização da unidade.
 // Atualiza via Supabase Realtime — quando o chamado é concluído/cancelado,
 // sai da lista de ativos e o ponto some.
 export function MapaChamados({ tenantId }: { tenantId: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const infoRef = useRef<google.maps.InfoWindow | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const overlayCtorRef = useRef<OverlayCtor | null>(null);
+  const overlaysRef = useRef<google.maps.OverlayView[]>([]);
   const [pronto, setPronto] = useState(false);
   const [ativos, setAtivos] = useState<ChamadoAtivoGeo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
@@ -34,6 +108,7 @@ export function MapaChamados({ tenantId }: { tenantId: string }) {
   useEffect(() => {
     if (!API_KEY) return;
     let cancelado = false;
+    garantirCss();
     const loader = new Loader({ apiKey: API_KEY, version: "weekly" });
     Promise.all([loader.importLibrary("maps"), loader.importLibrary("marker")])
       .then(() => {
@@ -46,7 +121,7 @@ export function MapaChamados({ tenantId }: { tenantId: string }) {
           streetViewControl: true,
           fullscreenControl: true,
         });
-        infoRef.current = new google.maps.InfoWindow();
+        overlayCtorRef.current = criarOverlayCtor();
         setPronto(true);
       })
       .catch(() => { if (!cancelado) setErro("Falha ao carregar o Google Maps."); });
@@ -81,43 +156,22 @@ export function MapaChamados({ tenantId }: { tenantId: string }) {
     };
   }, [tenantId]);
 
-  // Redesenha os marcadores quando a lista muda.
+  // Redesenha os pinos pulsantes quando a lista muda.
   useEffect(() => {
     const map = mapRef.current;
-    if (!pronto || !map) return;
+    const Ctor = overlayCtorRef.current;
+    if (!pronto || !map || !Ctor) return;
 
-    markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
+    overlaysRef.current.forEach((o) => o.setMap(null));
+    overlaysRef.current = [];
 
     const bounds = new google.maps.LatLngBounds();
     for (const c of ativos) {
       const cor = corCss(URGENCIA_META[c.urgencia as Urgencia]?.cor ?? "var(--color-azul-info)");
-      const pos = { lat: c.lat, lng: c.lng };
-      const marker = new google.maps.Marker({
-        position: pos,
-        map,
-        title: c.unidade_nome,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 9,
-          fillColor: cor,
-          fillOpacity: 0.95,
-          strokeColor: "#fff",
-          strokeWeight: 2,
-        },
-      });
-      marker.addListener("click", () => {
-        const div = document.createElement("div");
-        const t = document.createElement("strong");
-        t.textContent = c.unidade_nome;
-        div.appendChild(t);
-        const det = `${c.numero_protocolo} · ${STATUS_META[c.status as Status]?.label ?? c.status} · ${URGENCIA_META[c.urgencia as Urgencia]?.label ?? c.urgencia}`;
-        div.appendChild(document.createElement("br"));
-        div.appendChild(document.createTextNode(det));
-        infoRef.current?.setContent(div);
-        infoRef.current?.open(map, marker);
-      });
-      markersRef.current.push(marker);
+      const pos = new google.maps.LatLng(c.lat, c.lng);
+      const ov = new Ctor(pos, cor, c);
+      ov.setMap(map);
+      overlaysRef.current.push(ov);
       bounds.extend(pos);
     }
 

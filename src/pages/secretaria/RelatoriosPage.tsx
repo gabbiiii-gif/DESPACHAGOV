@@ -96,9 +96,7 @@ export function RelatoriosPage() {
     if (tipo === "unidade") {
       const logr = montarLogradouro(u?.logradouro_tipo, u?.logradouro);
       const endereco = [logr, u?.numero].filter(Boolean).join(", ");
-      const diretora = u?.diretora_nome
-        ? `Diretora: ${u.diretora_nome}${u.diretora_telefone ? ` (${u.diretora_telefone})` : ""}`
-        : "";
+      const diretora = u?.diretora_nome ? `Diretora: ${u.diretora_nome}` : "";
       const info = [endereco, u?.bairro, diretora].filter(Boolean).join(" · ");
       return {
         tipo, titulo: "Relatório por unidade",

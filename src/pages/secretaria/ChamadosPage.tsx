@@ -9,10 +9,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { URGENCIAS, URGENCIA_META, type Status, type Urgencia } from "@/lib/chamados";
 import { listarUnidades, listarEmpresas, type Unidade, type Empresa } from "@/services/cadastros";
 import {
-  listarChamados, listarEventos, atribuirChamado, transicionarChamado, sugerirTriagem,
+  listarChamados, listarEventos, atribuirChamado, transicionarChamado,
   type Chamado, type ChamadoEvento,
 } from "@/services/chamados";
-import { CATEGORIA_META, type Categoria } from "@/lib/aiTriagem";
 
 export function ChamadosPage() {
   const { session, profile } = useAuth();
@@ -29,19 +28,6 @@ export function ChamadosPage() {
   const [urgenciaSel, setUrgenciaSel] = useState<Urgencia | "">("");
   const [acaoErro, setAcaoErro] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);
-  const [iaSugerindo, setIaSugerindo] = useState(false);
-  const [iaHint, setIaHint] = useState<string | null>(null);
-
-  async function sugerirIa() {
-    if (!detalhe) return;
-    setIaHint(null); setAcaoErro(null); setIaSugerindo(true);
-    const { sugestao, error } = await sugerirTriagem(detalhe.id);
-    setIaSugerindo(false);
-    if (error || !sugestao) { setAcaoErro(error ?? "Falha na sugestão de IA."); return; }
-    setUrgenciaSel(sugestao.urgencia);
-    const cat = CATEGORIA_META[sugestao.categoria as Categoria] ?? sugestao.categoria;
-    setIaHint(`IA sugere: ${URGENCIA_META[sugestao.urgencia].label} · ${cat}. ${sugestao.justificativa}`);
-  }
 
   async function carregarTudo() {
     const [ch, un, em] = await Promise.all([listarChamados(), listarUnidades(), listarEmpresas()]);
@@ -65,7 +51,6 @@ export function ChamadosPage() {
   async function abrirDetalhe(c: Chamado) {
     setDetalhe(c);
     setAcaoErro(null);
-    setIaHint(null);
     setEmpresaSel(c.empresa_id ?? "");
     setUrgenciaSel((c.urgencia as Urgencia | null) ?? "");
     setEventos(await listarEventos(c.id));
@@ -153,13 +138,7 @@ export function ChamadosPage() {
             {/* Triagem: urgência + empresa (técnico é designado pela empresa) */}
             {detalhe.status !== "concluido" && detalhe.status !== "cancelado" && (
               <div className="rounded-lg border border-cinza-borda p-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
-                  <Button variant="outline" onClick={() => void sugerirIa()} loading={iaSugerindo} className="px-2.5 py-1 text-xs">
-                    Sugerir com IA
-                  </Button>
-                </div>
-                {iaHint && <div className="mb-2"><Alert tipo="info">{iaHint}</Alert></div>}
+                <p className="mb-2 text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <Select label="Urgência" value={urgenciaSel} onChange={(e) => setUrgenciaSel(e.target.value as Urgencia | "")}>
                     <option value="">Selecione…</option>

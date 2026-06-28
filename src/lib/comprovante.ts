@@ -48,10 +48,6 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
     <h3 style="font-size:14px;color:#1A3F7A;margin:18px 0 6px">Descrição</h3>
     <p style="font-size:13px;line-height:1.5;margin:0">${d.descricao}</p>
     ${fotosHtml ? `<h3 style="font-size:14px;color:#1A3F7A;margin:18px 0 6px">Registro fotográfico</h3><div>${fotosHtml}</div>` : ""}
-    <h3 style="font-size:14px;color:#1A3F7A;margin:18px 0 6px">Atesto do responsável</h3>
-    ${d.assinaturaDataUrl
-      ? `<img src="${d.assinaturaDataUrl}" style="height:90px" /><div style="border-top:1px solid #374151;width:240px;margin-top:4px;padding-top:4px;font-size:12px">${d.signatarioNome ?? ""}</div>`
-      : `<p style="font-size:12px;color:#9CA3AF">Sem assinatura registrada.</p>`}
     <p style="margin-top:24px;font-size:11px;color:#9CA3AF;text-align:center">Gerado por DespachaGov em ${fmt(new Date().toISOString())}</p>
   `;
 

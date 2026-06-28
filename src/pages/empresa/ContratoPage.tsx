@@ -9,6 +9,7 @@ import { listarChamados, type Chamado } from "@/services/chamados";
 import { resumoSlaMensal, taxaSlaGeral, type ChamadoSla } from "@/lib/sla";
 import { tempoMedioConclusaoHoras } from "@/lib/kpis";
 import { nomeArquivoRelatorio } from "@/lib/relatorios";
+import { useStagger } from "@/hooks/useEntrada";
 
 function fmtHoras(h: number | null): string {
   if (h == null) return "—";
@@ -52,6 +53,7 @@ export function ContratoPage() {
   const tMedio = tempoMedioConclusaoHoras(chamados);
 
   const dadosGrafico = serie.map((p) => ({ mes: p.mes, "% no prazo": Math.round(p.taxa * 100) }));
+  const kpiRef = useStagger<HTMLDivElement>(carregando);
 
   function exportarCsv() {
     const linhas = serie.map((p) => ({
@@ -81,7 +83,7 @@ export function ContratoPage() {
         <Card><p className="text-cinza-secundario">Nenhum chamado atribuído à sua empresa ainda.</p></Card>
       ) : (
         <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div ref={kpiRef} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Kpi titulo="Chamados recebidos" valor={String(chamados.length)} />
             <Kpi titulo="Concluídos" valor={String(concluidos)} />
             <Kpi titulo="SLA cumprido" valor={`${taxaPct}%`} sub="dos avaliáveis" />
@@ -106,7 +108,7 @@ export function ContratoPage() {
           <Card>
             <h2 className="mb-3 text-sm font-semibold text-cinza-texto">Detalhe mensal</h2>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[640px] text-sm">
                 <thead className="text-left text-cinza-secundario">
                   <tr>
                     <th className="py-1.5 pr-4 font-medium">Mês</th>

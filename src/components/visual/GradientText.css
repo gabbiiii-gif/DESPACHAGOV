@@ -1,0 +1,15 @@
+.dg-gradient-text {
+  display: inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-repeat: repeat;
+  animation: dg-grad 8s linear infinite;
+}
+@keyframes dg-grad {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dg-gradient-text { animation: none; }
+}

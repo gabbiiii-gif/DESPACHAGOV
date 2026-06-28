@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-  let body: { identificador?: string; senha?: string };
+  let body: { identificador?: string; senha?: string; subdomain?: string | null };
   try {
     body = await req.json();
   } catch {
@@ -32,9 +32,17 @@ Deno.serve(async (req) => {
 
   let email = id;
   if (!id.includes("@")) {
-    // Matrícula → e-mail. Erro genérico se não houver exatamente 1 correspondência.
+    // Matrícula → e-mail, ESCOPADA por tenant (subdomínio) p/ evitar colisão
+    // entre secretarias. Erro genérico se não houver exatamente 1 correspondência.
     const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
-    const { data } = await admin.from("users").select("email").eq("matricula", id).limit(2);
+    const sub = String(body.subdomain ?? "").trim().toLowerCase();
+    let query = admin.from("users").select("email").eq("matricula", id);
+    if (sub) {
+      const { data: t } = await admin.from("tenants").select("id").eq("subdomain", sub).maybeSingle();
+      if (!t) return json({ error: "Credenciais inválidas." }, 401);
+      query = query.eq("tenant_id", t.id);
+    }
+    const { data } = await query.limit(2);
     if (!data || data.length !== 1) return json({ error: "Credenciais inválidas." }, 401);
     email = data[0].email as string;
   }

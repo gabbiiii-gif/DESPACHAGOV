@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
+import { resolverSubdomain } from "@/lib/subdomain";
 
 const schema = z.object({
   identificador: z.string().min(3, "Informe e-mail ou matrícula"),
@@ -19,8 +20,12 @@ export function LoginPage() {
   const location = useLocation();
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
+  const [secretaria, setSecretaria] = useState(() => resolverSubdomain() ?? "");
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Campo da Secretaria só importa ao entrar por matrícula (desambigua o tenant).
+  const ehMatricula = identificador.trim().length > 0 && !identificador.includes("@");
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -31,7 +36,7 @@ export function LoginPage() {
       return;
     }
     setLoading(true);
-    const { error } = await signIn(parsed.data.identificador, parsed.data.senha);
+    const { error } = await signIn(parsed.data.identificador, parsed.data.senha, secretaria.trim() || null);
     setLoading(false);
     if (error) {
       setErro("E-mail/matrícula ou senha incorretos.");
@@ -54,6 +59,16 @@ export function LoginPage() {
           onChange={(e) => setIdentificador(e.target.value)}
           placeholder="voce@secretaria.gov.br ou matrícula"
         />
+        {ehMatricula && (
+          <Input
+            label="Secretaria (subdomínio)"
+            type="text"
+            autoComplete="organization"
+            value={secretaria}
+            onChange={(e) => setSecretaria(e.target.value)}
+            placeholder="ex.: semed-altamira"
+          />
+        )}
         <PasswordInput
           label="Senha"
           autoComplete="current-password"

@@ -11,7 +11,7 @@ interface AuthState {
   tenantId: string | null;
   empresaId: string | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (identificador: string, password: string, subdomain?: string | null) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   enviarResetSenha: (email: string) => Promise<{ error: string | null }>;
   definirNovaSenha: (senha: string) => Promise<{ error: string | null }>;
@@ -54,8 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [carregarPerfil]);
 
   // Aceita e-mail OU matrícula. E-mail: login direto. Matrícula: resolve +
-  // autentica via Edge Function `login` (service_role) e seta a sessão.
-  const signIn = useCallback(async (identificador: string, password: string) => {
+  // autentica via Edge Function `login` (service_role), escopando por
+  // subdomínio (tenant) p/ evitar colisão de matrícula entre secretarias.
+  const signIn = useCallback(async (identificador: string, password: string, subdomain?: string | null) => {
     const id = identificador.trim();
     if (id.includes("@")) {
       const { error } = await supabase.auth.signInWithPassword({ email: id, password });
@@ -65,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       access_token?: string;
       refresh_token?: string;
       error?: string;
-    }>("login", { body: { identificador: id, senha: password } });
+    }>("login", { body: { identificador: id, senha: password, subdomain: subdomain ?? null } });
     if (error) return { error: error.message };
     if (!data?.access_token || !data?.refresh_token) {
       return { error: data?.error ?? "Credenciais inválidas." };

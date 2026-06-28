@@ -24,10 +24,28 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
     const map = L.map(ref.current).setView(CENTRO_ALTAMIRA, 12);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+
+    // Camada de ruas (OpenStreetMap).
+    const ruas = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap",
       maxZoom: 19,
-    }).addTo(map);
+    });
+
+    // Camada satélite (Esri World Imagery — grátis, sem chave) + rótulos de
+    // ruas/lugares por cima, igual ao modo híbrido do Google Maps.
+    const satImagem = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { attribution: "Imagery © Esri, Maxar, Earthstar Geographics", maxZoom: 19 },
+    );
+    const satRotulos = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19 },
+    );
+    const satelite = L.layerGroup([satImagem, satRotulos]);
+
+    satelite.addTo(map); // satélite por padrão
+    L.control.layers({ "Satélite": satelite, "Ruas": ruas }, undefined, { position: "topright" }).addTo(map);
+
     layerRef.current = L.layerGroup().addTo(map);
     mapRef.current = map;
     return () => {

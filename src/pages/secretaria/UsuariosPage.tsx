@@ -29,6 +29,7 @@ const schema = z.object({
   email: z.string().email("E-mail inválido"),
   role: z.enum(["gestor_secretaria", "responsavel_unidade", "empresa_admin"]),
   empresa_id: z.string().optional(),
+  matricula: z.string().optional(),
 });
 
 export function UsuariosPage() {
@@ -72,6 +73,7 @@ export function UsuariosPage() {
       email: parsed.data.email,
       role: parsed.data.role,
       empresa_id: parsed.data.empresa_id || null,
+      matricula: parsed.data.matricula?.trim() || null,
       tenant_id: tenantId,
     });
     setSalvando(false);
@@ -136,6 +138,7 @@ export function UsuariosPage() {
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Input name="nome" label="Nome" />
           <Input name="email" label="E-mail" type="email" />
+          <Input name="matricula" label="Matrícula / usuário (opcional)" placeholder="ex.: 12345 — login alternativo ao e-mail" autoComplete="off" />
           <Select name="role" label="Papel" value={roleSel} onChange={(e) => setRoleSel(e.target.value as Role)}>
             {ROLES_CONVIDAVEIS.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
           </Select>

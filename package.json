@@ -21,6 +21,7 @@
     "@supabase/supabase-js": "^2.99.1",
     "@types/three": "^0.185.0",
     "gsap": "^3.15.0",
+    "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.3",
     "leaflet": "^1.9.4",
     "ogl": "^1.0.11",
@@ -31,6 +32,7 @@
     "react-router-dom": "^7.9.1",
     "recharts": "^3.9.0",
     "three": "^0.180.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.5"
   },
   "devDependencies": {

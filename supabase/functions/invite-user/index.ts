@@ -53,11 +53,18 @@ Deno.serve(comCaptura("invite-user", async (req) => {
   const email = String(body.email ?? "").trim().toLowerCase();
   const role = String(body.role ?? "");
   const empresaId = body.empresa_id ? String(body.empresa_id) : null;
+  const matricula = body.matricula ? String(body.matricula).trim() : null;
   const isEmpresa = ROLES_EMPRESA.has(role);
   if (!nome || !email || (!ROLES_SECRETARIA.has(role) && !isEmpresa)) {
     return json({ error: "campos inválidos" }, 400);
   }
   if (isEmpresa && !empresaId) return json({ error: "empresa_id obrigatório p/ papel de empresa" }, 400);
+
+  // Matrícula = login alternativo; única dentro do tenant.
+  if (matricula) {
+    const { data: jaUsada } = await admin.from("users").select("id").eq("tenant_id", tenantId).eq("matricula", matricula).maybeSingle();
+    if (jaUsada) return json({ error: "matrícula já usada nesta secretaria" }, 400);
+  }
 
   // Garante que a empresa pertence ao tenant do admin.
   if (empresaId) {
@@ -82,6 +89,7 @@ Deno.serve(comCaptura("invite-user", async (req) => {
     nome,
     email,
     empresa_id: empresaId,
+    matricula,
   });
   if (pErr) {
     await admin.auth.admin.deleteUser(created.user.id);

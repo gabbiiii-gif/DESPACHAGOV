@@ -3,6 +3,7 @@
 // via service_role e autentica server-side (não expõe e-mails: erro genérico
 // para 0 ou múltiplas matrículas). Retorna tokens p/ o cliente setSession.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { comCaptura } from "../_shared/erros.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +13,7 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("login", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
@@ -52,4 +53,4 @@ Deno.serve(async (req) => {
   if (error || !s.session) return json({ error: "Credenciais inválidas." }, 401);
 
   return json({ access_token: s.session.access_token, refresh_token: s.session.refresh_token });
-});
+}));

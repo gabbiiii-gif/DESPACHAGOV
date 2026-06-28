@@ -6,6 +6,7 @@
 // a lógica pura abaixo é ESPELHO de src/lib/notificacoes.ts (testada lá).
 // Ao mudar a matriz/templates, manter os dois em sincronia.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { comCaptura } from "../_shared/erros.ts";
 
 // ─── Domínio puro (espelho de src/lib/notificacoes.ts) ───────────────────────
 type EventoChamado =
@@ -100,7 +101,7 @@ async function enviarEmail(to: string, subject: string, html: string): Promise<{
 }
 
 // ─── Handler ─────────────────────────────────────────────────────────────────
-Deno.serve(async (req) => {
+Deno.serve(comCaptura("notify-event", async (req) => {
   if (req.method !== "POST") return new Response("method", { status: 405 });
 
   const admin = createClient(
@@ -228,4 +229,4 @@ Deno.serve(async (req) => {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
-});
+}));

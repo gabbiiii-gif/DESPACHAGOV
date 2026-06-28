@@ -9,7 +9,7 @@ import { MapaUnidades } from "@/components/cadastros/MapaUnidades";
 import { useAuth } from "@/hooks/useAuth";
 import { unidadeSchema, normalizarLinhaUnidade, enderecoParaGeocode, LOGRADOURO_TIPOS } from "@/lib/cadastros";
 import {
-  listarUnidades, criarUnidade, criarUnidadesLote, excluirUnidade, type Unidade,
+  listarUnidades, criarUnidade, atualizarUnidade, criarUnidadesLote, excluirUnidade, type Unidade,
 } from "@/services/cadastros";
 import { geocodeEndereco } from "@/services/geocode";
 
@@ -18,6 +18,7 @@ export function UnidadesPage() {
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [modal, setModal] = useState(false);
+  const [editando, setEditando] = useState<Unidade | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -81,6 +82,21 @@ export function UnidadesPage() {
     return () => { ativo = false; };
   }, [tenantId]);
 
+  function abrirNova() {
+    setEditando(null);
+    setMsg(null); setErro(null);
+    setLatStr(""); setLngStr("");
+    setModal(true);
+  }
+
+  function abrirEditar(u: Unidade) {
+    setEditando(u);
+    setMsg(null); setErro(null);
+    setLatStr(u.lat != null ? String(u.lat) : "");
+    setLngStr(u.lng != null ? String(u.lng) : "");
+    setModal(true);
+  }
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErro(null);
@@ -92,8 +108,7 @@ export function UnidadesPage() {
     }
     setSalvando(true);
     const d = parsed.data;
-    const { error } = await criarUnidade({
-      tenant_id: tenantId,
+    const campos = {
       nome: d.nome,
       codigo_inep: d.codigo_inep ?? null,
       email: d.email || null,
@@ -112,11 +127,15 @@ export function UnidadesPage() {
       zona: d.zona ?? null,
       lat: d.lat ?? null,
       lng: d.lng ?? null,
-    });
+    };
+    const { error } = editando
+      ? await atualizarUnidade(editando.id, campos)
+      : await criarUnidade({ tenant_id: tenantId, ...campos });
     setSalvando(false);
     if (error) { setErro(error); return; }
-    setMsg("Unidade cadastrada.");
+    setMsg(editando ? "Unidade atualizada." : "Unidade cadastrada.");
     setModal(false);
+    setEditando(null);
     void recarregar();
   }
 
@@ -168,7 +187,7 @@ export function UnidadesPage() {
         <div className="flex gap-2">
           <input ref={fileRef} type="file" accept=".csv" onChange={onCsv} className="hidden" id="csv-unidades" />
           <Button variant="outline" onClick={() => fileRef.current?.click()}>Importar CSV</Button>
-          <Button variant="acento" onClick={() => { setMsg(null); setLatStr(""); setLngStr(""); setModal(true); }}>Nova unidade</Button>
+          <Button variant="acento" onClick={abrirNova}>Nova unidade</Button>
         </div>
       </div>
 
@@ -206,7 +225,10 @@ export function UnidadesPage() {
                   <td className="px-4 py-2.5 text-cinza-secundario">{u.zona ?? "—"}</td>
                   <td className="px-4 py-2.5 text-cinza-secundario">{u.lat != null && u.lng != null ? "✓" : "—"}</td>
                   <td className="px-4 py-2.5 text-right">
-                    <button onClick={() => void remover(u.id)} className="text-xs text-vermelho-critico hover:underline">Excluir</button>
+                    <div className="flex justify-end gap-3">
+                      <button onClick={() => abrirEditar(u)} className="text-xs text-azul-principal hover:underline">Editar</button>
+                      <button onClick={() => void remover(u.id)} className="text-xs text-vermelho-critico hover:underline">Excluir</button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -215,30 +237,30 @@ export function UnidadesPage() {
         </Card>
       )}
 
-      <Modal aberto={modal} titulo="Nova unidade" onClose={() => setModal(false)}>
-        <form ref={formRef} onSubmit={onSubmit} className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="sm:col-span-2"><Input name="nome" label="Nome da escola" placeholder="EMEF Tancredo Neves" /></div>
-          <Input name="codigo_inep" label="Código INEP" />
-          <Input name="email" label="E-mail institucional" type="email" placeholder="escola@edu.gov.br" />
+      <Modal aberto={modal} titulo={editando ? "Editar unidade" : "Nova unidade"} onClose={() => { setModal(false); setEditando(null); }}>
+        <form key={editando?.id ?? "novo"} ref={formRef} onSubmit={onSubmit} className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-2"><Input name="nome" label="Nome da escola" placeholder="EMEF Tancredo Neves" defaultValue={editando?.nome ?? ""} /></div>
+          <Input name="codigo_inep" label="Código INEP" defaultValue={editando?.codigo_inep ?? ""} />
+          <Input name="email" label="E-mail institucional" type="email" placeholder="escola@edu.gov.br" defaultValue={editando?.email ?? ""} />
 
           <p className="sm:col-span-2 mt-1 text-xs font-semibold uppercase tracking-wide text-cinza-secundario">Contatos</p>
-          <Input name="diretora_nome" label="Diretora" />
-          <Input name="diretora_telefone" label="Telefone da diretora" placeholder="(93) 9____-____" />
-          <Input name="secretaria_nome" label="Secretária" />
-          <Input name="secretaria_telefone" label="Telefone da secretária" />
-          <Input name="coordenadora_nome" label="Coordenadora" />
-          <Input name="coordenadora_telefone" label="Telefone da coordenadora" />
+          <Input name="diretora_nome" label="Diretora" defaultValue={editando?.diretora_nome ?? ""} />
+          <Input name="diretora_telefone" label="Telefone da diretora" placeholder="(93) 9____-____" defaultValue={editando?.diretora_telefone ?? ""} />
+          <Input name="secretaria_nome" label="Secretária" defaultValue={editando?.secretaria_nome ?? ""} />
+          <Input name="secretaria_telefone" label="Telefone da secretária" defaultValue={editando?.secretaria_telefone ?? ""} />
+          <Input name="coordenadora_nome" label="Coordenadora" defaultValue={editando?.coordenadora_nome ?? ""} />
+          <Input name="coordenadora_telefone" label="Telefone da coordenadora" defaultValue={editando?.coordenadora_telefone ?? ""} />
 
           <p className="sm:col-span-2 mt-1 text-xs font-semibold uppercase tracking-wide text-cinza-secundario">Endereço</p>
-          <Select name="logradouro_tipo" label="Tipo" defaultValue="Rua">
+          <Select name="logradouro_tipo" label="Tipo" defaultValue={editando?.logradouro_tipo ?? "Rua"}>
             {LOGRADOURO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
           </Select>
-          <Input name="logradouro" label="Logradouro" placeholder="das Flores" />
-          <Input name="numero" label="Número" placeholder="123" />
-          <Input name="bairro" label="Bairro" />
-          <Input name="cep" label="CEP" placeholder="68370-000" />
-          <Input name="cidade" label="Cidade" placeholder="Altamira" />
-          <Select name="zona" label="Zona" defaultValue="">
+          <Input name="logradouro" label="Logradouro" placeholder="das Flores" defaultValue={editando?.logradouro ?? ""} />
+          <Input name="numero" label="Número" placeholder="123" defaultValue={editando?.numero ?? ""} />
+          <Input name="bairro" label="Bairro" defaultValue={editando?.bairro ?? ""} />
+          <Input name="cep" label="CEP" placeholder="68370-000" defaultValue={editando?.cep ?? ""} />
+          <Input name="cidade" label="Cidade" placeholder="Altamira" defaultValue={editando?.cidade ?? ""} />
+          <Select name="zona" label="Zona" defaultValue={editando?.zona ?? ""}>
             <option value="">—</option>
             <option value="urbana">Urbana</option>
             <option value="rural">Rural</option>

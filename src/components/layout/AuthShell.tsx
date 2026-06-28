@@ -10,7 +10,7 @@ const HeroCanvas = lazy(() => import("@/components/visual/HeroCanvas"));
 export function AuthShell({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: ReactNode }) {
   const cardRef = useEntrada<HTMLDivElement>();
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden bg-cinza-fundo px-5 py-10">
+    <main className="relative isolate flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-5 py-10">
       <Suspense fallback={null}><HeroCanvas /></Suspense>
 
       <div className="flex items-center gap-3">

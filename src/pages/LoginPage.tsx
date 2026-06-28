@@ -4,11 +4,13 @@ import { z } from "zod";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
+import { resolverSubdomain } from "@/lib/subdomain";
 
 const schema = z.object({
-  email: z.string().email("E-mail inválido"),
+  identificador: z.string().min(3, "Informe e-mail ou matrícula"),
   senha: z.string().min(6, "Mínimo 6 caracteres"),
 });
 
@@ -16,24 +18,28 @@ export function LoginPage() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState("");
+  const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
+  const [secretaria, setSecretaria] = useState(() => resolverSubdomain() ?? "");
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Campo da Secretaria só importa ao entrar por matrícula (desambigua o tenant).
+  const ehMatricula = identificador.trim().length > 0 && !identificador.includes("@");
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setErro(null);
-    const parsed = schema.safeParse({ email, senha });
+    const parsed = schema.safeParse({ identificador, senha });
     if (!parsed.success) {
       setErro(parsed.error.issues[0]?.message ?? "Dados inválidos");
       return;
     }
     setLoading(true);
-    const { error } = await signIn(parsed.data.email, parsed.data.senha);
+    const { error } = await signIn(parsed.data.identificador, parsed.data.senha, secretaria.trim() || null);
     setLoading(false);
     if (error) {
-      setErro("E-mail ou senha incorretos.");
+      setErro("E-mail/matrícula ou senha incorretos.");
       return;
     }
     // Roteamento por role acontece no guard pós-login (rota "/").
@@ -46,16 +52,25 @@ export function LoginPage() {
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         {erro && <Alert tipo="erro">{erro}</Alert>}
         <Input
-          label="E-mail"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="voce@secretaria.gov.br"
+          label="E-mail ou matrícula"
+          type="text"
+          autoComplete="username"
+          value={identificador}
+          onChange={(e) => setIdentificador(e.target.value)}
+          placeholder="voce@secretaria.gov.br ou matrícula"
         />
-        <Input
+        {ehMatricula && (
+          <Input
+            label="Secretaria (subdomínio)"
+            type="text"
+            autoComplete="organization"
+            value={secretaria}
+            onChange={(e) => setSecretaria(e.target.value)}
+            placeholder="ex.: semed-altamira"
+          />
+        )}
+        <PasswordInput
           label="Senha"
-          type="password"
           autoComplete="current-password"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}

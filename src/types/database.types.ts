@@ -484,6 +484,44 @@ export type Database = {
           },
         ]
       }
+      error_log: {
+        Row: {
+          contexto: Json
+          created_at: string
+          fonte: string
+          id: string
+          mensagem: string
+          nivel: string
+          tenant_id: string | null
+        }
+        Insert: {
+          contexto?: Json
+          created_at?: string
+          fonte: string
+          id?: string
+          mensagem: string
+          nivel?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          contexto?: Json
+          created_at?: string
+          fonte?: string
+          id?: string
+          mensagem?: string
+          nivel?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_log_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lgpd_consents: {
         Row: {
           aceito_em: string

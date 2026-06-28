@@ -105,9 +105,12 @@ export function TenantsPage() {
     <AppShell titulo="Painel interno — Secretarias contratantes">
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-cinza-secundario">{tenants.length} contrato(s) ativo(s)</p>
-        <Button variant="acento" onClick={() => setAberto((v) => !v)}>
-          {aberto ? "Fechar" : "Nova Secretaria"}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate("/superadmin/saude")}>Saúde do sistema</Button>
+          <Button variant="acento" onClick={() => setAberto((v) => !v)}>
+            {aberto ? "Fechar" : "Nova Secretaria"}
+          </Button>
+        </div>
       </div>
 
       {ok && <div className="mb-4"><Alert tipo="sucesso">{ok}</Alert></div>}

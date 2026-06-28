@@ -72,3 +72,24 @@ body {
   outline: 2px solid var(--color-azul-principal);
   outline-offset: 2px;
 }
+
+/* ─── Micro-interações (fluidez) — respeitam reduced-motion ─────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  a,
+  [role="button"] {
+    transition: background-color 0.15s ease, color 0.15s ease,
+      border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+  }
+  button:not(:disabled):active,
+  [role="button"]:active {
+    transform: translateY(1px);
+  }
+  /* Eleva cards interativos (links que envolvem .rounded-xl) no hover */
+  a:hover > .rounded-xl,
+  button:hover > .rounded-xl {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -12px rgb(36 86 166 / 0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+}

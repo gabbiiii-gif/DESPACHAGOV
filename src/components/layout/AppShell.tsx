@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
+import { useEntrada } from "@/hooks/useEntrada";
 
 // Casca mínima das áreas internas: header com marca + usuário + sair.
 export function AppShell({ titulo, children }: { titulo: string; children: ReactNode }) {
   const { profile, signOut } = useAuth();
+  const mainRef = useEntrada<HTMLElement>();
   return (
     <div className="min-h-dvh">
       <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-cinza-borda bg-cinza-card px-4 py-3 sm:px-6">
@@ -27,7 +29,7 @@ export function AppShell({ titulo, children }: { titulo: string; children: React
           </Button>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <main ref={mainRef} className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <h1 className="mb-5 font-display text-2xl font-bold text-cinza-texto">{titulo}</h1>
         {children}
       </main>

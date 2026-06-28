@@ -53,9 +53,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [carregarPerfil]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+  // Aceita e-mail OU matrícula. E-mail: login direto. Matrícula: resolve +
+  // autentica via Edge Function `login` (service_role) e seta a sessão.
+  const signIn = useCallback(async (identificador: string, password: string) => {
+    const id = identificador.trim();
+    if (id.includes("@")) {
+      const { error } = await supabase.auth.signInWithPassword({ email: id, password });
+      return { error: error?.message ?? null };
+    }
+    const { data, error } = await supabase.functions.invoke<{
+      access_token?: string;
+      refresh_token?: string;
+      error?: string;
+    }>("login", { body: { identificador: id, senha: password } });
+    if (error) return { error: error.message };
+    if (!data?.access_token || !data?.refresh_token) {
+      return { error: data?.error ?? "Credenciais inválidas." };
+    }
+    const { error: sErr } = await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    return { error: sErr?.message ?? null };
   }, []);
 
   const signOut = useCallback(async () => {

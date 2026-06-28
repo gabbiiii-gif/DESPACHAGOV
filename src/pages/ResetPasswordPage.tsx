@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
@@ -44,9 +44,9 @@ export function ResetPasswordPage() {
     <AuthShell titulo="Nova senha" subtitulo="Defina sua nova senha de acesso">
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         {erro && <Alert tipo="erro">{erro}</Alert>}
-        <Input label="Nova senha" type="password" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+        <PasswordInput label="Nova senha" autoComplete="new-password" value={senha} onChange={(e) => setSenha(e.target.value)} />
         <PasswordRequirements senha={senha} />
-        <Input label="Confirmar senha" type="password" autoComplete="new-password" value={confirma} onChange={(e) => setConfirma(e.target.value)} />
+        <PasswordInput label="Confirmar senha" autoComplete="new-password" value={confirma} onChange={(e) => setConfirma(e.target.value)} />
         <Button type="submit" loading={loading} disabled={!senhaValida(senha)} className="w-full">
           Salvar senha
         </Button>

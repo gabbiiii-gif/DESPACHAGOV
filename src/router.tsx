@@ -7,6 +7,7 @@ import { SemAcessoPage } from "./pages/SemAcessoPage";
 import { PoliticaPrivacidadePage } from "./pages/PoliticaPrivacidadePage";
 import { PrivacidadePage } from "./pages/conta/PrivacidadePage";
 import { TenantsPage } from "./pages/superadmin/TenantsPage";
+import { SaudePage } from "./pages/superadmin/SaudePage";
 import { SecretariaShell } from "./components/layout/SecretariaShell";
 import { SuperadminTenantScope } from "./components/layout/SuperadminTenantScope";
 import { UnidadesPage } from "./pages/secretaria/UnidadesPage";
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
   {
     path: "/superadmin",
     element: <ProtectedRoute roles={["superadmin"]}><TenantsPage /></ProtectedRoute>,
+  },
+  {
+    path: "/superadmin/saude",
+    element: <ProtectedRoute roles={["superadmin"]}><SaudePage /></ProtectedRoute>,
   },
   {
     path: "/superadmin/secretaria/:tenantId",

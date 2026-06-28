@@ -1,5 +1,3 @@
-// Gerado por `supabase gen types` (projeto evdjijvxllhrlkkhrcdi).
-// NÃO editar à mão — regenerar após cada migration.
 export type Json =
   | string
   | number
@@ -9,48 +7,89 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
-      chamado_eventos: {
+      ai_usage: {
         Row: {
-          ator_id: string | null
-          ator_nome: string | null
-          chamado_id: string
-          created_at: string
-          evento: string
-          id: string
-          payload: Json
+          ano_mes: string
+          contador: number
           tenant_id: string
         }
         Insert: {
-          ator_id?: string | null
-          ator_nome?: string | null
-          chamado_id: string
-          created_at?: string
-          evento: string
-          id?: string
-          payload?: Json
+          ano_mes: string
+          contador?: number
           tenant_id: string
         }
         Update: {
-          ator_id?: string | null
-          ator_nome?: string | null
-          chamado_id?: string
-          created_at?: string
-          evento?: string
-          id?: string
-          payload?: Json
+          ano_mes?: string
+          contador?: number
           tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "chamado_eventos_chamado_id_fkey"
+            foreignKeyName: "ai_usage_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assinaturas: {
+        Row: {
+          assinatura_dataurl: string
+          chamado_id: string
+          created_at: string
+          geo: string | null
+          id: string
+          ip: string | null
+          signatario_cargo: string | null
+          signatario_cpf: string | null
+          signatario_nome: string
+          tenant_id: string
+        }
+        Insert: {
+          assinatura_dataurl: string
+          chamado_id: string
+          created_at?: string
+          geo?: string | null
+          id?: string
+          ip?: string | null
+          signatario_cargo?: string | null
+          signatario_cpf?: string | null
+          signatario_nome: string
+          tenant_id: string
+        }
+        Update: {
+          assinatura_dataurl?: string
+          chamado_id?: string
+          created_at?: string
+          geo?: string | null
+          id?: string
+          ip?: string | null
+          signatario_cargo?: string | null
+          signatario_cpf?: string | null
+          signatario_nome?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assinaturas_chamado_id_fkey"
             columns: ["chamado_id"]
             isOneToOne: false
             referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assinaturas_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -92,46 +131,70 @@ export type Database = {
           tenant_id?: string
           tipo?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chamado_anexos_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamado_anexos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      assinaturas: {
+      chamado_eventos: {
         Row: {
-          assinatura_dataurl: string
+          ator_id: string | null
+          ator_nome: string | null
           chamado_id: string
           created_at: string
-          geo: string | null
+          evento: string
           id: string
-          ip: string | null
-          signatario_cargo: string | null
-          signatario_cpf: string | null
-          signatario_nome: string
+          payload: Json
           tenant_id: string
         }
         Insert: {
-          assinatura_dataurl: string
+          ator_id?: string | null
+          ator_nome?: string | null
           chamado_id: string
           created_at?: string
-          geo?: string | null
+          evento: string
           id?: string
-          ip?: string | null
-          signatario_cargo?: string | null
-          signatario_cpf?: string | null
-          signatario_nome: string
+          payload?: Json
           tenant_id: string
         }
         Update: {
-          assinatura_dataurl?: string
+          ator_id?: string | null
+          ator_nome?: string | null
           chamado_id?: string
           created_at?: string
-          geo?: string | null
+          evento?: string
           id?: string
-          ip?: string | null
-          signatario_cargo?: string | null
-          signatario_cpf?: string | null
-          signatario_nome?: string
+          payload?: Json
           tenant_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chamado_eventos_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamado_eventos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chamados: {
         Row: {
@@ -209,7 +272,50 @@ export type Database = {
           updated_at?: string
           urgencia?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chamados_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "tecnicos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chamados_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contratos: {
         Row: {
@@ -254,7 +360,22 @@ export type Database = {
           vigencia_fim?: string | null
           vigencia_inicio?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       empresas: {
         Row: {
@@ -293,7 +414,15 @@ export type Database = {
           tenant_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "empresas_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       equipamentos: {
         Row: {
@@ -340,10 +469,55 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "equipamentos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "equipamentos_unidade_id_fkey"
             columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      error_log: {
+        Row: {
+          contexto: Json
+          created_at: string
+          fonte: string
+          id: string
+          mensagem: string
+          nivel: string
+          tenant_id: string | null
+        }
+        Insert: {
+          contexto?: Json
+          created_at?: string
+          fonte: string
+          id?: string
+          mensagem: string
+          nivel?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          contexto?: Json
+          created_at?: string
+          fonte?: string
+          id?: string
+          mensagem?: string
+          nivel?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_log_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -375,6 +549,90 @@ export type Database = {
           user_agent?: string | null
           user_id?: string
           versao_termo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lgpd_consents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notificacoes: {
+        Row: {
+          assunto: string | null
+          canal: string
+          chamado_id: string
+          created_at: string
+          destinatario: string
+          erro: string | null
+          evento_id: string
+          id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          assunto?: string | null
+          canal?: string
+          chamado_id: string
+          created_at?: string
+          destinatario: string
+          erro?: string | null
+          evento_id: string
+          id?: string
+          status: string
+          tenant_id: string
+        }
+        Update: {
+          assunto?: string | null
+          canal?: string
+          chamado_id?: string
+          created_at?: string
+          destinatario?: string
+          erro?: string | null
+          evento_id?: string
+          id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_chamado_id_fkey"
+            columns: ["chamado_id"]
+            isOneToOne: false
+            referencedRelation: "chamados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificacoes_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "chamado_eventos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificacoes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notify_config: {
+        Row: {
+          id: number
+          webhook_secret: string
+        }
+        Insert: {
+          id?: number
+          webhook_secret?: string
+        }
+        Update: {
+          id?: number
+          webhook_secret?: string
         }
         Relationships: []
       }
@@ -426,6 +684,13 @@ export type Database = {
             referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tecnicos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tenants: {
@@ -441,6 +706,7 @@ export type Database = {
           status: string
           subdomain: string
           updated_at: string
+          valor_mensal: number | null
         }
         Insert: {
           cnpj?: string | null
@@ -454,6 +720,7 @@ export type Database = {
           status?: string
           subdomain: string
           updated_at?: string
+          valor_mensal?: number | null
         }
         Update: {
           cnpj?: string | null
@@ -467,6 +734,7 @@ export type Database = {
           status?: string
           subdomain?: string
           updated_at?: string
+          valor_mensal?: number | null
         }
         Relationships: []
       }
@@ -474,14 +742,26 @@ export type Database = {
         Row: {
           ativo: boolean
           bairro: string | null
+          cep: string | null
+          cidade: string | null
           codigo_inep: string | null
+          coordenadora_nome: string | null
+          coordenadora_telefone: string | null
           created_at: string
+          diretora_nome: string | null
+          diretora_telefone: string | null
+          email: string | null
           endereco: string | null
           id: string
           lat: number | null
           lng: number | null
+          logradouro: string | null
+          logradouro_tipo: string | null
           nome: string
+          numero: string | null
           responsavel: string | null
+          secretaria_nome: string | null
+          secretaria_telefone: string | null
           tenant_id: string
           updated_at: string
           zona: string | null
@@ -489,14 +769,26 @@ export type Database = {
         Insert: {
           ativo?: boolean
           bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           codigo_inep?: string | null
+          coordenadora_nome?: string | null
+          coordenadora_telefone?: string | null
           created_at?: string
+          diretora_nome?: string | null
+          diretora_telefone?: string | null
+          email?: string | null
           endereco?: string | null
           id?: string
           lat?: number | null
           lng?: number | null
+          logradouro?: string | null
+          logradouro_tipo?: string | null
           nome: string
+          numero?: string | null
           responsavel?: string | null
+          secretaria_nome?: string | null
+          secretaria_telefone?: string | null
           tenant_id: string
           updated_at?: string
           zona?: string | null
@@ -504,19 +796,39 @@ export type Database = {
         Update: {
           ativo?: boolean
           bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           codigo_inep?: string | null
+          coordenadora_nome?: string | null
+          coordenadora_telefone?: string | null
           created_at?: string
+          diretora_nome?: string | null
+          diretora_telefone?: string | null
+          email?: string | null
           endereco?: string | null
           id?: string
           lat?: number | null
           lng?: number | null
+          logradouro?: string | null
+          logradouro_tipo?: string | null
           nome?: string
+          numero?: string | null
           responsavel?: string | null
+          secretaria_nome?: string | null
+          secretaria_telefone?: string | null
           tenant_id?: string
           updated_at?: string
           zona?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "unidades_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -567,17 +879,44 @@ export type Database = {
           unidade_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "users_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      ai_consumir_credito: {
+        Args: { p_limite: number; p_tenant: string }
+        Returns: boolean
+      }
       current_app_role: { Args: never; Returns: string }
       current_empresa_id: { Args: never; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       is_superadmin: { Args: never; Returns: boolean }
+      pode_acessar_chamado: { Args: { p_chamado_id: string }; Returns: boolean }
     }
     Enums: {
       user_role:

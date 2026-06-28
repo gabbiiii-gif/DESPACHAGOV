@@ -2,14 +2,14 @@ import { useEffect, type ReactNode } from "react";
 
 // Modal acessível. Fecha só pelo ✕ ou Esc — toque fora NÃO fecha (evita
 // perder dados de formulário por toque acidental no fundo).
-// Overlay rola por inteiro: conteúdo mais alto que a tela fica 100% acessível
-// (o topo nunca corta). Mobile = bottom-sheet; desktop = card centralizado.
+// Layout: card limitado à altura da tela, com HEADER FIXO e CORPO ROLÁVEL —
+// o título e o ✕ ficam sempre visíveis e o conteúdo longo rola por dentro.
+// Mobile = bottom-sheet; desktop = card centralizado.
 export function Modal({ aberto, titulo, onClose, children }: { aberto: boolean; titulo: string; onClose: () => void; children: ReactNode }) {
   useEffect(() => {
     if (!aberto) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
-    // Trava o scroll do body enquanto o modal está aberto.
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -20,17 +20,15 @@ export function Modal({ aberto, titulo, onClose, children }: { aberto: boolean; 
 
   if (!aberto) return null;
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40" role="dialog" aria-modal="true" aria-label={titulo}>
-      <div className="flex min-h-full items-end justify-center p-0 sm:items-center sm:p-4">
-        <div className="w-full rounded-t-2xl bg-cinza-card p-6 shadow-xl sm:max-w-lg sm:rounded-2xl">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="font-display text-lg font-bold text-cinza-texto">{titulo}</h2>
-            <button onClick={onClose} aria-label="Fechar" className="shrink-0 text-cinza-secundario hover:text-cinza-texto">
-              ✕
-            </button>
-          </div>
-          {children}
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={titulo}>
+      <div className="flex max-h-[100dvh] w-full flex-col rounded-t-2xl bg-cinza-card shadow-xl sm:max-h-[90dvh] sm:max-w-lg sm:rounded-2xl">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-cinza-borda px-6 py-4">
+          <h2 className="font-display text-lg font-bold text-cinza-texto">{titulo}</h2>
+          <button onClick={onClose} aria-label="Fechar" className="shrink-0 text-xl leading-none text-cinza-secundario hover:text-cinza-texto">
+            ✕
+          </button>
         </div>
+        <div className="overflow-y-auto px-6 py-5">{children}</div>
       </div>
     </div>
   );

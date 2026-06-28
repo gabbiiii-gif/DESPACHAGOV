@@ -26,15 +26,18 @@ function garantirCss() {
   s.id = "dg-mapa-css";
   s.textContent = `
 .dg-pin{position:absolute;transform:translate(-50%,-50%);width:16px;height:16px}
-.dg-pin-dot{position:absolute;inset:0;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
-.dg-pin-pulse{position:absolute;inset:0;border-radius:9999px;animation:dg-pulse 1.6s ease-out infinite}
-@keyframes dg-pulse{0%{transform:scale(1);opacity:.65}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+.dg-pin-dot{position:absolute;inset:0;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5);animation:dg-dot .9s ease-in-out infinite}
+@keyframes dg-dot{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+.dg-pin-pulse,.dg-pin-pulse2{position:absolute;inset:0;border-radius:9999px}
+.dg-pin-pulse{animation:dg-pulse 1.1s ease-out infinite}
+.dg-pin-pulse2{animation:dg-pulse 1.1s ease-out .55s infinite}
+@keyframes dg-pulse{0%{transform:scale(1);opacity:.95}70%{transform:scale(3.6);opacity:0}100%{transform:scale(3.6);opacity:0}}
 .dg-tip{position:absolute;left:50%;bottom:150%;transform:translateX(-50%);display:none;background:#fff;color:#1f2937;border:1px solid #e5e7eb;border-radius:10px;padding:8px 11px;font-size:12px;line-height:1.4;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:50;pointer-events:none;min-width:170px;max-width:240px}
 .dg-tip strong{display:block;margin-bottom:2px;color:#111827}
 .dg-tip .dg-tip-l{color:#6b7280}
 .dg-pin:hover{z-index:60}
 .dg-pin:hover .dg-tip{display:block}
-@media (prefers-reduced-motion: reduce){.dg-pin-pulse{animation:none}}
+@media (prefers-reduced-motion: reduce){.dg-pin-pulse,.dg-pin-pulse2,.dg-pin-dot{animation:none}}
 `;
   document.head.appendChild(s);
 }
@@ -62,6 +65,9 @@ function criarOverlayCtor(): OverlayCtor {
       const pulse = document.createElement("div");
       pulse.className = "dg-pin-pulse";
       pulse.style.background = cor;
+      const pulse2 = document.createElement("div");
+      pulse2.className = "dg-pin-pulse2";
+      pulse2.style.background = cor;
       const dot = document.createElement("div");
       dot.className = "dg-pin-dot";
       dot.style.background = cor;
@@ -73,7 +79,7 @@ function criarOverlayCtor(): OverlayCtor {
       tip.appendChild(linha("Diretora", c.diretora_nome ?? "—"));
       tip.appendChild(linha("Contato", c.diretora_telefone ?? "—"));
       tip.appendChild(linha("Urgência", URGENCIA_META[c.urgencia as Urgencia]?.label ?? c.urgencia ?? "—"));
-      wrap.append(pulse, dot, tip);
+      wrap.append(pulse, pulse2, dot, tip);
       this.el = wrap;
     }
     onAdd() {

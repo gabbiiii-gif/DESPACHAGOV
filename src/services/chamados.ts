@@ -120,6 +120,8 @@ export interface ChamadoAtivoGeo {
   status: string;
   urgencia: string | null;
   unidade_nome: string;
+  diretora_nome: string | null;
+  diretora_telefone: string | null;
   lat: number;
   lng: number;
 }
@@ -129,12 +131,12 @@ export interface ChamadoAtivoGeo {
 export async function listarChamadosAtivosComGeo(): Promise<ChamadoAtivoGeo[]> {
   const { data, error } = await supabase
     .from("chamados")
-    .select("id, numero_protocolo, status, urgencia, unidades!inner(nome, lat, lng)")
+    .select("id, numero_protocolo, status, urgencia, unidades!inner(nome, lat, lng, diretora_nome, diretora_telefone)")
     .in("status", ["aberto", "atribuido", "em_campo"]);
   if (error) throw new Error(error.message);
   type Row = {
     id: string; numero_protocolo: string; status: string; urgencia: string;
-    unidades: { nome: string; lat: number | null; lng: number | null } | null;
+    unidades: { nome: string; lat: number | null; lng: number | null; diretora_nome: string | null; diretora_telefone: string | null } | null;
   };
   return ((data ?? []) as unknown as Row[])
     .filter((r) => r.unidades?.lat != null && r.unidades?.lng != null)
@@ -144,6 +146,8 @@ export async function listarChamadosAtivosComGeo(): Promise<ChamadoAtivoGeo[]> {
       status: r.status,
       urgencia: r.urgencia,
       unidade_nome: r.unidades!.nome,
+      diretora_nome: r.unidades!.diretora_nome,
+      diretora_telefone: r.unidades!.diretora_telefone,
       lat: r.unidades!.lat as number,
       lng: r.unidades!.lng as number,
     }));

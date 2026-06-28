@@ -80,8 +80,10 @@ export function TenantsPage() {
     e.preventDefault();
     setErro(null);
     setOk(null);
-    const fd = new FormData(e.currentTarget);
-    const parsed = schema.safeParse(Object.fromEntries(fd));
+    // Captura o form ANTES do await: após o await (e o setAberto que desmonta o
+    // form) e.currentTarget vira null e .reset() lançaria erro.
+    const form = e.currentTarget;
+    const parsed = schema.safeParse(Object.fromEntries(new FormData(form)));
     if (!parsed.success) {
       setErro(parsed.error.issues[0]?.message ?? "Dados inválidos");
       return;
@@ -96,8 +98,8 @@ export function TenantsPage() {
     }
     setOk(emailSent ? "Secretaria criada. Convite enviado por e-mail." : "Secretaria criada.");
     if (!emailSent && actionLink) setConviteLink(actionLink);
+    form.reset();
     setAberto(false);
-    e.currentTarget.reset();
     void recarregar();
   }
 

@@ -2,15 +2,29 @@ import { Suspense, lazy, type ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { useEntrada } from "@/hooks/useEntrada";
 
-// Three.js só aqui e lazy-loaded (chunk separado) — não pesa o resto do app.
-const HeroCanvas = lazy(() => import("@/components/visual/HeroCanvas"));
+// Fundo animado (WebGL via three) só aqui e lazy-loaded (chunk separado) —
+// não pesa o resto do app.
+const FloatingLines = lazy(() => import("@/components/visual/FloatingLines"));
 
 // Moldura das telas de autenticação: marca + card centralizado, mobile-first.
 export function AuthShell({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: ReactNode }) {
   const cardRef = useEntrada<HTMLDivElement>();
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-5 py-10">
-      <Suspense fallback={null}><HeroCanvas /></Suspense>
+    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden bg-cinza-fundo px-5 py-10">
+      <Suspense fallback={null}>
+        <div className="absolute inset-0 -z-10">
+          <FloatingLines
+            linesGradient={["#ffffff", "#0010fc", "#ffffff"]}
+            animationSpeed={1}
+            interactive
+            bendRadius={5}
+            bendStrength={-1.4}
+            mouseDamping={0.02}
+            parallax
+            parallaxStrength={0.2}
+          />
+        </div>
+      </Suspense>
 
       <div className="flex items-center gap-3">
         <Logo className="h-11 w-11" />

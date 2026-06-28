@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import {
-  Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/Button";
 import { Card, Alert } from "@/components/ui/Card";
+import { SpotlightCard } from "@/components/visual/SpotlightCard";
+import { GradientText } from "@/components/visual/GradientText";
+import { CountUp } from "@/components/visual/CountUp";
 import { useAuth } from "@/hooks/useAuth";
 import { listarChamados, type Chamado } from "@/services/chamados";
 import { listarUnidades, listarEmpresas, type Unidade, type Empresa } from "@/services/cadastros";
@@ -33,6 +36,13 @@ function baixar(conteudo: string, nomeArquivo: string, mime: string): void {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+const ACOES = [
+  { to: "/secretaria/chamados", icone: "🗂️", titulo: "Chamados", desc: "Triar e acompanhar" },
+  { to: "/secretaria/mapa", icone: "📍", titulo: "Mapa ao vivo", desc: "Chamados no mapa" },
+  { to: "/secretaria/relatorios", icone: "📊", titulo: "Relatórios", desc: "Gerar e exportar" },
+  { to: "/secretaria/unidades", icone: "🏫", titulo: "Unidades", desc: "Escolas e endereços" },
+];
 
 export function PainelPage() {
   const { tenantId, profile } = useAuth();
@@ -71,6 +81,10 @@ export function PainelPage() {
   const emAndamento = porStatus.aberto + porStatus.atribuido + porStatus.em_campo;
 
   const dadosStatus = STATUS.map((s) => ({ nome: STATUS_META[s].label, n: porStatus[s], cor: STATUS_META[s].cor }));
+  const dadosUrgencia = [
+    ...URGENCIAS.map((u) => ({ nome: URGENCIA_META[u].label, n: porUrgencia[u], cor: URGENCIA_META[u].cor })),
+    { nome: "Sem triagem", n: porUrgencia.sem_triagem, cor: "var(--color-cinza-secundario)" },
+  ].filter((d) => d.n > 0);
   const kpiRef = useStagger<HTMLDivElement>(carregando);
 
   const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
@@ -99,22 +113,40 @@ export function PainelPage() {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-display text-2xl font-bold text-cinza-texto">Painel</h1>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl font-extrabold">
+            <GradientText>Painel</GradientText>
+          </h1>
+          <p className="mt-1 text-sm text-cinza-secundario">
+            {profile?.nome ? `Olá, ${profile.nome.split(" ")[0]} · ` : ""}visão geral da manutenção
+          </p>
+        </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={exportarCsv} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">
-            Exportar CSV
-          </Button>
-          <Button variant="outline" onClick={exportarPdf} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">
-            Exportar PDF
-          </Button>
+          <Button variant="outline" onClick={exportarCsv} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">Exportar CSV</Button>
+          <Button variant="outline" onClick={exportarPdf} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">Exportar PDF</Button>
         </div>
       </div>
 
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
 
+      {/* ações rápidas */}
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {ACOES.map((a) => (
+          <Link key={a.to} to={a.to}>
+            <SpotlightCard className="flex h-full items-center gap-3 rounded-xl border border-cinza-borda bg-cinza-card p-4 transition-shadow hover:shadow-md">
+              <span className="text-2xl">{a.icone}</span>
+              <span>
+                <span className="block text-sm font-semibold text-cinza-texto">{a.titulo}</span>
+                <span className="block text-xs text-cinza-secundario">{a.desc}</span>
+              </span>
+            </SpotlightCard>
+          </Link>
+        ))}
+      </div>
+
       {!carregando && !onboardingCompleto(contagens) && (
-        <Card className="mb-4 border-azul-principal/30 bg-azul-principal/5">
+        <Card className="mb-5 border-azul-principal/30 bg-azul-principal/5">
           <div className="mb-2 flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold text-cinza-texto">Primeiros passos</h2>
             <span className="text-xs text-cinza-secundario">
@@ -128,9 +160,7 @@ export function PainelPage() {
                   {p.concluido ? "✓" : ""}
                 </span>
                 <div>
-                  <Link to={p.to} className={`font-medium ${p.concluido ? "text-cinza-secundario line-through" : "text-azul-principal hover:underline"}`}>
-                    {p.titulo}
-                  </Link>
+                  <Link to={p.to} className={`font-medium ${p.concluido ? "text-cinza-secundario line-through" : "text-azul-principal hover:underline"}`}>{p.titulo}</Link>
                   <p className="text-xs text-cinza-secundario">{p.descricao}</p>
                 </div>
               </li>
@@ -146,28 +176,49 @@ export function PainelPage() {
       ) : (
         <div className="grid gap-4">
           <div ref={kpiRef} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Kpi titulo="Total" valor={String(chamados.length)} />
-            <Kpi titulo="Em andamento" valor={String(emAndamento)} />
-            <Kpi titulo="Concluídos" valor={`${porStatus.concluido} (${taxaPct}%)`} />
-            <Kpi titulo="Tempo médio" valor={fmtHoras(tMedio)} sub="até conclusão" />
+            <Kpi titulo="Total de chamados" numero={chamados.length} />
+            <Kpi titulo="Em andamento" numero={emAndamento} cor="text-azul-principal" />
+            <Kpi titulo="Concluídos" numero={porStatus.concluido} sufixoTexto={` · ${taxaPct}%`} cor="text-verde-sucesso" />
+            <Kpi titulo="Tempo médio" texto={fmtHoras(tMedio)} sub="até conclusão" />
           </div>
 
-          <Card>
-            <h2 className="mb-3 text-sm font-semibold text-cinza-texto">Chamados por status</h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dadosStatus} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-cinza-borda)" />
-                  <XAxis dataKey="nome" fontSize={12} />
-                  <YAxis allowDecimals={false} fontSize={12} />
-                  <Tooltip />
-                  <Bar dataKey="n" name="Chamados" radius={[4, 4, 0, 0]}>
-                    {dadosStatus.map((d) => <Cell key={d.nome} fill={d.cor} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <h2 className="mb-3 text-sm font-semibold text-cinza-texto">Chamados por status</h2>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosStatus} margin={{ top: 8, right: 8, bottom: 8, left: -16 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-cinza-borda)" />
+                    <XAxis dataKey="nome" fontSize={12} />
+                    <YAxis allowDecimals={false} fontSize={12} />
+                    <Tooltip />
+                    <Bar dataKey="n" name="Chamados" radius={[4, 4, 0, 0]}>
+                      {dadosStatus.map((d) => <Cell key={d.nome} fill={d.cor} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card>
+              <h2 className="mb-3 text-sm font-semibold text-cinza-texto">Chamados por urgência</h2>
+              <div className="h-64">
+                {dadosUrgencia.length === 0 ? (
+                  <p className="grid h-full place-items-center text-sm text-cinza-secundario">Sem dados de urgência.</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={dadosUrgencia} dataKey="n" nameKey="nome" innerRadius={50} outerRadius={88} paddingAngle={2}>
+                        {dadosUrgencia.map((d) => <Cell key={d.nome} fill={d.cor} />)}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </Card>
+          </div>
 
           <Card>
             <h2 className="mb-3 text-sm font-semibold text-cinza-texto">Volume mensal (últimos 6 meses)</h2>
@@ -191,12 +242,17 @@ export function PainelPage() {
   );
 }
 
-function Kpi({ titulo, valor, sub }: { titulo: string; valor: string; sub?: string }) {
+function Kpi({ titulo, numero, texto, sufixoTexto, sub, cor }: {
+  titulo: string; numero?: number; texto?: string; sufixoTexto?: string; sub?: string; cor?: string;
+}) {
   return (
-    <Card className="p-4">
+    <SpotlightCard className="rounded-xl border border-cinza-borda bg-cinza-card p-4">
       <p className="text-xs text-cinza-secundario">{titulo}</p>
-      <p className="mt-1 text-2xl font-bold text-cinza-texto">{valor}</p>
+      <p className={`mt-1 text-2xl font-bold ${cor ?? "text-cinza-texto"}`}>
+        {numero != null ? <CountUp to={numero} /> : texto}
+        {sufixoTexto && <span className="text-base font-semibold text-cinza-secundario">{sufixoTexto}</span>}
+      </p>
       {sub && <p className="text-xs text-cinza-secundario">{sub}</p>}
-    </Card>
+    </SpotlightCard>
   );
 }

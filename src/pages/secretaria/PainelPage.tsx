@@ -11,6 +11,7 @@ import { listarChamados, type Chamado } from "@/services/chamados";
 import { listarUnidades, listarEmpresas, type Unidade, type Empresa } from "@/services/cadastros";
 import { listarUsuariosTenant } from "@/services/usuarios";
 import { passosOnboarding, onboardingCompleto, progressoOnboarding } from "@/lib/onboarding";
+import { useStagger } from "@/hooks/useEntrada";
 import { STATUS, STATUS_META, URGENCIAS, URGENCIA_META } from "@/lib/chamados";
 import {
   contarPorStatus, contarPorUrgencia, taxaConclusao, tempoMedioConclusaoHoras, serieMensal,
@@ -70,6 +71,7 @@ export function PainelPage() {
   const emAndamento = porStatus.aberto + porStatus.atribuido + porStatus.em_campo;
 
   const dadosStatus = STATUS.map((s) => ({ nome: STATUS_META[s].label, n: porStatus[s], cor: STATUS_META[s].cor }));
+  const kpiRef = useStagger<HTMLDivElement>(carregando);
 
   const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
   const nomeEmpresa = (id: string | null) => (id ? empresas.find((e) => e.id === id)?.razao_social ?? "—" : "—");
@@ -143,7 +145,7 @@ export function PainelPage() {
         <Card><p className="text-cinza-secundario">Nenhum chamado ainda. Os indicadores aparecem quando houver movimento.</p></Card>
       ) : (
         <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div ref={kpiRef} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Kpi titulo="Total" valor={String(chamados.length)} />
             <Kpi titulo="Em andamento" valor={String(emAndamento)} />
             <Kpi titulo="Concluídos" valor={`${porStatus.concluido} (${taxaPct}%)`} />

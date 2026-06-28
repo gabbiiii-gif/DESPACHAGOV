@@ -80,8 +80,10 @@ export function TenantsPage() {
     e.preventDefault();
     setErro(null);
     setOk(null);
-    const fd = new FormData(e.currentTarget);
-    const parsed = schema.safeParse(Object.fromEntries(fd));
+    // Captura o form ANTES do await: após o await (e o setAberto que desmonta o
+    // form) e.currentTarget vira null e .reset() lançaria erro.
+    const form = e.currentTarget;
+    const parsed = schema.safeParse(Object.fromEntries(new FormData(form)));
     if (!parsed.success) {
       setErro(parsed.error.issues[0]?.message ?? "Dados inválidos");
       return;
@@ -96,16 +98,16 @@ export function TenantsPage() {
     }
     setOk(emailSent ? "Secretaria criada. Convite enviado por e-mail." : "Secretaria criada.");
     if (!emailSent && actionLink) setConviteLink(actionLink);
+    form.reset();
     setAberto(false);
-    e.currentTarget.reset();
     void recarregar();
   }
 
   return (
     <AppShell titulo="Painel interno — Secretarias contratantes">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-cinza-secundario">{tenants.length} contrato(s) ativo(s)</p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => navigate("/superadmin/saude")}>Saúde do sistema</Button>
           <Button variant="acento" onClick={() => setAberto((v) => !v)}>
             {aberto ? "Fechar" : "Nova Secretaria"}
@@ -162,7 +164,7 @@ export function TenantsPage() {
         <p className="text-cinza-secundario">Carregando…</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-cinza-borda">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-cinza-fundo text-left text-cinza-secundario">
               <tr>
                 <th className="px-4 py-2.5 font-medium">Secretaria</th>

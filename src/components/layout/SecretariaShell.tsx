@@ -2,7 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
-import { useEntrada } from "@/hooks/useEntrada";
+import { PageTransition } from "@/components/visual/PageTransition";
 
 const NAV = [
   { to: "/secretaria/painel", label: "Painel" },
@@ -17,7 +17,6 @@ const NAV = [
 export function SecretariaShell() {
   const { profile, role, signOut } = useAuth();
   const nav = NAV.filter((n) => !n.adminOnly || role === "admin_secretaria");
-  const mainRef = useEntrada<HTMLElement>();
   return (
     <div className="min-h-dvh sm:flex">
       <aside className="border-b border-cinza-borda bg-cinza-card sm:w-60 sm:border-b-0 sm:border-r">
@@ -57,8 +56,8 @@ export function SecretariaShell() {
             </Button>
           </div>
         </header>
-        <main ref={mainRef} className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-          <Outlet />
+        <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <PageTransition><Outlet /></PageTransition>
         </main>
       </div>
     </div>

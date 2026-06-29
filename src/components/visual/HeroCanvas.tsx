@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-// Fundo 3D sutil para a tela de login (identidade azul/laranja). Lazy-loaded e
-// leve: poucos polígonos, pausa quando a aba oculta, e não renderiza se o usuário
-// pediu reduced-motion. Decorativo (aria-hidden, pointer-events-none).
+// Globo 3D sutil para a tela de login (wireframe azul + pontos laranja).
+// Lazy-loaded e leve: poucos polígonos, pausa quando a aba oculta, e não
+// renderiza se o usuário pediu reduced-motion. Decorativo.
 export default function HeroCanvas() {
   const ref = useRef<HTMLDivElement>(null);
 

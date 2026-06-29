@@ -2,14 +2,21 @@ import { Suspense, lazy, type ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { useEntrada } from "@/hooks/useEntrada";
 
-// Three.js só aqui e lazy-loaded (chunk separado) — não pesa o resto do app.
+// Fundos animados só aqui e lazy-loaded (chunks separados) — não pesam o
+// resto do app. Plasma é a camada de trás; o globo 3D fica por cima dele.
 const HeroCanvas = lazy(() => import("@/components/visual/HeroCanvas"));
+const Plasma = lazy(() => import("@/components/visual/Plasma"));
 
 // Moldura das telas de autenticação: marca + card centralizado, mobile-first.
 export function AuthShell({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: ReactNode }) {
   const cardRef = useEntrada<HTMLDivElement>();
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-5 py-10">
+    <main className="relative isolate flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-5 py-10">
+      <Suspense fallback={null}>
+        <div className="absolute inset-0 -z-20">
+          <Plasma color="#070652" speed={1} direction="forward" scale={1} opacity={0.35} mouseInteractive />
+        </div>
+      </Suspense>
       <Suspense fallback={null}><HeroCanvas /></Suspense>
 
       <div className="flex items-center gap-3">

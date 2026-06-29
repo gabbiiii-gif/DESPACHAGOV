@@ -6,6 +6,7 @@ import { PageTransition } from "@/components/visual/PageTransition";
 
 const NAV = [
   { to: "/secretaria/painel", label: "Painel" },
+  { to: "/secretaria/relatorios", label: "Relatórios" },
   { to: "/secretaria/chamados", label: "Chamados" },
   { to: "/secretaria/mapa", label: "Mapa ao vivo" },
   { to: "/secretaria/unidades", label: "Unidades" },

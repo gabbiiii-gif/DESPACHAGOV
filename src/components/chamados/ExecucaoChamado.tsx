@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Card";
-import { SignaturePad } from "./SignaturePad";
 import { useAuth } from "@/hooks/useAuth";
 import { transicionarChamado, type Chamado } from "@/services/chamados";
-import { anexarArquivo, listarAnexos, urlAnexo, salvarAssinatura, type Anexo, type TipoAnexo } from "@/services/execucao";
+import { anexarArquivo, listarAnexos, urlAnexo, type Anexo, type TipoAnexo } from "@/services/execucao";
 import { gerarComprovantePdf } from "@/lib/comprovante";
 
 async function urlParaDataUrl(url: string): Promise<string> {
@@ -29,8 +27,6 @@ export function ExecucaoChamado({
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState<TipoAnexo | null>(null);
-  const [assinatura, setAssinatura] = useState<string | null>(null);
-  const [signatario, setSignatario] = useState("");
   const [concluindo, setConcluindo] = useState(false);
   const inAntes = useRef<HTMLInputElement>(null);
   const inDepois = useRef<HTMLInputElement>(null);
@@ -74,11 +70,8 @@ export function ExecucaoChamado({
 
   async function concluir() {
     if (!session || !profile || !tenantId) return;
-    if (!assinatura) { setErro("Colete a assinatura do responsável."); return; }
-    if (signatario.trim().length < 3) { setErro("Informe o nome de quem assina."); return; }
     setConcluindo(true); setErro(null);
     try {
-      await salvarAssinatura({ tenantId, chamadoId: chamado.id, nome: signatario.trim(), dataUrl: assinatura });
       const { error } = await transicionarChamado(chamado, "concluido", { id: session.user.id, nome: profile.nome });
       if (error) { setErro(error); setConcluindo(false); return; }
 
@@ -97,8 +90,6 @@ export function ExecucaoChamado({
         tecnico: contexto.tecnicoNome,
         aberturaISO: chamado.data_solicitacao,
         conclusaoISO: new Date().toISOString(),
-        assinaturaDataUrl: assinatura,
-        signatarioNome: signatario.trim(),
         fotos: fotos.filter((f) => f.dataUrl),
       });
       onAtualizado();
@@ -139,12 +130,8 @@ export function ExecucaoChamado({
         )}
       </div>
 
-      <hr className="my-3 border-cinza-borda" />
-      <p className="mb-2 text-sm font-semibold text-cinza-texto">Concluir com atesto</p>
-      <div className="mb-2"><Input label="Nome de quem assina" value={signatario} onChange={(e) => setSignatario(e.target.value)} placeholder="Responsável da unidade" /></div>
-      <SignaturePad onChange={setAssinatura} />
       <Button onClick={() => void concluir()} loading={concluindo} className="mt-3 w-full">
-        Concluir + gerar comprovante PDF
+        Concluir e gerar comprovante PDF
       </Button>
     </div>
   );

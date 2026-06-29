@@ -123,6 +123,10 @@ export function RelatoriosPage() {
         el: docRef.current,
         nome: `relatorio-${tipo}-${tipo === "personalizado" ? de : mes}`,
         dados,
+        meta: {
+          periodo: tipo === "personalizado" ? `${dataBR(`${de}T00:00:00`)} a ${dataBR(`${ate}T00:00:00`)}` : rotuloMes(mes),
+          orgao: "Secretaria Municipal de Educação",
+        },
       });
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Falha ao exportar");

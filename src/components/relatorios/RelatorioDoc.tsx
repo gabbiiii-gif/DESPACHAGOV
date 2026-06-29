@@ -1,5 +1,6 @@
 import { forwardRef, type CSSProperties } from "react";
 import { fmtHoras, type DadosRelatorio } from "@/lib/relatorioModelo";
+import semedLogo from "@/assets/semed.png";
 
 // Documento de relatório na identidade visual institucional do DespachaGov
 // (verde-oliva + laranja). Renderizado em 820px para virar PDF/PNG fiel.
@@ -18,17 +19,6 @@ const C = {
 };
 const display = "'Plus Jakarta Sans','Public Sans',sans-serif";
 const corpo = "'Public Sans',sans-serif";
-
-const Marca = () => (
-  <svg width="46" height="46" viewBox="0 0 100 100" fill="none">
-    <path d="M93 11 L25 45 L60 51 Z" fill={C.oliva} />
-    <path d="M93 11 L60 51 L53 84 Z" fill={C.olivaClaro} />
-    <rect x="33" y="58" width="7" height="7" fill={C.laranja} />
-    <rect x="24" y="63" width="7" height="7" fill={C.laranja} />
-    <rect x="29" y="71" width="6" height="6" fill={C.laranja} />
-    <rect x="18" y="69" width="6" height="6" fill={C.laranja} />
-  </svg>
-);
 
 function Kpi({ valor, rotulo, cor }: { valor: string; rotulo: string; cor?: string }) {
   return (
@@ -76,14 +66,16 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
         fontFamily: corpo, boxSizing: "border-box",
       }}
     >
+      {/* logo institucional */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+        <img src={semedLogo} alt="SEMED · Prefeitura de Altamira" style={{ height: 62, display: "block" }} />
+      </div>
+
       {/* header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: `3px solid ${C.oliva}`, paddingBottom: 20, marginBottom: 6 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-          <Marca />
-          <div>
-            <div style={{ fontFamily: display, fontWeight: 800, fontSize: 15, color: C.oliva }}>Prefeitura de Altamira</div>
-            <div style={{ fontSize: 12.5, color: C.cinza }}>Secretaria Municipal de Educação</div>
-          </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: `3px solid ${C.oliva}`, paddingBottom: 18, marginBottom: 6 }}>
+        <div>
+          <div style={{ fontFamily: display, fontWeight: 800, fontSize: 15, color: C.oliva }}>Prefeitura de Altamira</div>
+          <div style={{ fontSize: 12.5, color: C.cinza }}>Secretaria Municipal de Educação</div>
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: C.laranja, fontWeight: 700 }}>{periodoRotulo}</div>

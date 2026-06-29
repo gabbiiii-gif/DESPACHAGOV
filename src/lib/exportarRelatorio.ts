@@ -3,6 +3,7 @@ import html2pdf from "html2pdf.js";
 import html2canvas from "html2canvas";
 import type ExcelJS from "exceljs";
 import Papa from "papaparse";
+import semedLogo from "@/assets/semed.png";
 import type { DadosRelatorio } from "./relatorioModelo";
 
 export type FormatoRelatorio = "pdf" | "xlsx" | "csv" | "png" | "json";
@@ -103,16 +104,22 @@ function bordaFina(cell: ExcelJS.Cell) {
   cell.border = { bottom: { style: "thin", color: { argb: "FFE3E6EC" } } };
 }
 
-function cabecalhoFolha(ws: ExcelJS.Worksheet, titulo: string, ate: number, meta: MetaRelatorio) {
+function cabecalhoFolha(ws: ExcelJS.Worksheet, titulo: string, ate: number, meta: MetaRelatorio, logoId: number) {
+  // Logo institucional no canto superior esquerdo (sobre as 3 linhas de header).
+  ws.addImage(logoId, { tl: { col: 1, row: 0.15 }, ext: { width: 142, height: 60 } });
+  const dir: Partial<ExcelJS.Alignment> = { horizontal: "right", vertical: "middle" };
   ws.mergeCells(1, 2, 1, ate);
-  Object.assign(ws.getCell(1, 2), { value: titulo });
+  ws.getCell(1, 2).value = titulo;
   ws.getCell(1, 2).font = { name: "Calibri", size: 18, bold: true, color: { argb: VERDE } };
+  ws.getCell(1, 2).alignment = dir;
   ws.mergeCells(2, 2, 2, ate);
   ws.getCell(2, 2).value = meta.orgao;
   ws.getCell(2, 2).font = { name: "Calibri", size: 11, color: { argb: SUB } };
+  ws.getCell(2, 2).alignment = dir;
   ws.mergeCells(3, 2, 3, ate);
   ws.getCell(3, 2).value = `Período de referência: ${meta.periodo}`;
   ws.getCell(3, 2).font = { name: "Calibri", size: 10, color: { argb: SUB } };
+  ws.getCell(3, 2).alignment = dir;
 }
 function secao(ws: ExcelJS.Worksheet, texto: string) {
   const c = ws.getCell(6, 2);
@@ -130,16 +137,28 @@ function headerTabela(ws: ExcelJS.Worksheet, lin: number, labels: string[]) {
   });
 }
 
+function lerDataUrl(blob: Blob): Promise<string> {
+  return new Promise((res) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result as string);
+    fr.readAsDataURL(blob);
+  });
+}
+
 async function exportarXlsx(dados: DadosRelatorio, nome: string, meta: MetaRelatorio) {
   // Carrega o ExcelJS sob demanda (chunk separado — não pesa o bundle inicial).
   const { default: ExcelJSLib } = await import("exceljs");
   const wb = new ExcelJSLib.Workbook();
   const M = 2.375;
 
+  // Logo institucional (embutida nas abas).
+  const dataUrl = await fetch(semedLogo).then((r2) => r2.blob()).then(lerDataUrl);
+  const logoId = wb.addImage({ base64: dataUrl, extension: "png" });
+
   // ── Resumo (cards) ──
   const r = wb.addWorksheet("Resumo");
   r.columns = [{ width: M }, ...Array(8).fill({ width: 15.875 }), { width: M }];
-  cabecalhoFolha(r, "RELATÓRIO DE CHAMADOS", 9, meta);
+  cabecalhoFolha(r, "RELATÓRIO DE CHAMADOS", 9, meta, logoId);
   secao(r, "VISÃO GERAL");
   const cards: { rot: string; val: Celula; desc: string; cor: string }[] = [
     { rot: "CHAMADOS TOTAIS", val: dados.total, desc: "chamados registrados", cor: TX },
@@ -178,7 +197,7 @@ async function exportarXlsx(dados: DadosRelatorio, nome: string, meta: MetaRelat
   function folhaDistribuicao(titulo: string, secaoTxt: string, rotuloCol: string, larguraB: number, linhas: { rotulo: string; total: number; concluidos: number }[]) {
     const ws = wb.addWorksheet(titulo);
     ws.columns = [{ width: M }, { width: larguraB }, { width: 16.625 }, { width: 16.625 }, { width: 16.625 }, { width: 21.625 }, { width: M }];
-    cabecalhoFolha(ws, titulo === "Por unidade" ? "CHAMADOS POR UNIDADE" : "CHAMADOS POR URGÊNCIA", 6, meta);
+    cabecalhoFolha(ws, titulo === "Por unidade" ? "CHAMADOS POR UNIDADE" : "CHAMADOS POR URGÊNCIA", 6, meta, logoId);
     secao(ws, secaoTxt);
     headerTabela(ws, 8, [rotuloCol, "CHAMADOS", "CONCLUÍDOS", "EM ABERTO", "TAXA DE CONCLUSÃO"]);
     let lin = 9;
@@ -205,7 +224,7 @@ async function exportarXlsx(dados: DadosRelatorio, nome: string, meta: MetaRelat
   // ── Chamados ──
   const ch = wb.addWorksheet("Chamados");
   ch.columns = [{ width: M }, { width: 15.875 }, { width: 17.5 }, { width: 30 }, { width: 53.375 }, { width: 16.625 }, { width: 20 }, { width: M }];
-  cabecalhoFolha(ch, "REGISTRO DE CHAMADOS", 7, meta);
+  cabecalhoFolha(ch, "REGISTRO DE CHAMADOS", 7, meta, logoId);
   secao(ch, "DETALHAMENTO DOS CHAMADOS");
   headerTabela(ch, 8, ["Data", "Protocolo", "Serviço", "Unidade", "Urgência", "Status"]);
   let lin = 9;

@@ -140,7 +140,38 @@ Deno.serve(comCaptura("invite-user", async (req) => {
           from: "DespachaGov <nao-responder@despachagov.com>",
           to: [email],
           subject: "Seu acesso ao DespachaGov",
-          html: `<div style="font-family:sans-serif"><h2 style="color:#2456A6">DespachaGov</h2><p>Olá, ${nome}.</p><p>Defina sua senha:</p><p><a href="${actionLink}">Definir senha</a></p></div>`,
+          html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F8F9FB;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F8F9FB;padding:32px 12px;">
+ <tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E5E7EB;">
+   <tr><td align="center" style="background:#2456A6;padding:24px 32px;">
+     <span style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;font-style:italic;"><span style="color:#FB923C;">Despacha</span><span style="color:#ffffff;">Gov</span></span>
+   </td></tr>
+   <tr><td style="padding:36px 40px 30px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#F97316;padding:0 0 8px;">Acesso ao sistema</td></tr>
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:23px;font-weight:bold;color:#1A3F7A;padding:0 0 16px;">Defina sua senha de acesso</td></tr>
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#374151;padding:0 0 14px;">Olá, <b style="color:#1A3F7A;">${nome}</b>.</td></tr>
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#374151;padding:0 0 20px;">A Secretaria Municipal de Educação criou um acesso para você no DespachaGov. Para começar, defina uma senha clicando no botão abaixo.</td></tr>
+     <tr><td style="padding:4px 0 4px;">
+       <a href="${actionLink}" style="display:inline-block;background:#2456A6;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;padding:14px 32px;border-radius:10px;">Definir minha senha</a>
+     </td></tr>
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#9CA3AF;padding:16px 0 0;">Este link expira em 24 horas. Se expirar, peça um novo convite à Secretaria.</td></tr>
+     <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#6B7488;border-top:1px solid #E5E7EB;padding:20px 0 0;">Se você não esperava este acesso, pode ignorar este e-mail com segurança.</td></tr>
+    </table>
+   </td></tr>
+   <tr><td style="background:#F8F9FB;padding:20px 40px;border-top:1px solid #E5E7EB;">
+     <p style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#9CA3AF;margin:0 0 6px;">Você recebeu este e-mail porque a Secretaria criou um acesso para você no DespachaGov.</p>
+     <p style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#9CA3AF;margin:0;">Prefeitura de Altamira · Secretaria Municipal de Educação · DespachaGov &copy; 2026</p>
+   </td></tr>
+  </table>
+ </td></tr>
+</table>
+</body>
+</html>`,
         }),
       });
       emailSent = r.ok;

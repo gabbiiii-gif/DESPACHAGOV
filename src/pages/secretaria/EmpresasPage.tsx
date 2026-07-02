@@ -5,6 +5,7 @@ import { Card, Alert } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { useAuth } from "@/hooks/useAuth";
 import { empresaSchema } from "@/lib/cadastros";
+import { ESPECIALIDADES } from "@/lib/especialidades";
 import { listarEmpresas, criarEmpresa, excluirEmpresa, listarTecnicos, type Empresa, type Tecnico } from "@/services/cadastros";
 
 export function EmpresasPage() {
@@ -14,6 +15,7 @@ export function EmpresasPage() {
   const [modal, setModal] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const [espSel, setEspSel] = useState<string[]>([]);
   // Visualização dos técnicos (funcionários) de uma empresa.
   const [verEmpresa, setVerEmpresa] = useState<Empresa | null>(null);
   const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
@@ -42,8 +44,7 @@ export function EmpresasPage() {
     const parsed = empresaSchema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
     if (!parsed.success) { setErro(parsed.error.issues[0]?.message ?? "Dados inválidos"); return; }
     setSalvando(true);
-    const especialidades = (parsed.data.especialidades ?? "")
-      .split(",").map((s) => s.trim()).filter(Boolean);
+    const especialidades = espSel;
     const { error } = await criarEmpresa({
       tenant_id: tenantId,
       razao_social: parsed.data.razao_social,
@@ -54,7 +55,7 @@ export function EmpresasPage() {
     });
     setSalvando(false);
     if (error) { setErro(error); return; }
-    setModal(false);
+    setModal(false); setEspSel([]);
     void recarregar();
   }
 
@@ -77,7 +78,7 @@ export function EmpresasPage() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-cinza-texto">Empresas prestadoras</h1>
-        <Button variant="acento" onClick={() => setModal(true)}>Nova empresa</Button>
+        <Button variant="acento" onClick={() => { setEspSel([]); setModal(true); }}>Nova empresa</Button>
       </div>
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
 
@@ -116,7 +117,22 @@ export function EmpresasPage() {
           <Input name="cnpj" label="CNPJ" />
           <Input name="telefone" label="Telefone" />
           <Input name="email" label="E-mail" type="email" />
-          <div className="sm:col-span-2"><Input name="especialidades" label="Especialidades (separadas por vírgula)" placeholder="climatização, elétrica" /></div>
+          <div className="sm:col-span-2">
+            <span className="mb-1.5 block text-sm font-medium text-cinza-texto">Especialidades (guiam a atribuição)</span>
+            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+              {ESPECIALIDADES.map((esp) => (
+                <label key={esp} className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-cinza-fundo">
+                  <input
+                    type="checkbox"
+                    checked={espSel.includes(esp)}
+                    onChange={() => setEspSel((s) => s.includes(esp) ? s.filter((x) => x !== esp) : [...s, esp])}
+                    className="size-4"
+                  />
+                  <span className="text-cinza-texto">{esp}</span>
+                </label>
+              ))}
+            </div>
+          </div>
           <div className="sm:col-span-2"><Button type="submit" loading={salvando} className="w-full">Salvar</Button></div>
         </form>
       </Modal>

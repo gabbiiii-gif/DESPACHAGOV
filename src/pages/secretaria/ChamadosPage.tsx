@@ -12,6 +12,7 @@ import {
   listarChamados, listarEventos, atribuirChamado, transicionarChamado,
   type Chamado, type ChamadoEvento,
 } from "@/services/chamados";
+import { ESPECIALIDADES, filtrarEmpresasPorEspecialidade } from "@/lib/especialidades";
 
 export function ChamadosPage() {
   const { session, profile } = useAuth();
@@ -25,6 +26,7 @@ export function ChamadosPage() {
   const [detalhe, setDetalhe] = useState<Chamado | null>(null);
   const [eventos, setEventos] = useState<ChamadoEvento[]>([]);
   const [empresaSel, setEmpresaSel] = useState("");
+  const [espFiltro, setEspFiltro] = useState("");
   const [urgenciaSel, setUrgenciaSel] = useState<Urgencia | "">("");
   const [acaoErro, setAcaoErro] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);
@@ -52,6 +54,7 @@ export function ChamadosPage() {
     setDetalhe(c);
     setAcaoErro(null);
     setEmpresaSel(c.empresa_id ?? "");
+    setEspFiltro("");
     setUrgenciaSel((c.urgencia as Urgencia | null) ?? "");
     setEventos(await listarEventos(c.id));
   }
@@ -139,6 +142,12 @@ export function ChamadosPage() {
             {detalhe.status !== "concluido" && detalhe.status !== "cancelado" && (
               <div className="rounded-lg border border-cinza-borda p-3">
                 <p className="mb-2 text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
+                <div className="mb-2">
+                  <Select label="Tipo de serviço (filtra as empresas)" value={espFiltro} onChange={(e) => { setEspFiltro(e.target.value); setEmpresaSel(""); }}>
+                    <option value="">Todas as especialidades</option>
+                    {ESPECIALIDADES.map((esp) => <option key={esp} value={esp}>{esp}</option>)}
+                  </Select>
+                </div>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <Select label="Urgência" value={urgenciaSel} onChange={(e) => setUrgenciaSel(e.target.value as Urgencia | "")}>
                     <option value="">Selecione…</option>
@@ -146,7 +155,11 @@ export function ChamadosPage() {
                   </Select>
                   <Select label="Empresa" value={empresaSel} onChange={(e) => setEmpresaSel(e.target.value)}>
                     <option value="">Selecione…</option>
-                    {empresas.map((e) => <option key={e.id} value={e.id}>{e.razao_social}</option>)}
+                    {filtrarEmpresasPorEspecialidade(empresas, espFiltro).map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.razao_social}{e.especialidades.length ? ` — ${e.especialidades.join(", ")}` : ""}
+                      </option>
+                    ))}
                   </Select>
                 </div>
                 <Button onClick={() => void atribuir()} loading={processando} className="mt-2 w-full">Triar e atribuir</Button>

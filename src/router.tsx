@@ -24,7 +24,13 @@ import { ContratoPage } from "./pages/empresa/ContratoPage";
 import { TecnicosPage } from "./pages/empresa/TecnicosPage";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
-const SECRETARIA_ROLES = ["admin_secretaria", "gestor_secretaria"] as const;
+const SECRETARIA_ROLES = [
+  "admin_secretaria", "gestor_secretaria", "secretaria_semed", "engenheiro", "arquiteto",
+] as const;
+const EMPRESA_ROLES = [
+  "empresa_admin", "manutencao_predial", "manutencao_refrigeracao",
+  "manutencao_ar_condicionado", "instalacao_ar_condicionado",
+] as const;
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -66,7 +72,8 @@ export const router = createBrowserRouter([
       { path: "mapa", element: <MapaPage /> },
       { path: "unidades", element: <UnidadesPage /> },
       { path: "empresas", element: <EmpresasPage /> },
-      { path: "usuarios", element: <UsuariosPage /> },
+      // Só o Chefe de divisão (admin_secretaria) cadastra usuários.
+      { path: "usuarios", element: <ProtectedRoute roles={["admin_secretaria"]}><UsuariosPage /></ProtectedRoute> },
     ],
   },
 
@@ -76,7 +83,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/empresa",
-    element: <ProtectedRoute roles={["empresa_admin"]}><EmpresaShell /></ProtectedRoute>,
+    element: <ProtectedRoute roles={[...EMPRESA_ROLES]}><EmpresaShell /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="/empresa/chamados" replace /> },
       { path: "chamados", element: <EmpresaChamadosPage /> },

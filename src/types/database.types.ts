@@ -937,6 +937,13 @@ export type Database = {
         | "tecnico_secretaria"
         | "empresa_admin"
         | "tecnico_empresa"
+        | "secretaria_semed"
+        | "engenheiro"
+        | "arquiteto"
+        | "manutencao_predial"
+        | "manutencao_refrigeracao"
+        | "manutencao_ar_condicionado"
+        | "instalacao_ar_condicionado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1072,6 +1079,13 @@ export const Constants = {
         "tecnico_secretaria",
         "empresa_admin",
         "tecnico_empresa",
+        "secretaria_semed",
+        "engenheiro",
+        "arquiteto",
+        "manutencao_predial",
+        "manutencao_refrigeracao",
+        "manutencao_ar_condicionado",
+        "instalacao_ar_condicionado",
       ],
     },
   },

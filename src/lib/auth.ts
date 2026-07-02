@@ -18,10 +18,17 @@ export function homeRouteForRole(role: Role): string {
       return "/superadmin";
     case "admin_secretaria":
     case "gestor_secretaria":
+    case "secretaria_semed":
+    case "engenheiro":
+    case "arquiteto":
       return "/secretaria";
     case "responsavel_unidade":
       return "/unidade";
     case "empresa_admin":
+    case "manutencao_predial":
+    case "manutencao_refrigeracao":
+    case "manutencao_ar_condicionado":
+    case "instalacao_ar_condicionado":
       return "/empresa";
     // Técnicos (interno e de empresa) não são usuários do app — apenas registros
     // cadastrados pela empresa. Se logarem, caem na tela de "sem acesso".

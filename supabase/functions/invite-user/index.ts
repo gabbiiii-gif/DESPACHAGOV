@@ -54,11 +54,22 @@ Deno.serve(comCaptura("invite-user", async (req) => {
   const role = String(body.role ?? "");
   const empresaId = body.empresa_id ? String(body.empresa_id) : null;
   const matricula = body.matricula ? String(body.matricula).trim() : null;
+  const unidadeIds = Array.isArray(body.unidade_ids) ? body.unidade_ids.map((x) => String(x)) : [];
   const isEmpresa = ROLES_EMPRESA.has(role);
+  const isResponsavel = role === "responsavel_unidade";
   if (!nome || !email || (!ROLES_SECRETARIA.has(role) && !isEmpresa)) {
     return json({ error: "campos inválidos" }, 400);
   }
   if (isEmpresa && !empresaId) return json({ error: "empresa_id obrigatório p/ papel de empresa" }, 400);
+  // Diretor precisa de ao menos uma escola vinculada.
+  if (isResponsavel && unidadeIds.length === 0) {
+    return json({ error: "selecione ao menos uma escola p/ o responsável" }, 400);
+  }
+  // Garante que as unidades informadas pertencem ao tenant do admin.
+  if (unidadeIds.length) {
+    const { data: uns } = await admin.from("unidades").select("id").eq("tenant_id", tenantId).in("id", unidadeIds);
+    if (!uns || uns.length !== unidadeIds.length) return json({ error: "unidade inválida" }, 400);
+  }
 
   // Matrícula = login alternativo; única dentro do tenant.
   if (matricula) {
@@ -94,6 +105,21 @@ Deno.serve(comCaptura("invite-user", async (req) => {
   if (pErr) {
     await admin.auth.admin.deleteUser(created.user.id);
     return json({ error: `perfil: ${pErr.message}` }, 400);
+  }
+
+  // Vincula as escolas ao diretor recém-criado (unidades.responsavel_user_id).
+  // Reatribui: se a escola já tinha responsável, o novo assume.
+  if (unidadeIds.length) {
+    const { error: uErr } = await admin
+      .from("unidades")
+      .update({ responsavel_user_id: created.user.id })
+      .eq("tenant_id", tenantId)
+      .in("id", unidadeIds);
+    if (uErr) {
+      // Rollback: deletar o auth user cascateia o perfil (users.id → auth.users).
+      await admin.auth.admin.deleteUser(created.user.id);
+      return json({ error: `vínculo de escola: ${uErr.message}` }, 400);
+    }
   }
 
   const { data: link } = await admin.auth.admin.generateLink({

@@ -15,6 +15,8 @@ export interface ChamadoRel {
 
 export interface LinhaUnidade { unidadeId: string; nome: string; total: number; concluidos: number; }
 export interface LinhaDetalhe { rotulo: string; total: number; concluidos: number; }
+// Detalhamento por chamado, agrupado por escola (exclui cancelados).
+export interface LinhaEscola { unidadeId: string; nome: string; emAndamento: number; concluidos: number; pct: number; }
 export interface PontoDia { dia: string; total: number; }
 export interface ChamadoLinha { data: string; protocolo: string; descricao: string; unidade: string; urgencia: string; status: string; }
 
@@ -26,6 +28,7 @@ export interface DadosRelatorio {
   tempoMedioHoras: number | null;
   porUnidade: LinhaUnidade[];
   porUrgencia: LinhaDetalhe[];
+  porEscola: LinhaEscola[];
   porDia: PontoDia[];
   chamados: ChamadoLinha[];
 }
@@ -83,6 +86,21 @@ export function agregar(
   const semTriagem = chamados.filter((c) => !c.urgencia);
   if (semTriagem.length) porUrgencia.push({ rotulo: "Sem triagem", total: semTriagem.length, concluidos: semTriagem.filter(ehConcluido).length });
 
+  // Detalhamento por chamado, agrupado por escola (exclui cancelados).
+  const mapE = new Map<string, LinhaEscola>();
+  for (const c of chamados) {
+    if (c.status === "cancelado") continue;
+    const l = mapE.get(c.unidade_id) ?? { unidadeId: c.unidade_id, nome: nomeUnidade(c.unidade_id), emAndamento: 0, concluidos: 0, pct: 0 };
+    if (ehConcluido(c)) l.concluidos++; else l.emAndamento++;
+    mapE.set(c.unidade_id, l);
+  }
+  const porEscola = [...mapE.values()]
+    .map((l) => {
+      const base = l.emAndamento + l.concluidos;
+      return { ...l, pct: base ? Math.round((l.concluidos / base) * 100) : 0 };
+    })
+    .sort((a, b) => (b.emAndamento + b.concluidos) - (a.emAndamento + a.concluidos));
+
   // Volume por dia (ordenado por data).
   const mapD = new Map<string, number>();
   for (const c of chamados) {
@@ -113,6 +131,7 @@ export function agregar(
     tempoMedioHoras,
     porUnidade,
     porUrgencia,
+    porEscola,
     porDia,
     chamados: chamadosLin,
   };

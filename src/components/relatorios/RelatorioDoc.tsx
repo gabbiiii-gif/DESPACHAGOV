@@ -53,8 +53,6 @@ export interface RelatorioDocProps {
 
 export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(function RelatorioDoc(props, ref) {
   const { tipo, titulo, subtitulo, periodoRotulo, periodoValor, docNum, emitidoEm, filtrosLinha, unidadeInfo, secretariaNome, dados } = props;
-  const maxU = dados.porUnidade[0]?.total ?? 1;
-  const topUnidades = dados.porUnidade.slice(0, 6);
   const maxDia = Math.max(1, ...dados.porDia.map((d) => d.total));
   const listaMostrada = dados.chamados.slice(0, 12);
 
@@ -116,23 +114,6 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
         Tempo médio até a conclusão: <strong style={{ color: C.oliva }}>{fmtHoras(dados.tempoMedioHoras)}</strong>
       </div>
 
-      {/* por unidade (mensal) */}
-      {tipo === "mensal" && topUnidades.length > 0 && (
-        <>
-          <div style={tituloSecao}>Chamados por unidade</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 11, marginBottom: 30 }}>
-            {topUnidades.map((u) => (
-              <div key={u.unidadeId} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ width: 170, fontSize: 13, color: C.oliva, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.nome}</span>
-                <div style={{ flex: 1, height: 22, background: C.linha, borderRadius: 5, overflow: "hidden" }}>
-                  <div style={{ width: `${Math.round((u.total / maxU) * 100)}%`, height: "100%", background: `linear-gradient(90deg,${C.olivaClaro},${C.oliva})` }} />
-                </div>
-                <span style={{ width: 34, textAlign: "right", fontSize: 13, fontWeight: 700, color: C.oliva }}>{u.total}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
 
       {/* volume diário (personalizado) */}
       {tipo === "personalizado" && dados.porDia.length > 0 && (
@@ -149,31 +130,34 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
         </>
       )}
 
-      {/* detalhamento por urgência (mensal) */}
+      {/* detalhamento por chamado, agrupado por escola (mensal) */}
       {tipo === "mensal" && (
         <>
-          <div style={tituloSecao}>Detalhamento por urgência</div>
+          <div style={tituloSecao}>Detalhamento por chamado</div>
           <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 30 }}>
             <thead>
               <tr style={{ borderBottom: `2px solid ${C.oliva}` }}>
-                <th style={th}>Urgência</th>
-                <th style={{ ...th, textAlign: "right" }}>Chamados</th>
+                <th style={th}>Escola</th>
+                <th style={{ ...th, textAlign: "right" }}>Em andamento</th>
                 <th style={{ ...th, textAlign: "right" }}>Concluídos</th>
                 <th style={{ ...th, textAlign: "right" }}>%</th>
               </tr>
             </thead>
             <tbody style={{ fontSize: 13, color: C.oliva }}>
-              {dados.porUrgencia.map((l) => (
-                <tr key={l.rotulo} style={{ borderBottom: `1px solid ${C.linha}` }}>
-                  <td style={{ ...td, fontWeight: 600 }}>{l.rotulo}</td>
-                  <td style={{ ...td, textAlign: "right" }}>{l.total}</td>
+              {dados.porEscola.map((l) => (
+                <tr key={l.unidadeId} style={{ borderBottom: `1px solid ${C.linha}` }}>
+                  <td style={{ ...td, fontWeight: 600 }}>{l.nome}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.laranja }}>{l.emAndamento}</td>
                   <td style={{ ...td, textAlign: "right" }}>{l.concluidos}</td>
-                  <td style={{ ...td, textAlign: "right", color: C.verde, fontWeight: 700 }}>{l.total ? Math.round((l.concluidos / l.total) * 100) : 0}%</td>
+                  <td style={{ ...td, textAlign: "right", color: C.verde, fontWeight: 700 }}>{l.pct}%</td>
                 </tr>
               ))}
+              {dados.porEscola.length === 0 && (
+                <tr><td style={{ ...td, color: C.cinzaClaro }} colSpan={4}>Nenhum chamado no período.</td></tr>
+              )}
               <tr style={{ borderBottom: `2px solid ${C.oliva}`, fontWeight: 800 }}>
                 <td style={{ ...td, padding: "11px 8px" }}>Total</td>
-                <td style={{ ...td, textAlign: "right", padding: "11px 8px" }}>{dados.total}</td>
+                <td style={{ ...td, textAlign: "right", padding: "11px 8px", color: C.laranja }}>{dados.emAberto}</td>
                 <td style={{ ...td, textAlign: "right", padding: "11px 8px" }}>{dados.concluidos}</td>
                 <td style={{ ...td, textAlign: "right", padding: "11px 8px", color: C.verde }}>{dados.taxaPct}%</td>
               </tr>

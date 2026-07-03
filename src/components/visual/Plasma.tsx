@@ -116,7 +116,9 @@ export default function Plasma({
         webgl: 2,
         alpha: true,
         antialias: false,
-        dpr: Math.min(window.devicePixelRatio || 1, 2),
+        // Fundo decorativo borrado: DPR fixo em 1 evita raymarch em 4x os pixels
+        // numa tela retina (custo do shader ∝ nº de pixels).
+        dpr: 1,
       });
     } catch {
       return;
@@ -158,11 +160,17 @@ export default function Plasma({
     };
     if (mouseInteractive) containerEl.addEventListener("mousemove", handleMouseMove);
 
+    // Renderiza num buffer menor (0.8x) e estica via CSS: fundo borrado não perde
+    // qualidade perceptível e o shader processa ~36% menos pixels.
+    const RENDER_SCALE = 0.8;
     const setSize = () => {
       const rect = containerEl.getBoundingClientRect();
-      const width = Math.max(1, Math.floor(rect.width));
-      const height = Math.max(1, Math.floor(rect.height));
+      const width = Math.max(1, Math.floor(rect.width * RENDER_SCALE));
+      const height = Math.max(1, Math.floor(rect.height * RENDER_SCALE));
       renderer.setSize(width, height);
+      // ogl fixa canvas.style em px; forçamos 100% p/ cobrir o container.
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
       const res = program.uniforms.iResolution.value as Float32Array;
       res[0] = gl.drawingBufferWidth;
       res[1] = gl.drawingBufferHeight;
@@ -175,9 +183,15 @@ export default function Plasma({
     let contextLost = false;
     let isVisible = true;
     const t0 = performance.now();
+    // Cap ~30fps: fundo não precisa de 60fps e corta metade do trabalho de GPU.
+    let lastFrame = 0;
+    const FRAME_MS = 1000 / 30;
 
     const loop = (t: number) => {
       if (contextLost || !isVisible) return;
+      raf = requestAnimationFrame(loop);
+      if (t - lastFrame < FRAME_MS) return;
+      lastFrame = t;
       const timeValue = (t - t0) * 0.001;
       if (direction === "pingpong") {
         const pingpongDuration = 10;
@@ -192,7 +206,6 @@ export default function Plasma({
         program.uniforms.iTime.value = timeValue;
       }
       renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
     };
 
     const handleContextLost = (e: Event) => {

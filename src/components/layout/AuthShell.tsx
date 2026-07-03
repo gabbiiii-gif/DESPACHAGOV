@@ -7,17 +7,35 @@ import { useEntrada } from "@/hooks/useEntrada";
 const HeroCanvas = lazy(() => import("@/components/visual/HeroCanvas"));
 const Plasma = lazy(() => import("@/components/visual/Plasma"));
 
+// Em telas touch/estreitas (onde 2 contextos WebGL travam) ou com reduced-motion,
+// troca os fundos animados por um gradiente estático — login fluido em qualquer
+// aparelho. Avaliado uma vez no load (login não é redimensionado entre breakpoints).
+const FUNDO_LEVE =
+  typeof window !== "undefined" &&
+  (window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.innerWidth < 820);
+
 // Moldura das telas de autenticação: marca + card centralizado, mobile-first.
 export function AuthShell({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: ReactNode }) {
   const cardRef = useEntrada<HTMLDivElement>();
   return (
     <main className="relative isolate flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-5 py-10">
-      <Suspense fallback={null}>
-        <div className="absolute inset-0 -z-20">
-          <Plasma color="#070652" speed={1} direction="forward" scale={1} opacity={0.35} mouseInteractive />
-        </div>
-      </Suspense>
-      <Suspense fallback={null}><HeroCanvas /></Suspense>
+      {FUNDO_LEVE ? (
+        <div
+          className="absolute inset-0 -z-20"
+          style={{ background: "radial-gradient(120% 120% at 50% 0%, #0a1550 0%, #070652 45%, #050430 100%)" }}
+        />
+      ) : (
+        <>
+          <Suspense fallback={null}>
+            <div className="absolute inset-0 -z-20">
+              <Plasma color="#070652" speed={1} direction="forward" scale={1} opacity={0.35} mouseInteractive={false} />
+            </div>
+          </Suspense>
+          <Suspense fallback={null}><HeroCanvas /></Suspense>
+        </>
+      )}
 
       <div className="flex items-center gap-3">
         <Logo className="h-11 w-11" />

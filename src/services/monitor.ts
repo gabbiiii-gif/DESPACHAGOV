@@ -25,6 +25,29 @@ export async function analisarErros(): Promise<{ total: number; analise: Analise
 
 let instalado = false;
 
+// Extrai mensagem REAL + contexto (stack, code/status/hint do PostgREST/supabase-js)
+// de qualquer motivo de erro. Evita o "Rejected" genérico sem origem.
+function detalhesErro(r: unknown): { mensagem: string; contexto: Record<string, unknown> } {
+  if (r instanceof Error) {
+    return { mensagem: r.message || r.name || "Erro", contexto: { stack: r.stack?.slice(0, 3000) } };
+  }
+  if (r && typeof r === "object") {
+    const o = r as Record<string, unknown>;
+    // supabase-js / PostgREST: { message, code, details, hint, status/statusCode }
+    const msg = typeof o.message === "string" && o.message ? o.message : JSON.stringify(o).slice(0, 500);
+    return {
+      mensagem: msg,
+      contexto: {
+        code: o.code ?? null,
+        status: o.status ?? o.statusCode ?? null,
+        details: o.details ?? null,
+        hint: o.hint ?? null,
+      },
+    };
+  }
+  return { mensagem: r == null ? "Rejeição sem motivo" : String(r), contexto: {} };
+}
+
 // Captura erros globais do front e envia ao log-erro (throttle por mensagem).
 export function instalarReporterErros(): void {
   if (instalado || typeof window === "undefined") return;
@@ -40,11 +63,14 @@ export function instalarReporterErros(): void {
   };
 
   window.addEventListener("error", (e) => {
-    reportar(e.message, { origem: "window.error", arquivo: e.filename, linha: e.lineno, url: location.pathname });
+    const d = detalhesErro(e.error ?? e.message);
+    reportar(d.mensagem, {
+      origem: "window.error", arquivo: e.filename, linha: e.lineno, coluna: e.colno,
+      url: location.pathname, ...d.contexto,
+    });
   });
   window.addEventListener("unhandledrejection", (e) => {
-    const r = e.reason;
-    const msg = r instanceof Error ? r.message : String(r);
-    reportar(msg, { origem: "unhandledrejection", url: location.pathname });
+    const d = detalhesErro(e.reason);
+    reportar(d.mensagem, { origem: "unhandledrejection", url: location.pathname, ...d.contexto });
   });
 }

@@ -196,7 +196,12 @@ export function ChamadosPage() {
               <div className="rounded-lg border border-cinza-borda p-3">
                 <p className="mb-2 text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
                 <div className="mb-2">
-                  <Select label="Tipo de serviço (filtra as empresas)" value={espFiltro} onChange={(e) => { setEspFiltro(e.target.value); setEmpresaSel(""); }}>
+                  <Select label="Tipo de serviço (filtra as empresas)" value={espFiltro} onChange={(e) => {
+                    const novo = e.target.value;
+                    setEspFiltro(novo);
+                    // Auto-seleciona a empresa que atende a especialidade (a 1ª que casa).
+                    setEmpresaSel(novo ? (filtrarEmpresasPorEspecialidade(empresas, novo)[0]?.id ?? "") : "");
+                  }}>
                     <option value="">Todas as especialidades</option>
                     {ESPECIALIDADES.map((esp) => <option key={esp} value={esp}>{esp}</option>)}
                   </Select>

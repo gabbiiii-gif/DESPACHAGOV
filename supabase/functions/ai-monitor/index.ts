@@ -20,7 +20,9 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const MODELO = "claude-sonnet-4-6";
+// Opus 4.7 p/ análise mais profunda (causa-raiz, riscos futuros, melhorias).
+// Só roda sob demanda (botão "Analisar" na tela Saúde) — não há gatilho automático.
+const MODELO = "claude-opus-4-7";
 
 Deno.serve(comCaptura("ai-monitor", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -57,10 +59,12 @@ Deno.serve(comCaptura("ai-monitor", async (req) => {
     headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model: MODELO,
-      max_tokens: 1024,
-      thinking: { type: "disabled" },
+      // Opus 4.7: thinking adaptativo (budget_tokens não é aceito) + effort alto.
+      // max_tokens cobre o raciocínio + o JSON final (senão trunca e o parse falha).
+      max_tokens: 8000,
+      thinking: { type: "adaptive" },
       system: PROMPT_MONITOR,
-      output_config: { format: { type: "json_schema", schema: ANALISE_SCHEMA } },
+      output_config: { effort: "high", format: { type: "json_schema", schema: ANALISE_SCHEMA } },
       messages: [{ role: "user", content: promptErros(grupos) }],
     }),
   });

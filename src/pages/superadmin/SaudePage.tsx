@@ -44,10 +44,19 @@ export function SaudePage() {
           <Button variant="outline" onClick={() => navigate("/superadmin")} className="px-3 py-1.5 text-xs">← Secretarias</Button>
           <p className="text-sm text-cinza-secundario">{grupos.length} tipo(s) de erro recente(s)</p>
         </div>
-        <Button variant="acento" onClick={() => void analisar()} loading={analisando} disabled={grupos.length === 0}>
-          Analisar com IA
+        <Button
+          variant="acento"
+          onClick={() => void analisar()}
+          loading={analisando}
+          disabled={grupos.length === 0}
+          title="Roda o agente Opus 4.7 sob demanda (modelo premium) — só quando você clica."
+        >
+          Analisar com IA (Opus 4.7)
         </Button>
       </div>
+      <p className="mb-3 text-xs text-cinza-secundario">
+        A análise usa o modelo Opus 4.7 e roda <strong>só quando você clica</strong> — nada automático, para não gastar tokens à toa.
+      </p>
 
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
 

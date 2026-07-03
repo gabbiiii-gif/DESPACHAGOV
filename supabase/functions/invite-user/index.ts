@@ -14,8 +14,13 @@ const cors = {
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const ROLES_SECRETARIA = new Set(["gestor_secretaria", "responsavel_unidade"]);
-const ROLES_EMPRESA = new Set(["empresa_admin"]);
+const ROLES_SECRETARIA = new Set([
+  "gestor_secretaria", "responsavel_unidade", "secretaria_semed", "engenheiro", "arquiteto",
+]);
+const ROLES_EMPRESA = new Set([
+  "empresa_admin", "manutencao_predial", "manutencao_refrigeracao",
+  "manutencao_ar_condicionado", "instalacao_ar_condicionado",
+]);
 
 Deno.serve(comCaptura("invite-user", async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });

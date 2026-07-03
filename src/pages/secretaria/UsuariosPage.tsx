@@ -15,21 +15,36 @@ import {
 // Técnicos não são usuários do app — a empresa os cadastra como registros
 // (aba "Técnicos"). Aqui só papéis com login.
 const ROLE_LABEL: Record<string, string> = {
-  admin_secretaria: "Admin da Secretaria",
-  gestor_secretaria: "Gestor da Secretaria",
-  responsavel_unidade: "Responsável de Unidade",
-  empresa_admin: "Admin de Empresa",
+  admin_secretaria: "Chefe de divisão",
+  engenheiro: "Engenheiro",
+  arquiteto: "Arquiteto",
+  secretaria_semed: "Secretaria (SEMED)",
+  responsavel_unidade: "Gestor de unidade",
+  gestor_secretaria: "Gestor da Secretaria", // legado
+  empresa_admin: "Empresa", // legado
+  manutencao_predial: "Manutenção predial",
+  manutencao_refrigeracao: "Manutenção de refrigeração",
+  manutencao_ar_condicionado: "Manutenção de ar-condicionado",
+  instalacao_ar_condicionado: "Instalação de ar-condicionado",
 };
 
+// Papéis que o Chefe de divisão pode cadastrar (ordem = exibição).
 const ROLES_CONVIDAVEIS: Role[] = [
-  "gestor_secretaria", "responsavel_unidade", "empresa_admin",
+  "admin_secretaria", "engenheiro", "arquiteto", "secretaria_semed", "responsavel_unidade",
+  "manutencao_predial", "manutencao_refrigeracao", "manutencao_ar_condicionado", "instalacao_ar_condicionado",
 ];
-const ROLES_EMPRESA = new Set<Role>(["empresa_admin"]);
+// Papéis de empresa: exigem vínculo com uma empresa (empresa_id).
+const ROLES_EMPRESA = new Set<Role>([
+  "manutencao_predial", "manutencao_refrigeracao", "manutencao_ar_condicionado", "instalacao_ar_condicionado",
+]);
 
 const schema = z.object({
   nome: z.string().min(3, "Informe o nome"),
   email: z.string().email("E-mail inválido"),
-  role: z.enum(["gestor_secretaria", "responsavel_unidade", "empresa_admin"]),
+  role: z.enum([
+    "admin_secretaria", "engenheiro", "arquiteto", "secretaria_semed", "responsavel_unidade",
+    "manutencao_predial", "manutencao_refrigeracao", "manutencao_ar_condicionado", "instalacao_ar_condicionado",
+  ]),
   empresa_id: z.string().optional(),
   matricula: z.string().optional(),
 });
@@ -168,7 +183,7 @@ export function UsuariosPage() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-cinza-texto">Usuários</h1>
-        <Button variant="acento" onClick={abrirConvite}>Convidar usuário</Button>
+        <Button variant="acento" onClick={abrirConvite}>Cadastrar usuário</Button>
       </div>
 
       {ok && <div className="mb-3"><Alert tipo="sucesso">{ok}</Alert></div>}
@@ -230,7 +245,7 @@ export function UsuariosPage() {
         </Card>
       )}
 
-      <Modal aberto={modal} titulo="Convidar usuário" onClose={() => setModal(false)}>
+      <Modal aberto={modal} titulo="Cadastrar usuário" onClose={() => setModal(false)}>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Input name="nome" label="Nome" />
           <Input name="email" label="E-mail" type="email" />
@@ -256,7 +271,7 @@ export function UsuariosPage() {
               <p className="mt-1 text-xs text-cinza-secundario">Ele abrirá chamados só para estas escolas. Ao menos uma é obrigatória.</p>
             </div>
           )}
-          <Button type="submit" loading={salvando} className="w-full">Enviar convite</Button>
+          <Button type="submit" loading={salvando} className="w-full">Cadastrar usuário</Button>
         </form>
       </Modal>
 

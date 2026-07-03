@@ -103,6 +103,7 @@ export function UnidadeChamadosPage() {
     if (!val.ok) { setErro(val.erro ?? "Anexo inválido."); return; }
     setSalvando(true);
 
+    try {
     const dados = {
       tenant_id: tenantId,
       unidade_id: unidadeIdEfetivo,
@@ -154,9 +155,14 @@ export function UnidadeChamadosPage() {
         return;
       }
     }
-    setSalvando(false);
     fecharEResetar();
     void recarregar();
+    } catch (e) {
+      // Rede/erro inesperado não pode "travar" o botão sem aviso.
+      setErro(e instanceof Error ? e.message : "Falha ao abrir o chamado. Tente novamente.");
+    } finally {
+      setSalvando(false);
+    }
   }
 
   async function verDetalhe(c: Chamado) {
@@ -240,7 +246,7 @@ export function UnidadeChamadosPage() {
             <input
               type="file"
               multiple
-              accept=".png,.jpg,.jpeg,application/pdf"
+              accept="image/*,application/pdf"
               onChange={(e) => setArquivos(Array.from(e.target.files ?? []).slice(0, 3))}
               className="block w-full text-sm text-cinza-texto file:mr-3 file:rounded-lg file:border-0 file:bg-azul-principal file:px-3 file:py-2 file:text-white"
             />

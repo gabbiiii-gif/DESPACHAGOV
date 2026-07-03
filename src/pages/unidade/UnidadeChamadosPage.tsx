@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
@@ -13,6 +13,7 @@ import {
 } from "@/services/chamados";
 import { anexarArquivo } from "@/services/execucao";
 import { validarAnexosAbertura } from "@/lib/anexos";
+import { resolverUnidadesAbertura } from "@/lib/unidadesAbertura";
 import { useOutbox } from "@/hooks/useOutbox";
 import { enfileirar } from "@/services/outbox";
 import { criarJobAbertura, ehErroDeRede, rotuloPendentes } from "@/lib/outbox";
@@ -47,6 +48,14 @@ export function UnidadeChamadosPage() {
   // detalhe
   const [detalhe, setDetalhe] = useState<Chamado | null>(null);
   const [eventos, setEventos] = useState<ChamadoEvento[]>([]);
+
+  // Escolas do diretor: 1 → trava (sem escolher); 2+ → só as dele; 0 → todas (legado).
+  const resolucao = useMemo(
+    () => resolverUnidadesAbertura(unidades, profile?.id ?? ""),
+    [unidades, profile?.id],
+  );
+  // No modo travado o id vem da única escola; senão, do que foi escolhido no select.
+  const unidadeIdEfetivo = resolucao.modo === "travado" ? resolucao.unidade.id : unidadeId;
 
   async function recarregar() {
     try {
@@ -88,7 +97,7 @@ export function UnidadeChamadosPage() {
   async function onAbrir() {
     setErro(null); setAviso(null);
     if (!tenantId || !session || !profile) return;
-    if (!unidadeId) { setErro("Selecione a unidade."); return; }
+    if (!unidadeIdEfetivo) { setErro("Selecione a unidade."); return; }
     if (descricao.trim().length < 5) { setErro("Descreva o problema (mín. 5 caracteres)."); return; }
     const val = validarAnexosAbertura(arquivos);
     if (!val.ok) { setErro(val.erro ?? "Anexo inválido."); return; }
@@ -96,8 +105,8 @@ export function UnidadeChamadosPage() {
 
     const dados = {
       tenant_id: tenantId,
-      unidade_id: unidadeId,
-      unidade_nome: nomeUnidade(unidadeId),
+      unidade_id: unidadeIdEfetivo,
+      unidade_nome: nomeUnidade(unidadeIdEfetivo),
       descricao: descricao.trim(),
       solicitante_id: session.user.id,
       solicitante_nome: profile.nome,
@@ -214,10 +223,17 @@ export function UnidadeChamadosPage() {
       {/* Abrir chamado — 3 passos numa tela só */}
       <Modal aberto={abrir} titulo="Abrir chamado" onClose={() => setAbrir(false)}>
         <div className="flex flex-col gap-4">
-          <Select label="1. Unidade" value={unidadeId} onChange={(e) => setUnidadeId(e.target.value)}>
-            <option value="">Selecione…</option>
-            {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome}</option>)}
-          </Select>
+          {resolucao.modo === "travado" ? (
+            <div>
+              <span className="mb-1.5 block text-sm font-medium text-cinza-texto">1. Unidade</span>
+              <p className="rounded-lg border border-cinza-borda bg-cinza-fundo px-3.5 py-2.5 text-sm text-cinza-texto">{resolucao.unidade.nome}</p>
+            </div>
+          ) : (
+            <Select label="1. Unidade" value={unidadeId} onChange={(e) => setUnidadeId(e.target.value)}>
+              <option value="">Selecione…</option>
+              {resolucao.unidades.map((u) => <option key={u.id} value={u.id}>{u.nome}</option>)}
+            </Select>
+          )}
 
           <div>
             <span className="mb-1.5 block text-sm font-medium text-cinza-texto">2. Ofício / foto (1 a 3 — PNG, JPG ou PDF)</span>

@@ -760,6 +760,7 @@ export type Database = {
           nome: string
           numero: string | null
           responsavel: string | null
+          responsavel_user_id: string | null
           secretaria_nome: string | null
           secretaria_telefone: string | null
           tenant_id: string
@@ -787,6 +788,7 @@ export type Database = {
           nome: string
           numero?: string | null
           responsavel?: string | null
+          responsavel_user_id?: string | null
           secretaria_nome?: string | null
           secretaria_telefone?: string | null
           tenant_id: string
@@ -814,6 +816,7 @@ export type Database = {
           nome?: string
           numero?: string | null
           responsavel?: string | null
+          responsavel_user_id?: string | null
           secretaria_nome?: string | null
           secretaria_telefone?: string | null
           tenant_id?: string
@@ -826,6 +829,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unidades_responsavel_user_id_fkey"
+            columns: ["responsavel_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

@@ -12,9 +12,24 @@ import {
   listarChamados, listarEventos, atribuirChamado, transicionarChamado,
   type Chamado, type ChamadoEvento,
 } from "@/services/chamados";
+import { ESPECIALIDADES, filtrarEmpresasPorEspecialidade } from "@/lib/especialidades";
+import { listarAnexos, urlAnexo, type Anexo } from "@/services/execucao";
+import { gerarComprovantePdf } from "@/lib/comprovante";
+
+// Ofícios/fotos/comprovante são visíveis a Chefe de divisão, Engenheiro e Arquiteto.
+const PODE_VER_ANEXOS = new Set(["admin_secretaria", "engenheiro", "arquiteto"]);
+
+async function urlParaDataUrl(url: string): Promise<string> {
+  const blob = await (await fetch(url)).blob();
+  return await new Promise((res) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result as string);
+    fr.readAsDataURL(blob);
+  });
+}
 
 export function ChamadosPage() {
-  const { session, profile } = useAuth();
+  const { session, profile, role } = useAuth();
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -25,9 +40,16 @@ export function ChamadosPage() {
   const [detalhe, setDetalhe] = useState<Chamado | null>(null);
   const [eventos, setEventos] = useState<ChamadoEvento[]>([]);
   const [empresaSel, setEmpresaSel] = useState("");
+  const [espFiltro, setEspFiltro] = useState("");
   const [urgenciaSel, setUrgenciaSel] = useState<Urgencia | "">("");
   const [acaoErro, setAcaoErro] = useState<string | null>(null);
   const [processando, setProcessando] = useState(false);
+  const [anexos, setAnexos] = useState<Anexo[]>([]);
+  const [baixando, setBaixando] = useState(false);
+
+  const podeVerAnexos = !!role && PODE_VER_ANEXOS.has(role);
+  const oficios = anexos.filter((a) => a.tipo === "oficio");
+  const fotos = anexos.filter((a) => a.tipo.startsWith("foto"));
 
   async function carregarTudo() {
     const [ch, un, em] = await Promise.all([listarChamados(), listarUnidades(), listarEmpresas()]);
@@ -52,8 +74,42 @@ export function ChamadosPage() {
     setDetalhe(c);
     setAcaoErro(null);
     setEmpresaSel(c.empresa_id ?? "");
+    setEspFiltro("");
     setUrgenciaSel((c.urgencia as Urgencia | null) ?? "");
+    setAnexos([]);
     setEventos(await listarEventos(c.id));
+    if (podeVerAnexos) setAnexos(await listarAnexos(c.id));
+  }
+
+  async function abrirAnexo(a: Anexo) {
+    const u = await urlAnexo(a.storage_path);
+    if (u) window.open(u, "_blank", "noopener");
+  }
+
+  async function baixarComprovante() {
+    if (!detalhe) return;
+    setBaixando(true); setAcaoErro(null);
+    try {
+      const fotos = anexos.filter((a) => a.tipo.startsWith("foto"));
+      const comFoto = await Promise.all(fotos.map(async (a) => {
+        const u = await urlAnexo(a.storage_path);
+        return { tipo: a.tipo, dataUrl: u ? await urlParaDataUrl(u) : "" };
+      }));
+      await gerarComprovantePdf({
+        protocolo: detalhe.numero_protocolo,
+        unidade: nomeUnidade(detalhe.unidade_id),
+        descricao: detalhe.descricao,
+        urgencia: detalhe.urgencia ?? "—",
+        empresa: nomeEmpresa(detalhe.empresa_id),
+        aberturaISO: detalhe.data_solicitacao,
+        conclusaoISO: detalhe.data_conclusao ?? new Date().toISOString(),
+        fotos: comFoto.filter((f) => f.dataUrl),
+      });
+    } catch (e) {
+      setAcaoErro(e instanceof Error ? e.message : "Falha ao gerar comprovante.");
+    } finally {
+      setBaixando(false);
+    }
   }
 
   async function recarregarDetalhe(id: string) {
@@ -139,6 +195,12 @@ export function ChamadosPage() {
             {detalhe.status !== "concluido" && detalhe.status !== "cancelado" && (
               <div className="rounded-lg border border-cinza-borda p-3">
                 <p className="mb-2 text-sm font-semibold text-cinza-texto">Triar e atribuir</p>
+                <div className="mb-2">
+                  <Select label="Tipo de serviço (filtra as empresas)" value={espFiltro} onChange={(e) => { setEspFiltro(e.target.value); setEmpresaSel(""); }}>
+                    <option value="">Todas as especialidades</option>
+                    {ESPECIALIDADES.map((esp) => <option key={esp} value={esp}>{esp}</option>)}
+                  </Select>
+                </div>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <Select label="Urgência" value={urgenciaSel} onChange={(e) => setUrgenciaSel(e.target.value as Urgencia | "")}>
                     <option value="">Selecione…</option>
@@ -146,7 +208,11 @@ export function ChamadosPage() {
                   </Select>
                   <Select label="Empresa" value={empresaSel} onChange={(e) => setEmpresaSel(e.target.value)}>
                     <option value="">Selecione…</option>
-                    {empresas.map((e) => <option key={e.id} value={e.id}>{e.razao_social}</option>)}
+                    {filtrarEmpresasPorEspecialidade(empresas, espFiltro).map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.razao_social}{e.especialidades.length ? ` — ${e.especialidades.join(", ")}` : ""}
+                      </option>
+                    ))}
                   </Select>
                 </div>
                 <Button onClick={() => void atribuir()} loading={processando} className="mt-2 w-full">Triar e atribuir</Button>
@@ -159,6 +225,35 @@ export function ChamadosPage() {
                 <Button variant="outline" onClick={() => void transicionar("cancelado")} loading={processando} className="text-xs">
                   Cancelar chamado
                 </Button>
+              </div>
+            )}
+
+            {podeVerAnexos && (
+              <div className="rounded-lg border border-cinza-borda p-3">
+                <p className="mb-2 text-sm font-semibold text-cinza-texto">Ofícios e comprovante</p>
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <span className="text-xs font-medium text-cinza-secundario">Ofícios da diretora: </span>
+                    {oficios.length === 0
+                      ? <span className="text-xs text-cinza-desabilitado">nenhum</span>
+                      : oficios.map((a, i) => (
+                        <button key={a.id} onClick={() => void abrirAnexo(a)} className="mr-2 text-xs text-azul-principal hover:underline">Ofício {i + 1} ↓</button>
+                      ))}
+                  </div>
+                  {fotos.length > 0 && (
+                    <div>
+                      <span className="text-xs font-medium text-cinza-secundario">Fotos do serviço: </span>
+                      {fotos.map((a) => (
+                        <button key={a.id} onClick={() => void abrirAnexo(a)} className="mr-2 text-xs text-azul-principal hover:underline">
+                          {a.tipo === "foto_antes" ? "Antes" : "Depois"} ↓
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <Button variant="outline" onClick={() => void baixarComprovante()} loading={baixando} disabled={fotos.length === 0} className="w-fit text-xs">
+                    Baixar comprovante (PDF)
+                  </Button>
+                </div>
               </div>
             )}
 

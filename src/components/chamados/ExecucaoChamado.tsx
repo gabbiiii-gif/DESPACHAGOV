@@ -61,6 +61,8 @@ export function ExecucaoChamado({
 
   async function enviarFoto(tipo: TipoAnexo, file: File | undefined) {
     if (!file || !tenantId || !session) return;
+    const jaTem = anexos.filter((a) => a.tipo === tipo).length;
+    if (jaTem >= 5) { setErro(`Máximo de 5 fotos de ${tipo === "foto_antes" ? "antes" : "depois"}.`); return; }
     setErro(null); setEnviando(tipo);
     const { error } = await anexarArquivo({ tenantId, chamadoId: chamado.id, atorId: session.user.id, tipo, file });
     setEnviando(null);
@@ -113,9 +115,9 @@ export function ExecucaoChamado({
           ([tipo, label, ref, lista]) => (
             <div key={tipo}>
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-xs font-medium text-cinza-secundario">{label}</span>
-                <button type="button" onClick={() => ref.current?.click()} className="text-xs text-azul-principal hover:underline" disabled={enviando === tipo}>
-                  {enviando === tipo ? "Enviando…" : "+ Foto"}
+                <span className="text-xs font-medium text-cinza-secundario">{label} ({lista.length}/5)</span>
+                <button type="button" onClick={() => ref.current?.click()} className="text-xs text-azul-principal hover:underline disabled:text-cinza-desabilitado disabled:no-underline" disabled={enviando === tipo || lista.length >= 5}>
+                  {enviando === tipo ? "Enviando…" : lista.length >= 5 ? "Máx. 5" : "+ Foto"}
                 </button>
               </div>
               <input ref={ref} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => void enviarFoto(tipo, e.target.files?.[0])} />

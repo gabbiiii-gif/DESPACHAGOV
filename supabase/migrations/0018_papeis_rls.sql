@@ -139,8 +139,9 @@ create policy eventos_insert on public.chamado_eventos
 -- pode_acessar_chamado porteia SELECT e INSERT: engenheiro/arquiteto entram aqui
 -- (agem como secretaria). SEMED NÃO entra (senão poderia inserir) — lê por cláusula
 -- extra só nas policies de SELECT abaixo.
+-- IMPORTANTE: mantém SECURITY INVOKER (0006 endureceu isto). NÃO usar security definer.
 create or replace function public.pode_acessar_chamado(p_chamado_id uuid)
-returns boolean language sql stable security definer set search_path = '' as $$
+returns boolean language sql stable set search_path = '' as $$
   select exists (
     select 1 from public.chamados c
     where c.id = p_chamado_id
@@ -198,13 +199,15 @@ drop policy if exists tecnicos_empresa_admin_all on public.tecnicos;
 create policy tecnicos_empresa_admin_all on public.tecnicos
   for all to authenticated
   using (
-    empresa_id = public.current_empresa_id()
+    tenant_id = public.current_tenant_id()
+    and empresa_id = public.current_empresa_id()
     and public.current_app_role() in
       ('empresa_admin','manutencao_predial','manutencao_refrigeracao',
        'manutencao_ar_condicionado','instalacao_ar_condicionado')
   )
   with check (
-    empresa_id = public.current_empresa_id()
+    tenant_id = public.current_tenant_id()
+    and empresa_id = public.current_empresa_id()
     and public.current_app_role() in
       ('empresa_admin','manutencao_predial','manutencao_refrigeracao',
        'manutencao_ar_condicionado','instalacao_ar_condicionado')

@@ -188,21 +188,27 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
     </div>
   `;
 
-  // Precisa estar no DOM para o layout calcular scrollHeight (fotos, tabelas
-  // e assinatura crescem em altura). Fica fora da viewport com layout normal
-  // — NÃO usar visibility:hidden/opacity:0 pois o html2canvas herda no clone
-  // e o PDF sai em branco.
-  el.style.position = "absolute";
-  el.style.left = "-99999px";
-  el.style.top = "0";
-  el.style.pointerEvents = "none";
-  document.body.appendChild(el);
+  // Precisa estar renderizado no DOM VISÍVEL para o html2canvas capturar
+  // corretamente (visibility:hidden / opacity:0 / off-screen produzem PDF
+  // branco em várias combinações). Um overlay branco cobre o container
+  // enquanto a captura acontece, então o usuário só vê um flash rápido.
+  const overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:#fff;z-index:2147483646;pointer-events:none";
+
+  const holder = document.createElement("div");
+  holder.style.cssText = "position:fixed;left:0;top:0;z-index:2147483645;pointer-events:none";
+  holder.appendChild(el);
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(holder);
 
   try {
-    // Espera as imagens (fotos) decodificarem antes da captura — evita cortes
-    // por altura ainda não calculada quando o layout depende do <img>.
+    // Espera as imagens (logo + fotos + assinatura) decodificarem antes da
+    // captura para o scrollHeight refletir a altura real.
     const imgs = Array.from(el.querySelectorAll("img"));
     await Promise.all(imgs.map((img) => img.decode().catch(() => undefined)));
+    // Um frame extra para o layout estabilizar com as imagens já decodificadas.
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
 
     // PDF dimensionado exatamente ao conteúdo (mesmo padrão do relatório):
     // altura da página = altura do documento, nada é cortado.
@@ -212,12 +218,13 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
         margin: 0,
         filename: `comprovante_${d.protocolo}.pdf`,
         image: { type: "jpeg", quality: 0.94 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false },
         jsPDF: { unit: "px", format: [820, altura], orientation: "portrait" },
       })
       .from(el)
       .save();
   } finally {
-    document.body.removeChild(el);
+    document.body.removeChild(holder);
+    document.body.removeChild(overlay);
   }
 }

@@ -10,6 +10,20 @@ export async function listarTenants(): Promise<Tenant[]> {
   return data ?? [];
 }
 
+// Público (login): apenas id/nome/subdomínio de tenants ativos, via RPC
+// SECURITY DEFINER — não vaza cnpj, contrato, valor, etc.
+export interface TenantPublico {
+  id: string;
+  nome_secretaria: string;
+  subdomain: string;
+}
+
+export async function listarTenantsPublicos(): Promise<TenantPublico[]> {
+  const { data, error } = await supabase.rpc("listar_tenants_publicos");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as TenantPublico[];
+}
+
 // Exclusão de tenant roda na Edge Function (service_role: remove usuários do Auth
 // e dispara o cascade dos dados públicos). Apenas superadmin.
 export async function deletarTenant(tenantId: string): Promise<{ error: string | null }> {

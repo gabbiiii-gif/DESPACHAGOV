@@ -926,6 +926,10 @@ export type Database = {
       current_empresa_id: { Args: never; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       is_superadmin: { Args: never; Returns: boolean }
+      listar_tenants_publicos: {
+        Args: never
+        Returns: { id: string; nome_secretaria: string; subdomain: string }[]
+      }
       pode_acessar_chamado: { Args: { p_chamado_id: string }; Returns: boolean }
     }
     Enums: {

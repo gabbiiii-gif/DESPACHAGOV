@@ -52,6 +52,23 @@ function docNum(protocolo: string, conclusaoISO: string): string {
   return `DG-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-EXE-${protocolo.replace(/[^0-9A-Za-z]/g, "")}`;
 }
 
+// Converte o asset da logo em data URL para embutir direto no HTML — assim
+// a captura via html2canvas não corre em cima de um <img> ainda carregando
+// (que era o motivo do PDF vir em branco quando o elemento é criado on-the-fly).
+let logoDataUrlCache: string | null = null;
+async function logoParaDataUrl(): Promise<string> {
+  if (logoDataUrlCache) return logoDataUrlCache;
+  const blob = await (await fetch(semedLogo)).blob();
+  const dataUrl = await new Promise<string>((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result as string);
+    fr.onerror = () => rej(fr.error);
+    fr.readAsDataURL(blob);
+  });
+  logoDataUrlCache = dataUrl;
+  return dataUrl;
+}
+
 // Gera e baixa o comprovante de execução em PDF (html2pdf no cliente).
 // Layout alinhado ao RelatorioDoc: logo institucional, header oliva/laranja,
 // bloco de identificação, KPIs de execução, descrição, registro fotográfico
@@ -60,6 +77,7 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
   const emitidoEm = fmtData(new Date().toISOString());
   const numero = docNum(d.protocolo, d.conclusaoISO);
   const decorrido = tempoDecorrido(d.aberturaISO, d.conclusaoISO);
+  const logoSrc = await logoParaDataUrl();
 
   const antes = (d.fotos ?? []).filter((f) => f.tipo === "foto_antes");
   const depois = (d.fotos ?? []).filter((f) => f.tipo === "foto_depois");
@@ -105,7 +123,7 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
   el.style.cssText = `width:820px;background:#fff;padding:52px 52px 44px;color:${C.oliva};font-family:${corpo};box-sizing:border-box`;
   el.innerHTML = `
     <div style="display:flex;justify-content:center;margin-bottom:20px">
-      <img src="${semedLogo}" alt="SEMED · Prefeitura de Altamira" style="height:62px;display:block" />
+      <img src="${logoSrc}" alt="SEMED · Prefeitura de Altamira" style="height:62px;display:block" />
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid ${C.oliva};padding-bottom:18px;margin-bottom:6px">
@@ -170,26 +188,15 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
     </div>
   `;
 
-  // html2pdf precisa do elemento no DOM p/ que fontes e imagens carreguem
-  // corretamente na captura via html2canvas.
-  el.style.position = "fixed";
-  el.style.left = "-99999px";
-  el.style.top = "0";
-  document.body.appendChild(el);
-
-  try {
-    await html2pdf()
-      .set({
-        margin: 10,
-        filename: `comprovante_${d.protocolo}.pdf`,
-        image: { type: "jpeg", quality: 0.94 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"] },
-      })
-      .from(el)
-      .save();
-  } finally {
-    document.body.removeChild(el);
-  }
+  await html2pdf()
+    .set({
+      margin: 10,
+      filename: `comprovante_${d.protocolo}.pdf`,
+      image: { type: "jpeg", quality: 0.94 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] },
+    })
+    .from(el)
+    .save();
 }

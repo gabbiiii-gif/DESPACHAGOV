@@ -247,12 +247,36 @@ export function UnidadeChamadosPage() {
               type="file"
               multiple
               accept="image/*,application/pdf"
-              onChange={(e) => setArquivos(Array.from(e.target.files ?? []).slice(0, 3))}
+              onChange={(e) => {
+                const novos = Array.from(e.target.files ?? []);
+                setArquivos((atuais) => {
+                  const combinados = [...atuais];
+                  for (const nv of novos) {
+                    if (!combinados.some((f) => f.name === nv.name && f.size === nv.size)) {
+                      combinados.push(nv);
+                    }
+                  }
+                  return combinados.slice(0, 3);
+                });
+                e.target.value = "";
+              }}
               className="block w-full text-sm text-cinza-texto file:mr-3 file:rounded-lg file:border-0 file:bg-azul-principal file:px-3 file:py-2 file:text-white"
             />
             {arquivos.length > 0 && (
               <ul className="mt-2 space-y-1 text-xs text-cinza-secundario">
-                {arquivos.map((f) => <li key={f.name}>{f.name} ({Math.ceil(f.size / 1024)} KB)</li>)}
+                {arquivos.map((f, idx) => (
+                  <li key={`${f.name}-${idx}`} className="flex items-center justify-between gap-2 rounded-md border border-cinza-borda bg-cinza-fundo px-2 py-1">
+                    <span className="truncate">{f.name} ({Math.ceil(f.size / 1024)} KB)</span>
+                    <button
+                      type="button"
+                      onClick={() => setArquivos((atuais) => atuais.filter((_, i) => i !== idx))}
+                      className="shrink-0 rounded px-1.5 py-0.5 text-xs font-medium text-vermelho-critico hover:bg-vermelho-critico/10"
+                      aria-label={`Remover ${f.name}`}
+                    >
+                      Remover
+                    </button>
+                  </li>
+                ))}
               </ul>
             )}
           </div>

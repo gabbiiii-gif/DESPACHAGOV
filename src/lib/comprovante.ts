@@ -189,11 +189,12 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
   `;
 
   // Precisa estar no DOM para o layout calcular scrollHeight (fotos, tabelas
-  // e assinatura crescem em altura). Fica invisível mas com dimensões reais.
+  // e assinatura crescem em altura). Fica fora da viewport com layout normal
+  // — NÃO usar visibility:hidden/opacity:0 pois o html2canvas herda no clone
+  // e o PDF sai em branco.
   el.style.position = "absolute";
-  el.style.left = "0";
+  el.style.left = "-99999px";
   el.style.top = "0";
-  el.style.visibility = "hidden";
   el.style.pointerEvents = "none";
   document.body.appendChild(el);
 

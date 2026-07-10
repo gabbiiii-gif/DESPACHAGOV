@@ -1,13 +1,15 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
+import { Select } from "@/components/ui/Select";
 import { Alert } from "@/components/ui/Card";
 import { useAuth } from "@/hooks/useAuth";
 import { resolverSubdomain } from "@/lib/subdomain";
+import { listarTenantsPublicos, type TenantPublico } from "@/services/tenants";
 
 const schema = z.object({
   identificador: z.string().min(3, "Informe e-mail ou matrícula"),
@@ -21,11 +23,27 @@ export function LoginPage() {
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
   const [secretaria, setSecretaria] = useState(() => resolverSubdomain() ?? "");
+  const [tenants, setTenants] = useState<TenantPublico[]>([]);
+  const [tenantsErro, setTenantsErro] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Campo da Secretaria só importa ao entrar por matrícula (desambigua o tenant).
   const ehMatricula = identificador.trim().length > 0 && !identificador.includes("@");
+
+  useEffect(() => {
+    let cancelado = false;
+    listarTenantsPublicos()
+      .then((lista) => {
+        if (!cancelado) setTenants(lista);
+      })
+      .catch(() => {
+        if (!cancelado) setTenantsErro(true);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,14 +78,28 @@ export function LoginPage() {
           placeholder="voce@secretaria.gov.br ou matrícula"
         />
         {ehMatricula && (
-          <Input
-            label="Secretaria (subdomínio)"
-            type="text"
-            autoComplete="organization"
-            value={secretaria}
-            onChange={(e) => setSecretaria(e.target.value)}
-            placeholder="ex.: semed-altamira"
-          />
+          tenants.length > 0 ? (
+            <Select
+              label="Secretaria"
+              autoComplete="organization"
+              value={secretaria}
+              onChange={(e) => setSecretaria(e.target.value)}
+            >
+              <option value="">Selecione a Secretaria…</option>
+              {tenants.map((t) => (
+                <option key={t.id} value={t.subdomain}>{t.nome_secretaria}</option>
+              ))}
+            </Select>
+          ) : (
+            <Input
+              label="Secretaria (subdomínio)"
+              type="text"
+              autoComplete="organization"
+              value={secretaria}
+              onChange={(e) => setSecretaria(e.target.value)}
+              placeholder={tenantsErro ? "ex.: semed-altamira" : "carregando…"}
+            />
+          )
         )}
         <PasswordInput
           label="Senha"

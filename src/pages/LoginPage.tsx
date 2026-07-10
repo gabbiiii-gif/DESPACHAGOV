@@ -80,19 +80,19 @@ export function LoginPage() {
         {ehMatricula && (
           tenants.length > 0 ? (
             <Select
-              label="Secretaria"
+              label="Subdomínio"
               autoComplete="organization"
               value={secretaria}
               onChange={(e) => setSecretaria(e.target.value)}
             >
-              <option value="">Selecione a Secretaria…</option>
+              <option value="">Selecione o subdomínio…</option>
               {tenants.map((t) => (
-                <option key={t.id} value={t.subdomain}>{t.nome_secretaria}</option>
+                <option key={t.id} value={t.subdomain}>{t.subdomain}</option>
               ))}
             </Select>
           ) : (
             <Input
-              label="Secretaria (subdomínio)"
+              label="Subdomínio"
               type="text"
               autoComplete="organization"
               value={secretaria}

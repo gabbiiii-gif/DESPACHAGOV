@@ -1,4 +1,5 @@
 import html2pdf from "html2pdf.js";
+import semedLogo from "@/assets/semed.png";
 
 export interface ComprovanteData {
   protocolo: string;
@@ -14,51 +15,181 @@ export interface ComprovanteData {
   fotos?: { tipo: string; dataUrl: string }[] | undefined;
 }
 
+// Paleta e famílias iguais ao RelatorioDoc — mantém consistência visual
+// entre relatórios institucionais e o comprovante de conclusão.
+const C = {
+  oliva: "#636B2F",
+  laranja: "#C2602F",
+  verde: "#157A52",
+  cinza: "#6B7488",
+  cinzaClaro: "#9099ab",
+  borda: "#E3E6EC",
+  linha: "#EEF0F4",
+  fundoSuave: "#F7F8FB",
+};
+const display = "'Plus Jakarta Sans','Public Sans',sans-serif";
+const corpo = "'Public Sans',sans-serif";
+
 function fmt(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
+function fmtData(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+function esc(s: string) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+function tempoDecorrido(deISO: string, ateISO: string): string {
+  const ms = new Date(ateISO).getTime() - new Date(deISO).getTime();
+  if (ms <= 0) return "—";
+  const h = Math.floor(ms / 3_600_000);
+  if (h < 24) return `${h}h${String(Math.floor((ms % 3_600_000) / 60_000)).padStart(2, "0")}`;
+  const d = Math.floor(h / 24);
+  return `${d}d ${h % 24}h`;
+}
+function docNum(protocolo: string, conclusaoISO: string): string {
+  const d = new Date(conclusaoISO);
+  return `DG-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-EXE-${protocolo.replace(/[^0-9A-Za-z]/g, "")}`;
+}
 
 // Gera e baixa o comprovante de execução em PDF (html2pdf no cliente).
+// Layout alinhado ao RelatorioDoc: logo institucional, header oliva/laranja,
+// bloco de identificação, KPIs de execução, descrição, registro fotográfico
+// pareado (antes/depois) e assinatura.
 export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
-  const fotosHtml = (d.fotos ?? [])
-    .map(
-      (f) => `<div style="display:inline-block;width:48%;margin:1%;vertical-align:top">
-        <div style="font-size:11px;color:#6B7488;margin-bottom:4px">${f.tipo === "foto_antes" ? "Antes" : "Depois"}</div>
-        <img src="${f.dataUrl}" style="width:100%;border:1px solid #E5E7EB;border-radius:6px" />
-      </div>`,
-    )
-    .join("");
+  const emitidoEm = fmtData(new Date().toISOString());
+  const numero = docNum(d.protocolo, d.conclusaoISO);
+  const decorrido = tempoDecorrido(d.aberturaISO, d.conclusaoISO);
+
+  const antes = (d.fotos ?? []).filter((f) => f.tipo === "foto_antes");
+  const depois = (d.fotos ?? []).filter((f) => f.tipo === "foto_depois");
+  const paresMax = Math.max(antes.length, depois.length);
+  const paresHtml = paresMax === 0 ? "" : Array.from({ length: paresMax }).map((_, i) => {
+    const a = antes[i], p = depois[i];
+    const cell = (label: string, url?: string) => `
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <div style="font-family:${display};font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${C.cinza}">${label}</div>
+        ${url
+          ? `<img src="${url}" style="width:100%;height:210px;object-fit:cover;border:1px solid ${C.borda};border-radius:10px" />`
+          : `<div style="width:100%;height:210px;border:1px dashed ${C.borda};border-radius:10px;display:flex;align-items:center;justify-content:center;color:${C.cinzaClaro};font-size:11.5px">sem registro</div>`}
+      </div>`;
+    return `<div style="display:flex;gap:16px;margin-bottom:14px">${cell("Antes", a?.dataUrl)}${cell("Depois", p?.dataUrl)}</div>`;
+  }).join("");
+
+  const linhaInfo = (rot: string, val: string, corVal?: string) => `
+    <tr style="border-bottom:1px solid ${C.linha}">
+      <td style="padding:11px 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:${C.cinza};font-weight:600;width:180px">${rot}</td>
+      <td style="padding:11px 4px;font-size:13px;font-weight:600;color:${corVal ?? C.oliva}">${val}</td>
+    </tr>`;
+
+  const assinaturaBlock = d.assinaturaDataUrl
+    ? `<div style="display:flex;justify-content:center;margin-top:50px">
+         <div style="text-align:center;width:340px">
+           <img src="${d.assinaturaDataUrl}" style="max-height:70px;max-width:100%;display:block;margin:0 auto 4px" />
+           <div style="border-top:1.5px solid ${C.oliva};padding-top:8px;font-family:${display};font-size:12.5px;color:${C.oliva};font-weight:700">${esc(d.signatarioNome ?? "Responsável pela unidade")}</div>
+           <div style="font-size:11.5px;color:${C.cinza}">Assinatura de recebimento</div>
+         </div>
+       </div>`
+    : `<div style="display:flex;justify-content:space-between;gap:40px;margin-top:60px">
+         <div style="flex:1;text-align:center">
+           <div style="border-top:1.5px solid ${C.oliva};padding-top:8px;font-family:${display};font-size:12px;color:${C.oliva};font-weight:700">${esc(d.tecnico ?? "Técnico responsável")}</div>
+           <div style="font-size:11px;color:${C.cinza}">${esc(d.empresa ?? "Empresa executora")}</div>
+         </div>
+         <div style="flex:1;text-align:center">
+           <div style="border-top:1.5px solid ${C.oliva};padding-top:8px;font-family:${display};font-size:12px;color:${C.oliva};font-weight:700">${esc(d.signatarioNome ?? "Responsável pela unidade")}</div>
+           <div style="font-size:11px;color:${C.cinza}">Recebimento do serviço</div>
+         </div>
+       </div>`;
 
   const el = document.createElement("div");
-  el.style.cssText = "font-family:Arial,Helvetica,sans-serif;color:#374151;padding:24px;max-width:720px";
+  el.style.cssText = `width:820px;background:#fff;padding:52px 52px 44px;color:${C.oliva};font-family:${corpo};box-sizing:border-box`;
   el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;border-bottom:2px solid #2456A6;padding-bottom:12px;margin-bottom:16px">
-      <span style="font-size:22px;font-weight:bold;font-style:italic"><span style="color:#F97316">Despacha</span><span style="color:#2456A6">Gov</span></span>
-      <span style="margin-left:auto;font-size:13px;color:#6B7488">Comprovante de execução</span>
+    <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <img src="${semedLogo}" alt="SEMED · Prefeitura de Altamira" style="height:62px;display:block" />
     </div>
-    <table style="width:100%;font-size:13px;border-collapse:collapse">
-      <tr><td style="padding:4px 0;color:#6B7488;width:160px">Protocolo</td><td style="font-weight:bold">${d.protocolo}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Unidade</td><td>${d.unidade}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Urgência</td><td>${d.urgencia}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Empresa</td><td>${d.empresa ?? "—"}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Técnico</td><td>${d.tecnico ?? "—"}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Aberto em</td><td>${fmt(d.aberturaISO)}</td></tr>
-      <tr><td style="padding:4px 0;color:#6B7488">Concluído em</td><td>${fmt(d.conclusaoISO)}</td></tr>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid ${C.oliva};padding-bottom:18px;margin-bottom:6px">
+      <div>
+        <div style="font-family:${display};font-weight:800;font-size:15px;color:${C.oliva}">Prefeitura de Altamira</div>
+        <div style="font-size:12.5px;color:${C.cinza}">Secretaria Municipal de Educação</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${C.laranja};font-weight:700">Comprovante de Execução</div>
+        <div style="font-family:${display};font-size:18px;font-weight:800;color:${C.oliva}">Serviço Concluído</div>
+      </div>
+    </div>
+    <div style="text-align:right;font-size:11px;color:${C.cinzaClaro};margin-bottom:26px">
+      Emitido em ${emitidoEm} · Doc. nº ${numero}
+    </div>
+
+    <h1 style="font-family:${display};font-size:25px;font-weight:800;color:${C.oliva};margin:0 0 6px">
+      Protocolo ${esc(d.protocolo)}
+    </h1>
+    <p style="font-size:14px;color:${C.cinza};line-height:1.6;margin:0 0 24px">
+      Comprovante oficial de conclusão do chamado de manutenção registrado na plataforma DespachaGov, com dados do executor, do responsável pela unidade e o registro fotográfico do serviço.
+    </p>
+
+    <div style="display:flex;gap:16px;align-items:center;background:${C.fundoSuave};border:1px solid ${C.borda};border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <div style="flex:1">
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:${C.cinza};font-weight:600">Unidade atendida</div>
+        <div style="font-family:${display};font-size:17px;font-weight:800;color:${C.oliva};margin-top:2px">${esc(d.unidade)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:${display};font-size:22px;font-weight:800;color:${C.verde}">${decorrido}</div>
+        <div style="font-size:11px;color:${C.cinza}">tempo de execução</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.cinza};margin-bottom:12px">Identificação</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:28px">
+      <tbody>
+        ${linhaInfo("Protocolo", esc(d.protocolo))}
+        ${linhaInfo("Urgência", esc(d.urgencia))}
+        ${linhaInfo("Empresa executora", esc(d.empresa ?? "—"))}
+        ${linhaInfo("Técnico responsável", esc(d.tecnico ?? "—"))}
+        ${linhaInfo("Abertura do chamado", fmt(d.aberturaISO))}
+        ${linhaInfo("Conclusão do serviço", fmt(d.conclusaoISO), C.verde)}
+      </tbody>
     </table>
-    <h3 style="font-size:14px;color:#1A3F7A;margin:18px 0 6px">Descrição</h3>
-    <p style="font-size:13px;line-height:1.5;margin:0">${d.descricao}</p>
-    ${fotosHtml ? `<h3 style="font-size:14px;color:#1A3F7A;margin:18px 0 6px">Registro fotográfico</h3><div>${fotosHtml}</div>` : ""}
-    <p style="margin-top:24px;font-size:11px;color:#9CA3AF;text-align:center">Gerado por DespachaGov em ${fmt(new Date().toISOString())}</p>
+
+    <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.cinza};margin-bottom:10px">Descrição do atendimento</div>
+    <div style="border-left:3px solid ${C.laranja};padding:2px 0 2px 14px;margin-bottom:30px">
+      <p style="font-size:13.5px;line-height:1.65;color:${C.oliva};margin:0">${esc(d.descricao)}</p>
+    </div>
+
+    ${paresHtml ? `
+      <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.cinza};margin-bottom:14px">Registro fotográfico</div>
+      ${paresHtml}
+    ` : ""}
+
+    ${assinaturaBlock}
+
+    <div style="margin-top:36px;padding-top:14px;border-top:1px solid ${C.borda};display:flex;justify-content:space-between;font-size:10.5px;color:${C.cinzaClaro}">
+      <span>DespachaGov · Comprovante gerado automaticamente</span>
+      <span>Página 1 de 1</span>
+    </div>
   `;
 
-  await html2pdf()
-    .set({
-      margin: 10,
-      filename: `comprovante_${d.protocolo}.pdf`,
-      image: { type: "jpeg", quality: 0.92 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    })
-    .from(el)
-    .save();
+  // html2pdf precisa do elemento no DOM p/ que fontes e imagens carreguem
+  // corretamente na captura via html2canvas.
+  el.style.position = "fixed";
+  el.style.left = "-99999px";
+  el.style.top = "0";
+  document.body.appendChild(el);
+
+  try {
+    await html2pdf()
+      .set({
+        margin: 10,
+        filename: `comprovante_${d.protocolo}.pdf`,
+        image: { type: "jpeg", quality: 0.94 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] },
+      })
+      .from(el)
+      .save();
+  } finally {
+    document.body.removeChild(el);
+  }
 }

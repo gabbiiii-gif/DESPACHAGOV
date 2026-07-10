@@ -188,15 +188,35 @@ export async function gerarComprovantePdf(d: ComprovanteData): Promise<void> {
     </div>
   `;
 
-  await html2pdf()
-    .set({
-      margin: 10,
-      filename: `comprovante_${d.protocolo}.pdf`,
-      image: { type: "jpeg", quality: 0.94 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] },
-    })
-    .from(el)
-    .save();
+  // Precisa estar no DOM para o layout calcular scrollHeight (fotos, tabelas
+  // e assinatura crescem em altura). Fica invisível mas com dimensões reais.
+  el.style.position = "absolute";
+  el.style.left = "0";
+  el.style.top = "0";
+  el.style.visibility = "hidden";
+  el.style.pointerEvents = "none";
+  document.body.appendChild(el);
+
+  try {
+    // Espera as imagens (fotos) decodificarem antes da captura — evita cortes
+    // por altura ainda não calculada quando o layout depende do <img>.
+    const imgs = Array.from(el.querySelectorAll("img"));
+    await Promise.all(imgs.map((img) => img.decode().catch(() => undefined)));
+
+    // PDF dimensionado exatamente ao conteúdo (mesmo padrão do relatório):
+    // altura da página = altura do documento, nada é cortado.
+    const altura = el.scrollHeight + 8;
+    await html2pdf()
+      .set({
+        margin: 0,
+        filename: `comprovante_${d.protocolo}.pdf`,
+        image: { type: "jpeg", quality: 0.94 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "px", format: [820, altura], orientation: "portrait" },
+      })
+      .from(el)
+      .save();
+  } finally {
+    document.body.removeChild(el);
+  }
 }

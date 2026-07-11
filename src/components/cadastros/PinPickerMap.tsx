@@ -3,6 +3,8 @@ import { Loader } from "@googlemaps/js-api-loader";
 
 const CENTRO_ALTAMIRA = { lat: -3.2031, lng: -52.2095 };
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+// AdvancedMarkerElement exige mapId — DEMO_MAP_ID vale como fallback.
+const MAP_ID = (import.meta.env.VITE_GOOGLE_MAPS_MAP_ID as string | undefined) ?? "DEMO_MAP_ID";
 
 interface Props {
   lat: number | null;
@@ -19,7 +21,7 @@ interface Props {
 export function PinPickerMap({ lat, lng, onChange, altura = "18rem" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   // Inicializa o SDK e o mapa uma vez.
   useEffect(() => {
@@ -34,24 +36,26 @@ export function PinPickerMap({ lat, lng, onChange, altura = "18rem" }: Props) {
           center,
           zoom: lat != null && lng != null ? 18 : 13,
           mapTypeId: "hybrid",
+          mapId: MAP_ID,
           streetViewControl: false,
           fullscreenControl: true,
           mapTypeControl: true,
         });
-        markerRef.current = new google.maps.Marker({
+        markerRef.current = new google.maps.marker.AdvancedMarkerElement({
           map: mapRef.current,
           position: center,
-          draggable: true,
+          gmpDraggable: true,
           title: "Arraste para ajustar a posição",
         });
         markerRef.current.addListener("dragend", () => {
-          const pos = markerRef.current!.getPosition();
-          if (pos) onChange(pos.lat(), pos.lng());
+          const pos = markerRef.current!.position as google.maps.LatLngLiteral | null;
+          if (pos) onChange(pos.lat, pos.lng);
         });
         mapRef.current.addListener("click", (e: google.maps.MapMouseEvent) => {
           if (!e.latLng) return;
-          markerRef.current!.setPosition(e.latLng);
-          onChange(e.latLng.lat(), e.latLng.lng());
+          const literal = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+          markerRef.current!.position = literal;
+          onChange(literal.lat, literal.lng);
         });
       })
       .catch(() => { /* sem mapa → editor continua funcionando com os inputs */ });
@@ -65,7 +69,7 @@ export function PinPickerMap({ lat, lng, onChange, altura = "18rem" }: Props) {
     const map = mapRef.current, marker = markerRef.current;
     if (!map || !marker || lat == null || lng == null) return;
     const pos = { lat, lng };
-    marker.setPosition(pos);
+    marker.position = pos;
     map.panTo(pos);
     if (map.getZoom()! < 17) map.setZoom(18);
   }, [lat, lng]);

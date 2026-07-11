@@ -4,6 +4,10 @@ import type { Unidade } from "@/services/cadastros";
 
 const CENTRO_ALTAMIRA = { lat: -3.2031, lng: -52.2095 };
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+// mapId é obrigatório para AdvancedMarkerElement (substituto do Marker
+// legado, depreciado desde 21/02/2024). Se não houver Map ID próprio no
+// Google Cloud, DEMO_MAP_ID é aceito para uso não-produção.
+const MAP_ID = (import.meta.env.VITE_GOOGLE_MAPS_MAP_ID as string | undefined) ?? "DEMO_MAP_ID";
 
 interface Props {
   unidades: Unidade[];
@@ -13,11 +17,25 @@ interface Props {
   focada?: { id: string; nonce: number } | null;
 }
 
+// AdvancedMarkerElement.position aceita LatLng | LatLngLiteral | LatLngAltitude.
+// Normaliza para {lat, lng} numéricos.
+function posComoLiteral(
+  pos: google.maps.LatLng | google.maps.LatLngLiteral | google.maps.LatLngAltitude | null | undefined,
+): google.maps.LatLngLiteral | null {
+  if (!pos) return null;
+  if (typeof (pos as google.maps.LatLng).lat === "function") {
+    const p = pos as google.maps.LatLng;
+    return { lat: p.lat(), lng: p.lng() };
+  }
+  const p = pos as google.maps.LatLngLiteral;
+  return { lat: p.lat, lng: p.lng };
+}
+
 export function MapaUnidades({ unidades, focada }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const infoRef = useRef<google.maps.InfoWindow | null>(null);
-  const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
+  const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const [pronto, setPronto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -33,6 +51,7 @@ export function MapaUnidades({ unidades, focada }: Props) {
           center: CENTRO_ALTAMIRA,
           zoom: 12,
           mapTypeId: "hybrid", // satélite + rótulos
+          mapId: MAP_ID, // necessário para AdvancedMarkerElement
           mapTypeControl: true,
           streetViewControl: true,
           fullscreenControl: true,
@@ -49,7 +68,8 @@ export function MapaUnidades({ unidades, focada }: Props) {
     const map = mapRef.current;
     if (!pronto || !map) return;
 
-    markersRef.current.forEach((m) => m.setMap(null));
+    // Remove os markers antigos (AdvancedMarker: setar `.map = null`).
+    markersRef.current.forEach((m) => { m.map = null; });
     markersRef.current.clear();
 
     const comGeo = unidades.filter((u) => u.lat != null && u.lng != null);
@@ -57,7 +77,9 @@ export function MapaUnidades({ unidades, focada }: Props) {
 
     for (const u of comGeo) {
       const pos = { lat: u.lat as number, lng: u.lng as number };
-      const marker = new google.maps.Marker({ position: pos, map, title: u.nome });
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: pos, map, title: u.nome,
+      });
       marker.addListener("click", () => {
         const div = document.createElement("div");
         const titulo = document.createElement("strong");
@@ -68,7 +90,9 @@ export function MapaUnidades({ unidades, focada }: Props) {
           div.appendChild(document.createTextNode(u.bairro));
         }
         infoRef.current?.setContent(div);
-        infoRef.current?.open(map, marker);
+        // AdvancedMarkerElement funciona como âncora do InfoWindow via
+        // `anchor: marker` em vez do 2º argumento posicional.
+        infoRef.current?.open({ map, anchor: marker });
       });
       markersRef.current.set(u.id, marker);
       bounds.extend(pos);
@@ -89,7 +113,7 @@ export function MapaUnidades({ unidades, focada }: Props) {
     const map = mapRef.current;
     const marker = markersRef.current.get(focada.id);
     if (!map || !marker) return;
-    const pos = marker.getPosition();
+    const pos = posComoLiteral(marker.position);
     if (!pos) return;
     map.panTo(pos);
     map.setZoom(17);

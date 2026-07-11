@@ -6,12 +6,13 @@ import { Select } from "@/components/ui/Select";
 import { Card, Alert } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { MapaUnidades } from "@/components/cadastros/MapaUnidades";
+import { PinPickerMap } from "@/components/cadastros/PinPickerMap";
 import { useAuth } from "@/hooks/useAuth";
 import { unidadeSchema, normalizarLinhaUnidade, enderecoParaGeocode, LOGRADOURO_TIPOS } from "@/lib/cadastros";
 import {
   listarUnidades, criarUnidade, atualizarUnidade, criarUnidadesLote, excluirUnidade, type Unidade,
 } from "@/services/cadastros";
-import { geocodeEndereco } from "@/services/geocode";
+import { geocodeEndereco, geocodeEscolaPorNome } from "@/services/geocode";
 
 export function UnidadesPage() {
   const { tenantId } = useAuth();
@@ -27,6 +28,9 @@ export function UnidadesPage() {
   const [latStr, setLatStr] = useState("");
   const [lngStr, setLngStr] = useState("");
   const [geoLoading, setGeoLoading] = useState(false);
+  const [geoPlaceLoading, setGeoPlaceLoading] = useState(false);
+  const [precisao, setPrecisao] = useState<"rooftop" | "aproximada" | null>(null);
+  const [recalibrando, setRecalibrando] = useState<{ feito: number; total: number } | null>(null);
   const [busca, setBusca] = useState("");
   // focadaId muda a cada clique — o `nonce` garante que clicar duas vezes
   // no mesmo item re-dispare o efeito do mapa (senão o React ignora set
@@ -77,11 +81,68 @@ export function UnidadesPage() {
       if (!r) { setErro("Coordenadas não encontradas. Refine o endereço."); return; }
       setLatStr(String(r.lat));
       setLngStr(String(r.lng));
+      setPrecisao(r.precisao ?? null);
     } catch {
       setErro("Falha ao buscar coordenadas.");
     } finally {
       setGeoLoading(false);
     }
+  }
+
+  // Geocoding pelo NOME da escola via Google Places — retorna o ponto do
+  // próprio prédio (rooftop), muito mais preciso que endereço, especialmente
+  // quando o endereço vem com faixas do tipo "DE 1001/1002 AO FIM".
+  async function onGeocodePlace() {
+    if (!formRef.current) return;
+    const fd = new FormData(formRef.current);
+    const nome = String(fd.get("nome") ?? "").trim();
+    const cidade = String(fd.get("cidade") ?? "").trim() || "Altamira";
+    if (!nome) { setErro("Preencha o nome da escola para localizar no Google Maps."); return; }
+    setErro(null);
+    setGeoPlaceLoading(true);
+    try {
+      const r = await geocodeEscolaPorNome(nome, cidade);
+      if (!r) { setErro("Google Places não achou esta escola. Tente o botão de endereço ou ajuste o pino manualmente."); return; }
+      setLatStr(String(r.lat));
+      setLngStr(String(r.lng));
+      setPrecisao(r.precisao ?? null);
+    } catch {
+      setErro("Falha ao consultar o Google Places.");
+    } finally {
+      setGeoPlaceLoading(false);
+    }
+  }
+
+  // Recalibração em massa: percorre todas as unidades com nome e tenta o
+  // Places pelo nome — atualiza coordenadas quando encontra. Corrige o banco
+  // legado (endereços com faixas do Correios geravam ponto na rua, não no
+  // prédio). Rate-limited em 250ms para não estourar a API.
+  async function onRecalibrarTodas() {
+    if (!tenantId) return;
+    if (!confirm(`Recalibrar coordenadas de todas as ${unidades.length} unidades usando Google Places?\n\nA operação leva ~1 minuto e sobrescreve lat/lng existente quando o Places encontra a escola.`)) return;
+    setErro(null); setMsg(null);
+    setRecalibrando({ feito: 0, total: unidades.length });
+    let atualizadas = 0, semResultado = 0;
+    for (let i = 0; i < unidades.length; i++) {
+      const u = unidades[i];
+      if (!u) continue;
+      try {
+        const r = await geocodeEscolaPorNome(u.nome, u.cidade ?? "Altamira");
+        if (r) {
+          const { error } = await atualizarUnidade(u.id, { lat: r.lat, lng: r.lng });
+          if (!error) atualizadas++;
+        } else {
+          semResultado++;
+        }
+      } catch {
+        semResultado++;
+      }
+      setRecalibrando({ feito: i + 1, total: unidades.length });
+      await new Promise((res) => setTimeout(res, 250));
+    }
+    setRecalibrando(null);
+    setMsg(`Recalibração concluída: ${atualizadas} atualizada(s), ${semResultado} sem resultado no Places.`);
+    void recarregar();
   }
 
   async function recarregar() {
@@ -113,6 +174,7 @@ export function UnidadesPage() {
     setEditando(null);
     setMsg(null); setErro(null);
     setLatStr(""); setLngStr("");
+    setPrecisao(null);
     setModal(true);
   }
 
@@ -121,6 +183,7 @@ export function UnidadesPage() {
     setMsg(null); setErro(null);
     setLatStr(u.lat != null ? String(u.lat) : "");
     setLngStr(u.lng != null ? String(u.lng) : "");
+    setPrecisao(null);
     setModal(true);
   }
 
@@ -211,8 +274,15 @@ export function UnidadesPage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h1 className="font-display text-2xl font-bold text-cinza-texto">Unidades</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input ref={fileRef} type="file" accept=".csv" onChange={onCsv} className="hidden" id="csv-unidades" />
+          <Button
+            variant="outline"
+            onClick={() => void onRecalibrarTodas()}
+            disabled={recalibrando != null || unidades.length === 0}
+          >
+            {recalibrando ? `Recalibrando ${recalibrando.feito}/${recalibrando.total}…` : "Recalibrar coordenadas (Google Places)"}
+          </Button>
           <Button variant="outline" onClick={() => fileRef.current?.click()}>Importar CSV</Button>
           <Button variant="acento" onClick={abrirNova}>Nova unidade</Button>
         </div>
@@ -324,13 +394,29 @@ export function UnidadesPage() {
           </Select>
           <div />
 
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 flex flex-col gap-2 sm:flex-row">
+            <Button type="button" variant="acento" onClick={() => void onGeocodePlace()} loading={geoPlaceLoading} className="w-full">
+              Localizar escola no Google Maps (pelo nome)
+            </Button>
             <Button type="button" variant="outline" onClick={() => void onGeocode()} loading={geoLoading} className="w-full">
-              Buscar coordenadas pelo endereço
+              Buscar pelo endereço
             </Button>
           </div>
           <Input name="lat" label="Latitude" placeholder="-3.2031" value={latStr} onChange={(ev) => setLatStr(ev.target.value)} />
           <Input name="lng" label="Longitude" placeholder="-52.2095" value={lngStr} onChange={(ev) => setLngStr(ev.target.value)} />
+          {precisao && (
+            <p className="sm:col-span-2 text-xs">
+              Precisão retornada: <strong className={precisao === "rooftop" ? "text-verde-sucesso" : "text-cinza-texto"}>{precisao}</strong>
+              {precisao !== "rooftop" && " — se não bateu exato, arraste o pino abaixo."}
+            </p>
+          )}
+          <div className="sm:col-span-2">
+            <PinPickerMap
+              lat={latStr ? Number(latStr) : null}
+              lng={lngStr ? Number(lngStr) : null}
+              onChange={(la, ln) => { setLatStr(String(la)); setLngStr(String(ln)); setPrecisao("rooftop"); }}
+            />
+          </div>
           <div className="sm:col-span-2"><Button type="submit" loading={salvando} className="w-full">Salvar</Button></div>
         </form>
       </Modal>

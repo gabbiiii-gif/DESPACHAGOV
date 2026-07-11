@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Card, Alert } from "@/components/ui/Card";
@@ -36,6 +36,12 @@ export function ChamadosPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<Status | "">("");
+  const [busca, setBusca] = useState("");
+  const [filtroUrgencia, setFiltroUrgencia] = useState<Urgencia | "">("");
+  const [filtroUnidade, setFiltroUnidade] = useState("");
+  const [filtroEmpresa, setFiltroEmpresa] = useState("");
+  const [de, setDe] = useState("");
+  const [ate, setAte] = useState("");
 
   const [detalhe, setDetalhe] = useState<Chamado | null>(null);
   const [eventos, setEventos] = useState<ChamadoEvento[]>([]);
@@ -68,7 +74,44 @@ export function ChamadosPage() {
 
   const nomeUnidade = (id: string) => unidades.find((u) => u.id === id)?.nome ?? "—";
   const nomeEmpresa = (id: string | null) => empresas.find((e) => e.id === id)?.razao_social ?? "—";
-  const visiveis = filtro ? chamados.filter((c) => c.status === filtro) : chamados;
+
+  // Normaliza texto para busca insensível a acento/maiúscula.
+  const semAcentos = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+  const visiveis = useMemo(() => {
+    const q = semAcentos(busca.trim());
+    const deTs = de ? new Date(`${de}T00:00:00`).getTime() : -Infinity;
+    const ateTs = ate ? new Date(`${ate}T23:59:59.999`).getTime() : Infinity;
+    return chamados.filter((c) => {
+      if (filtro && c.status !== filtro) return false;
+      if (filtroUrgencia && c.urgencia !== filtroUrgencia) return false;
+      if (filtroUnidade && c.unidade_id !== filtroUnidade) return false;
+      if (filtroEmpresa && c.empresa_id !== filtroEmpresa) return false;
+      if (de || ate) {
+        const ts = new Date(c.data_solicitacao).getTime();
+        if (ts < deTs || ts > ateTs) return false;
+      }
+      if (q) {
+        const alvos = [
+          c.numero_protocolo,
+          c.descricao,
+          c.solicitante_nome ?? "",
+          nomeUnidade(c.unidade_id),
+          nomeEmpresa(c.empresa_id),
+        ].map(semAcentos);
+        if (!alvos.some((a) => a.includes(q))) return false;
+      }
+      return true;
+    });
+  }, [chamados, filtro, filtroUrgencia, filtroUnidade, filtroEmpresa, de, ate, busca, unidades, empresas]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const filtrosAtivos =
+    !!filtro || !!filtroUrgencia || !!filtroUnidade || !!filtroEmpresa || !!de || !!ate || !!busca.trim();
+
+  function limparFiltros() {
+    setFiltro(""); setFiltroUrgencia(""); setFiltroUnidade(""); setFiltroEmpresa("");
+    setDe(""); setAte(""); setBusca("");
+  }
 
   async function abrirDetalhe(c: Chamado) {
     setDetalhe(c);
@@ -143,16 +186,61 @@ export function ChamadosPage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h1 className="font-display text-2xl font-bold text-cinza-texto">Chamados</h1>
-        <Select label="" aria-label="Filtrar status" value={filtro} onChange={(e) => setFiltro(e.target.value as Status | "")} className="py-1.5">
-          <option value="">Todos</option>
-          <option value="aberto">Abertos</option>
-          <option value="atribuido">Atribuídos</option>
-          <option value="em_campo">Em campo</option>
-          <option value="concluido">Concluídos</option>
-          <option value="cancelado">Cancelados</option>
-        </Select>
+        <span className="text-xs text-cinza-secundario">{visiveis.length} de {chamados.length}</span>
       </div>
       {erro && <div className="mb-3"><Alert tipo="erro">{erro}</Alert></div>}
+
+      <Card className="mb-4">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <input
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar protocolo, descrição, solicitante, unidade…"
+            aria-label="Buscar chamados"
+            className="min-w-[260px] flex-1 rounded-lg border border-cinza-borda bg-white px-3.5 py-2 text-sm text-cinza-texto placeholder:text-cinza-desabilitado focus:border-azul-principal focus:outline-none"
+          />
+          {filtrosAtivos && (
+            <button
+              type="button"
+              onClick={limparFiltros}
+              className="text-xs font-medium text-azul-principal hover:underline"
+            >
+              Limpar filtros
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <Select label="Status" value={filtro} onChange={(e) => setFiltro(e.target.value as Status | "")}>
+            <option value="">Todos</option>
+            <option value="aberto">Abertos</option>
+            <option value="atribuido">Atribuídos</option>
+            <option value="em_campo">Em campo</option>
+            <option value="concluido">Concluídos</option>
+            <option value="cancelado">Cancelados</option>
+          </Select>
+          <Select label="Urgência" value={filtroUrgencia} onChange={(e) => setFiltroUrgencia(e.target.value as Urgencia | "")}>
+            <option value="">Todas</option>
+            {URGENCIAS.map((u) => <option key={u} value={u}>{URGENCIA_META[u].label}</option>)}
+          </Select>
+          <Select label="Unidade" value={filtroUnidade} onChange={(e) => setFiltroUnidade(e.target.value)}>
+            <option value="">Todas</option>
+            {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome}</option>)}
+          </Select>
+          <Select label="Empresa" value={filtroEmpresa} onChange={(e) => setFiltroEmpresa(e.target.value)}>
+            <option value="">Todas</option>
+            {empresas.map((e) => <option key={e.id} value={e.id}>{e.razao_social}</option>)}
+          </Select>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-medium text-cinza-texto">De</span>
+            <input type="date" value={de} onChange={(e) => setDe(e.target.value)} className="rounded-lg border border-cinza-borda bg-white px-3.5 py-2.5 text-sm text-cinza-texto focus:border-azul-principal focus:outline-none" />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-medium text-cinza-texto">Até</span>
+            <input type="date" value={ate} onChange={(e) => setAte(e.target.value)} className="rounded-lg border border-cinza-borda bg-white px-3.5 py-2.5 text-sm text-cinza-texto focus:border-azul-principal focus:outline-none" />
+          </label>
+        </div>
+      </Card>
 
       {carregando ? <p className="text-cinza-secundario">Carregando…</p> : (
         <Card className="overflow-x-auto p-0">
@@ -167,7 +255,11 @@ export function ChamadosPage() {
               </tr>
             </thead>
             <tbody>
-              {visiveis.length === 0 && <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza-secundario">Nenhum chamado.</td></tr>}
+              {visiveis.length === 0 && (
+                <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza-secundario">
+                  {chamados.length === 0 ? "Nenhum chamado." : "Nenhum chamado encontrado para os filtros aplicados."}
+                </td></tr>
+              )}
               {visiveis.map((c) => (
                 <tr key={c.id} onClick={() => void abrirDetalhe(c)} className="cursor-pointer border-t border-cinza-borda hover:bg-cinza-fundo">
                   <td className="px-4 py-2.5 font-mono text-xs text-cinza-texto">{c.numero_protocolo}</td>

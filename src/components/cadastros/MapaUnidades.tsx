@@ -5,11 +5,19 @@ import type { Unidade } from "@/services/cadastros";
 const CENTRO_ALTAMIRA = { lat: -3.2031, lng: -52.2095 };
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
 
-export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
+interface Props {
+  unidades: Unidade[];
+  // Quando muda, centraliza no mapa e abre o info window da unidade focada
+  // (usado ao clicar no nome da escola na lista). O `nonce` permite disparar
+  // o efeito novamente ao clicar no mesmo item.
+  focada?: { id: string; nonce: number } | null;
+}
+
+export function MapaUnidades({ unidades, focada }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const infoRef = useRef<google.maps.InfoWindow | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
   const [pronto, setPronto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -42,7 +50,7 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
     if (!pronto || !map) return;
 
     markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
+    markersRef.current.clear();
 
     const comGeo = unidades.filter((u) => u.lat != null && u.lng != null);
     const bounds = new google.maps.LatLngBounds();
@@ -62,7 +70,7 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
         infoRef.current?.setContent(div);
         infoRef.current?.open(map, marker);
       });
-      markersRef.current.push(marker);
+      markersRef.current.set(u.id, marker);
       bounds.extend(pos);
     }
 
@@ -73,6 +81,21 @@ export function MapaUnidades({ unidades }: { unidades: Unidade[] }) {
       map.fitBounds(bounds, 48);
     }
   }, [unidades, pronto]);
+
+  // Foco em uma unidade específica (clique no nome da escola): centraliza,
+  // abre o info window e rola o mapa para dentro da viewport.
+  useEffect(() => {
+    if (!pronto || !focada) return;
+    const map = mapRef.current;
+    const marker = markersRef.current.get(focada.id);
+    if (!map || !marker) return;
+    const pos = marker.getPosition();
+    if (!pos) return;
+    map.panTo(pos);
+    map.setZoom(17);
+    google.maps.event.trigger(marker, "click");
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [focada, pronto]);
 
   const aviso = !API_KEY
     ? "Mapa indisponível: defina VITE_GOOGLE_MAPS_API_KEY no ambiente."

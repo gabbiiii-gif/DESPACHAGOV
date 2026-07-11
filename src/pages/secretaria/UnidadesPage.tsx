@@ -30,8 +30,9 @@ export function UnidadesPage() {
   const [busca, setBusca] = useState("");
   // focadaId muda a cada clique — o `nonce` garante que clicar duas vezes
   // no mesmo item re-dispare o efeito do mapa (senão o React ignora set
-  // com valor igual).
+  // com valor igual). Contador em ref para manter o handler puro.
   const [focada, setFocada] = useState<{ id: string; nonce: number } | null>(null);
+  const focoNonceRef = useRef(0);
 
   // Normaliza para comparar sem acento/case (ex.: "sao" bate "São").
   const semAcentos = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
@@ -50,7 +51,8 @@ export function UnidadesPage() {
       return;
     }
     setErro(null);
-    setFocada({ id, nonce: Date.now() });
+    focoNonceRef.current += 1;
+    setFocada({ id, nonce: focoNonceRef.current });
   }
 
   // Geocoding: monta a busca com o endereço estruturado e preenche lat/lng.

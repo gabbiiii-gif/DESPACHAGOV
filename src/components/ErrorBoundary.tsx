@@ -8,7 +8,7 @@ interface Props {
   // log — permite localizar a origem sem ler stack.
   feature?: string;
   // Opcional: fallback customizado. Se ausente, usa o padrao ThemeGov.
-  fallback?: (ctx: { erro: Error | null; resetar: () => void; feature?: string }) => ReactNode;
+  fallback?: (ctx: { erro: Error | null; resetar: () => void; feature?: string | undefined }) => ReactNode;
 }
 interface State {
   erro: Error | null;

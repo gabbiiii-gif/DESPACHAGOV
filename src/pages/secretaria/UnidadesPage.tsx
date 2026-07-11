@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -27,6 +27,31 @@ export function UnidadesPage() {
   const [latStr, setLatStr] = useState("");
   const [lngStr, setLngStr] = useState("");
   const [geoLoading, setGeoLoading] = useState(false);
+  const [busca, setBusca] = useState("");
+  // focadaId muda a cada clique — o `nonce` garante que clicar duas vezes
+  // no mesmo item re-dispare o efeito do mapa (senão o React ignora set
+  // com valor igual).
+  const [focada, setFocada] = useState<{ id: string; nonce: number } | null>(null);
+
+  // Normaliza para comparar sem acento/case (ex.: "sao" bate "São").
+  const semAcentos = (s: string) => s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const unidadesFiltradas = useMemo(() => {
+    const q = semAcentos(busca.trim());
+    if (!q) return unidades;
+    return unidades.filter((u) => {
+      const alvos = [u.nome, u.bairro ?? "", u.codigo_inep ?? ""].map(semAcentos);
+      return alvos.some((a) => a.includes(q));
+    });
+  }, [unidades, busca]);
+
+  function focarNoMapa(id: string) {
+    if (!unidades.find((u) => u.id === id && u.lat != null && u.lng != null)) {
+      setErro("Esta unidade não tem coordenadas cadastradas — abra em Editar e clique em \"Buscar coordenadas pelo endereço\".");
+      return;
+    }
+    setErro(null);
+    setFocada({ id, nonce: Date.now() });
+  }
 
   // Geocoding: monta a busca com o endereço estruturado e preenche lat/lng.
   async function onGeocode() {
@@ -198,42 +223,72 @@ export function UnidadesPage() {
         CSV com colunas: <code>nome, codigo_inep, endereco, bairro, zona, lat, lng, responsavel</code> (só <code>nome</code> é obrigatório).
       </p>
 
-      <div className="mb-5"><MapaUnidades unidades={unidades} /></div>
+      <div className="mb-5"><MapaUnidades unidades={unidades} focada={focada} /></div>
 
       {carregando ? (
         <p className="text-cinza-secundario">Carregando…</p>
       ) : (
-        <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[640px] text-sm">
-            <thead className="bg-cinza-fundo text-left text-cinza-secundario">
-              <tr>
-                <th className="px-4 py-2.5 font-medium">Nome</th>
-                <th className="px-4 py-2.5 font-medium">Bairro</th>
-                <th className="px-4 py-2.5 font-medium">Zona</th>
-                <th className="px-4 py-2.5 font-medium">Geo</th>
-                <th className="px-4 py-2.5"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {unidades.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza-secundario">Nenhuma unidade.</td></tr>
-              )}
-              {unidades.map((u) => (
-                <tr key={u.id} className="border-t border-cinza-borda">
-                  <td className="px-4 py-2.5 font-medium text-cinza-texto">{u.nome}</td>
-                  <td className="px-4 py-2.5 text-cinza-secundario">{u.bairro ?? "—"}</td>
-                  <td className="px-4 py-2.5 text-cinza-secundario">{u.zona ?? "—"}</td>
-                  <td className="px-4 py-2.5 text-cinza-secundario">{u.lat != null && u.lng != null ? "✓" : "—"}</td>
-                  <td className="px-4 py-2.5 text-right">
-                    <div className="flex justify-end gap-3">
-                      <button onClick={() => abrirEditar(u)} className="text-xs text-azul-principal hover:underline">Editar</button>
-                      <button onClick={() => void remover(u.id)} className="text-xs text-vermelho-critico hover:underline">Excluir</button>
-                    </div>
-                  </td>
+        <Card className="p-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-cinza-borda px-4 py-3">
+            <input
+              type="search"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por nome, bairro ou INEP…"
+              aria-label="Buscar unidades"
+              className="min-w-[240px] flex-1 rounded-lg border border-cinza-borda bg-white px-3.5 py-2 text-sm text-cinza-texto placeholder:text-cinza-desabilitado focus:border-azul-principal focus:outline-none"
+            />
+            <span className="text-xs text-cinza-secundario">
+              {unidadesFiltradas.length} de {unidades.length}
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="bg-cinza-fundo text-left text-cinza-secundario">
+                <tr>
+                  <th className="px-4 py-2.5 font-medium">Nome</th>
+                  <th className="px-4 py-2.5 font-medium">Bairro</th>
+                  <th className="px-4 py-2.5 font-medium">Zona</th>
+                  <th className="px-4 py-2.5 font-medium">Geo</th>
+                  <th className="px-4 py-2.5"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {unidadesFiltradas.length === 0 && (
+                  <tr><td colSpan={5} className="px-4 py-6 text-center text-cinza-secundario">
+                    {unidades.length === 0 ? "Nenhuma unidade." : "Nenhuma unidade encontrada para a busca."}
+                  </td></tr>
+                )}
+                {unidadesFiltradas.map((u) => {
+                  const temGeo = u.lat != null && u.lng != null;
+                  return (
+                    <tr key={u.id} className="border-t border-cinza-borda">
+                      <td className="px-4 py-2.5 font-medium text-cinza-texto">
+                        <button
+                          type="button"
+                          onClick={() => focarNoMapa(u.id)}
+                          disabled={!temGeo}
+                          title={temGeo ? "Mostrar no mapa" : "Sem coordenadas cadastradas"}
+                          className="text-left hover:text-azul-principal hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:hover:text-cinza-texto"
+                        >
+                          {u.nome}
+                        </button>
+                      </td>
+                      <td className="px-4 py-2.5 text-cinza-secundario">{u.bairro ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-cinza-secundario">{u.zona ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-cinza-secundario">{temGeo ? "✓" : "—"}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        <div className="flex justify-end gap-3">
+                          <button onClick={() => abrirEditar(u)} className="text-xs text-azul-principal hover:underline">Editar</button>
+                          <button onClick={() => void remover(u.id)} className="text-xs text-vermelho-critico hover:underline">Excluir</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </Card>
       )}
 

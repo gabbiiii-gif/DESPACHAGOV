@@ -23,7 +23,7 @@ export const unidadeSchema = z.object({
   bairro: z.string().optional(),
   cep: z.string().optional(),
   cidade: z.string().optional(),
-  zona: z.enum(["urbana", "rural"]).optional(),
+  zona: z.enum(["urbana", "rural", "indigena"]).optional(),
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),
 });

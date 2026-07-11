@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoginPage } from "./pages/LoginPage";
 import { RecoverPage } from "./pages/RecoverPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
@@ -44,20 +45,20 @@ export const router = createBrowserRouter([
 
   {
     path: "/superadmin",
-    element: <ProtectedRoute roles={["superadmin"]}><TenantsPage /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["superadmin"]}><ErrorBoundary feature="Superadmin"><TenantsPage /></ErrorBoundary></ProtectedRoute>,
   },
   {
     path: "/superadmin/saude",
-    element: <ProtectedRoute roles={["superadmin"]}><SaudePage /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["superadmin"]}><ErrorBoundary feature="Saúde"><SaudePage /></ErrorBoundary></ProtectedRoute>,
   },
   {
     path: "/superadmin/secretaria/:tenantId",
     element: <ProtectedRoute roles={["superadmin"]}><SuperadminTenantScope /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="unidades" replace /> },
-      { path: "unidades", element: <UnidadesPage /> },
-      { path: "empresas", element: <EmpresasPage /> },
-      { path: "usuarios", element: <UsuariosPage /> },
+      { path: "unidades", element: <ErrorBoundary feature="Unidades"><UnidadesPage /></ErrorBoundary> },
+      { path: "empresas", element: <ErrorBoundary feature="Empresas"><EmpresasPage /></ErrorBoundary> },
+      { path: "usuarios", element: <ErrorBoundary feature="Usuários"><UsuariosPage /></ErrorBoundary> },
     ],
   },
 
@@ -66,29 +67,29 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute roles={[...SECRETARIA_ROLES]}><SecretariaShell /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="/secretaria/painel" replace /> },
-      { path: "painel", element: <PainelPage /> },
-      { path: "relatorios", element: <RelatoriosPage /> },
-      { path: "chamados", element: <ChamadosPage /> },
-      { path: "mapa", element: <MapaPage /> },
-      { path: "unidades", element: <UnidadesPage /> },
-      { path: "empresas", element: <EmpresasPage /> },
+      { path: "painel", element: <ErrorBoundary feature="Painel"><PainelPage /></ErrorBoundary> },
+      { path: "relatorios", element: <ErrorBoundary feature="Relatórios"><RelatoriosPage /></ErrorBoundary> },
+      { path: "chamados", element: <ErrorBoundary feature="Chamados"><ChamadosPage /></ErrorBoundary> },
+      { path: "mapa", element: <ErrorBoundary feature="Mapa"><MapaPage /></ErrorBoundary> },
+      { path: "unidades", element: <ErrorBoundary feature="Unidades"><UnidadesPage /></ErrorBoundary> },
+      { path: "empresas", element: <ErrorBoundary feature="Empresas"><EmpresasPage /></ErrorBoundary> },
       // Só o Chefe de divisão (admin_secretaria) cadastra usuários.
-      { path: "usuarios", element: <ProtectedRoute roles={["admin_secretaria"]}><UsuariosPage /></ProtectedRoute> },
+      { path: "usuarios", element: <ProtectedRoute roles={["admin_secretaria"]}><ErrorBoundary feature="Usuários"><UsuariosPage /></ErrorBoundary></ProtectedRoute> },
     ],
   },
 
   {
     path: "/unidade",
-    element: <ProtectedRoute roles={["responsavel_unidade"]}><UnidadeChamadosPage /></ProtectedRoute>,
+    element: <ProtectedRoute roles={["responsavel_unidade"]}><ErrorBoundary feature="Meus chamados"><UnidadeChamadosPage /></ErrorBoundary></ProtectedRoute>,
   },
   {
     path: "/empresa",
     element: <ProtectedRoute roles={[...EMPRESA_ROLES]}><EmpresaShell /></ProtectedRoute>,
     children: [
       { index: true, element: <Navigate to="/empresa/chamados" replace /> },
-      { path: "chamados", element: <EmpresaChamadosPage /> },
-      { path: "contrato", element: <ContratoPage /> },
-      { path: "tecnicos", element: <TecnicosPage /> },
+      { path: "chamados", element: <ErrorBoundary feature="Chamados"><EmpresaChamadosPage /></ErrorBoundary> },
+      { path: "contrato", element: <ErrorBoundary feature="Contrato"><ContratoPage /></ErrorBoundary> },
+      { path: "tecnicos", element: <ErrorBoundary feature="Técnicos"><TecnicosPage /></ErrorBoundary> },
     ],
   },
 ]);

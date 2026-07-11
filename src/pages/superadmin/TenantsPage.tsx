@@ -82,7 +82,8 @@ export function TenantsPage() {
     setOk(null);
     // Captura o form ANTES do await: após o await (e o setAberto que desmonta o
     // form) e.currentTarget vira null e .reset() lançaria erro.
-    const form = e.currentTarget;
+    const form: HTMLFormElement | null = e.currentTarget;
+    if (!form) return;
     const parsed = schema.safeParse(Object.fromEntries(new FormData(form)));
     if (!parsed.success) {
       setErro(parsed.error.issues[0]?.message ?? "Dados inválidos");
@@ -98,7 +99,11 @@ export function TenantsPage() {
     }
     setOk(emailSent ? "Secretaria criada. Convite enviado por e-mail." : "Secretaria criada.");
     if (!emailSent && actionLink) setConviteLink(actionLink);
-    form.reset();
+    // Guarda contra o form já ter sido desmontado antes do reset (ex.: modal
+    // fechado durante o await). Sem isso, `form.reset()` num node solto que
+    // por acaso virou null causava "Cannot read properties of null (reading
+    // 'reset')" reportado no monitor.
+    if (form.isConnected) form.reset();
     setAberto(false);
     void recarregar();
   }

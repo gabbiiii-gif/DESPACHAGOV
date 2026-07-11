@@ -391,6 +391,7 @@ export function UnidadesPage() {
             <option value="">—</option>
             <option value="urbana">Urbana</option>
             <option value="rural">Rural</option>
+            <option value="indigena">Indígena</option>
           </Select>
           <div />
 

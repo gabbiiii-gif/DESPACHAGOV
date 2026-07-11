@@ -9,15 +9,29 @@ export interface ChamadoRel {
   data_atendimento: string | null;
   data_conclusao: string | null;
   unidade_id: string;
+  empresa_id?: string | null;
   descricao: string;
   numero_protocolo: string | null;
 }
+
+// SLA convencionado por urgência (usado no relatório de SLA e para
+// distinguir "dentro do prazo" vs "atrasado"). Ajustável no futuro para
+// vir do contrato/tenant.
+export const SLA_HORAS_POR_URGENCIA: Record<Urgencia, number> = {
+  critica: 4,
+  alta: 24,
+  media: 72,
+  baixa: 168,
+};
 
 export interface LinhaUnidade { unidadeId: string; nome: string; total: number; concluidos: number; }
 export interface LinhaDetalhe { rotulo: string; total: number; concluidos: number; }
 // Detalhamento por chamado, agrupado por escola (exclui cancelados).
 export interface LinhaEscola { unidadeId: string; nome: string; emAndamento: number; concluidos: number; pct: number; }
+export interface LinhaEmpresa { empresaId: string; nome: string; total: number; concluidos: number; emAberto: number; tempoMedioHoras: number | null; taxaPct: number; }
+export interface LinhaSla { urgencia: string; slaHoras: number; total: number; concluidos: number; dentroSla: number; foraSla: number; pctDentro: number; tempoMedioHoras: number | null; }
 export interface PontoDia { dia: string; total: number; }
+export interface PontoMes { mes: string; rotulo: string; total: number; concluidos: number; taxaPct: number; }
 export interface ChamadoLinha { data: string; protocolo: string; descricao: string; unidade: string; urgencia: string; status: string; }
 
 export interface DadosRelatorio {
@@ -29,7 +43,10 @@ export interface DadosRelatorio {
   porUnidade: LinhaUnidade[];
   porUrgencia: LinhaDetalhe[];
   porEscola: LinhaEscola[];
+  porEmpresa: LinhaEmpresa[];
+  porSla: LinhaSla[];
   porDia: PontoDia[];
+  porMes: PontoMes[];
   chamados: ChamadoLinha[];
 }
 
@@ -41,15 +58,22 @@ export function dataBR(iso: string): string {
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-// Filtra por intervalo [de, ate] (datas YYYY-MM-DD, inclusivas) e unidade.
+// Filtra por intervalo [de, ate] (datas YYYY-MM-DD, inclusivas), unidade,
+// empresa, urgência e status. Todos opcionais e combinaveis.
 export function filtrar(
   chamados: ChamadoRel[],
-  opts: { de?: string; ate?: string; unidadeId?: string },
+  opts: {
+    de?: string; ate?: string; unidadeId?: string;
+    empresaId?: string; urgencia?: string; status?: string;
+  },
 ): ChamadoRel[] {
   const deMs = opts.de ? new Date(`${opts.de}T00:00:00`).getTime() : -Infinity;
   const ateMs = opts.ate ? new Date(`${opts.ate}T23:59:59`).getTime() : Infinity;
   return chamados.filter((c) => {
     if (opts.unidadeId && c.unidade_id !== opts.unidadeId) return false;
+    if (opts.empresaId && c.empresa_id !== opts.empresaId) return false;
+    if (opts.urgencia && c.urgencia !== opts.urgencia) return false;
+    if (opts.status && c.status !== opts.status) return false;
     const t = new Date(c.created_at).getTime();
     return t >= deMs && t <= ateMs;
   });
@@ -58,6 +82,7 @@ export function filtrar(
 export function agregar(
   chamados: ChamadoRel[],
   nomeUnidade: (id: string) => string,
+  nomeEmpresa?: (id: string) => string,
 ): DadosRelatorio {
   const total = chamados.length;
   const concluidos = chamados.filter(ehConcluido).length;
@@ -111,6 +136,78 @@ export function agregar(
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([dia, n]) => ({ dia: `${dia.slice(8, 10)}/${dia.slice(5, 7)}`, total: n }));
 
+  // Por empresa (só chamados atribuídos, com empresa_id).
+  const mapEmp = new Map<string, { total: number; concluidos: number; horas: number[] }>();
+  const nomeEmpresaFn = nomeEmpresa ?? ((id: string) => id);
+  for (const c of chamados) {
+    if (!c.empresa_id) continue;
+    const l = mapEmp.get(c.empresa_id) ?? { total: 0, concluidos: 0, horas: [] };
+    l.total++;
+    if (ehConcluido(c)) {
+      l.concluidos++;
+      if (c.data_conclusao) l.horas.push(horasEntre(c.created_at, c.data_conclusao));
+    }
+    mapEmp.set(c.empresa_id, l);
+  }
+  const porEmpresa: LinhaEmpresa[] = [...mapEmp.entries()].map(([id, l]) => ({
+    empresaId: id,
+    nome: nomeEmpresaFn(id),
+    total: l.total,
+    concluidos: l.concluidos,
+    emAberto: l.total - l.concluidos,
+    tempoMedioHoras: l.horas.length ? l.horas.reduce((a, b) => a + b, 0) / l.horas.length : null,
+    taxaPct: l.total ? Math.round((l.concluidos / l.total) * 100) : 0,
+  })).sort((a, b) => b.total - a.total);
+
+  // SLA por urgência: usa SLA_HORAS_POR_URGENCIA como referência.
+  const porSla: LinhaSla[] = URGENCIAS.map((u) => {
+    const lista = chamados.filter((c) => c.urgencia === u);
+    const concluidosLista = lista.filter(ehConcluido);
+    const slaH = SLA_HORAS_POR_URGENCIA[u as Urgencia];
+    let dentro = 0, fora = 0;
+    const horas: number[] = [];
+    for (const c of concluidosLista) {
+      if (!c.data_conclusao) continue;
+      const h = horasEntre(c.created_at, c.data_conclusao);
+      horas.push(h);
+      if (h <= slaH) dentro++; else fora++;
+    }
+    return {
+      urgencia: URGENCIA_META[u as Urgencia].label,
+      slaHoras: slaH,
+      total: lista.length,
+      concluidos: concluidosLista.length,
+      dentroSla: dentro,
+      foraSla: fora,
+      pctDentro: concluidosLista.length ? Math.round((dentro / concluidosLista.length) * 100) : 0,
+      tempoMedioHoras: horas.length ? horas.reduce((a, b) => a + b, 0) / horas.length : null,
+    };
+  });
+
+  // Comparativo dos últimos 12 meses (por created_at). Mostra volume e
+  // taxa de conclusão mês a mês — útil pra tendência.
+  const mapM = new Map<string, { total: number; concluidos: number }>();
+  for (const c of chamados) {
+    const mes = c.created_at.slice(0, 7); // YYYY-MM
+    const l = mapM.get(mes) ?? { total: 0, concluidos: 0 };
+    l.total++;
+    if (ehConcluido(c)) l.concluidos++;
+    mapM.set(mes, l);
+  }
+  const porMes: PontoMes[] = [...mapM.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([mes, l]) => {
+      const [a, m] = mes.split("-");
+      const nomes = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+      return {
+        mes,
+        rotulo: `${nomes[Number(m) - 1]}/${a?.slice(2)}`,
+        total: l.total,
+        concluidos: l.concluidos,
+        taxaPct: l.total ? Math.round((l.concluidos / l.total) * 100) : 0,
+      };
+    });
+
   // Lista de chamados (mais recentes primeiro).
   const chamadosLin: ChamadoLinha[] = [...chamados]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
@@ -132,7 +229,10 @@ export function agregar(
     porUnidade,
     porUrgencia,
     porEscola,
+    porEmpresa,
+    porSla,
     porDia,
+    porMes,
     chamados: chamadosLin,
   };
 }

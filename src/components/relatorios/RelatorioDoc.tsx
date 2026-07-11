@@ -38,7 +38,7 @@ const th: CSSProperties = {
 const td: CSSProperties = { padding: "9px 8px" };
 
 export interface RelatorioDocProps {
-  tipo: "mensal" | "unidade" | "personalizado";
+  tipo: "mensal" | "unidade" | "personalizado" | "empresa" | "sla" | "comparativo";
   titulo: string;
   subtitulo: string;
   periodoRotulo: string;
@@ -130,6 +130,114 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
         </>
       )}
 
+      {/* Por empresa: tabela com desempenho de cada empresa executora. */}
+      {tipo === "empresa" && (
+        <>
+          <div style={tituloSecao}>Desempenho por empresa</div>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 30 }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${C.oliva}` }}>
+                <th style={th}>Empresa</th>
+                <th style={{ ...th, textAlign: "right" }}>Chamados</th>
+                <th style={{ ...th, textAlign: "right" }}>Concluídos</th>
+                <th style={{ ...th, textAlign: "right" }}>Em aberto</th>
+                <th style={{ ...th, textAlign: "right" }}>Taxa</th>
+                <th style={{ ...th, textAlign: "right" }}>Tempo médio</th>
+              </tr>
+            </thead>
+            <tbody style={{ fontSize: 13, color: C.oliva }}>
+              {dados.porEmpresa.map((l) => (
+                <tr key={l.empresaId} style={{ borderBottom: `1px solid ${C.linha}` }}>
+                  <td style={{ ...td, fontWeight: 600 }}>{l.nome}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{l.total}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{l.concluidos}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.laranja }}>{l.emAberto}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.verde, fontWeight: 700 }}>{l.taxaPct}%</td>
+                  <td style={{ ...td, textAlign: "right", color: C.cinza }}>{fmtHoras(l.tempoMedioHoras)}</td>
+                </tr>
+              ))}
+              {dados.porEmpresa.length === 0 && (
+                <tr><td style={{ ...td, color: C.cinzaClaro }} colSpan={6}>Nenhuma empresa com chamados no período.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* SLA por urgência: cumprimento do prazo por nível. */}
+      {tipo === "sla" && (
+        <>
+          <div style={tituloSecao}>Cumprimento de SLA por urgência</div>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 30 }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${C.oliva}` }}>
+                <th style={th}>Urgência</th>
+                <th style={{ ...th, textAlign: "right" }}>SLA</th>
+                <th style={{ ...th, textAlign: "right" }}>Total</th>
+                <th style={{ ...th, textAlign: "right" }}>Concluídos</th>
+                <th style={{ ...th, textAlign: "right" }}>Dentro</th>
+                <th style={{ ...th, textAlign: "right" }}>Fora</th>
+                <th style={{ ...th, textAlign: "right" }}>% dentro</th>
+                <th style={{ ...th, textAlign: "right" }}>Tempo médio</th>
+              </tr>
+            </thead>
+            <tbody style={{ fontSize: 12.5, color: C.oliva }}>
+              {dados.porSla.map((l) => (
+                <tr key={l.urgencia} style={{ borderBottom: `1px solid ${C.linha}` }}>
+                  <td style={{ ...td, fontWeight: 600 }}>{l.urgencia}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.cinza }}>{l.slaHoras}h</td>
+                  <td style={{ ...td, textAlign: "right" }}>{l.total}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{l.concluidos}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.verde }}>{l.dentroSla}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.laranjaEsc }}>{l.foraSla}</td>
+                  <td style={{ ...td, textAlign: "right", fontWeight: 700, color: l.pctDentro >= 80 ? C.verde : l.pctDentro >= 50 ? C.laranja : C.laranjaEsc }}>{l.pctDentro}%</td>
+                  <td style={{ ...td, textAlign: "right", color: C.cinza }}>{fmtHoras(l.tempoMedioHoras)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* Comparativo mensal: barras de volume e taxa de conclusão. */}
+      {tipo === "comparativo" && dados.porMes.length > 0 && (
+        <>
+          <div style={tituloSecao}>Evolução mensal (últimos {dados.porMes.length} meses)</div>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 160, marginBottom: 22 }}>
+            {(() => {
+              const maxMes = Math.max(1, ...dados.porMes.map((m) => m.total));
+              return dados.porMes.map((m) => (
+                <div key={m.mes} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, height: "100%", justifyContent: "flex-end" }}>
+                  <div style={{ fontSize: 10, color: C.cinza, fontWeight: 700 }}>{m.total}</div>
+                  <div style={{ width: "100%", maxWidth: 46, height: `${Math.round((m.total / maxMes) * 100)}%`, background: `linear-gradient(180deg,${C.laranja},${C.oliva})`, borderRadius: "5px 5px 0 0" }} />
+                  <span style={{ fontSize: 10, color: C.cinza }}>{m.rotulo}</span>
+                </div>
+              ));
+            })()}
+          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 30 }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${C.oliva}` }}>
+                <th style={th}>Mês</th>
+                <th style={{ ...th, textAlign: "right" }}>Chamados</th>
+                <th style={{ ...th, textAlign: "right" }}>Concluídos</th>
+                <th style={{ ...th, textAlign: "right" }}>Taxa</th>
+              </tr>
+            </thead>
+            <tbody style={{ fontSize: 13, color: C.oliva }}>
+              {dados.porMes.map((m) => (
+                <tr key={m.mes} style={{ borderBottom: `1px solid ${C.linha}` }}>
+                  <td style={{ ...td, fontWeight: 600 }}>{m.rotulo}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{m.total}</td>
+                  <td style={{ ...td, textAlign: "right" }}>{m.concluidos}</td>
+                  <td style={{ ...td, textAlign: "right", color: C.verde, fontWeight: 700 }}>{m.taxaPct}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
       {/* detalhamento por chamado, agrupado por escola (mensal) */}
       {tipo === "mensal" && (
         <>
@@ -167,7 +275,7 @@ export const RelatorioDoc = forwardRef<HTMLDivElement, RelatorioDocProps>(functi
       )}
 
       {/* lista de chamados (unidade / personalizado) */}
-      {tipo !== "mensal" && (
+      {(tipo === "unidade" || tipo === "personalizado") && (
         <>
           <div style={tituloSecao}>Chamados do período</div>
           <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14 }}>

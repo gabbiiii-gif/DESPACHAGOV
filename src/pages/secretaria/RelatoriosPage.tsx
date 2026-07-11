@@ -96,17 +96,18 @@ export function RelatoriosPage() {
     if (tipo === "personalizado") {
       return filtrar(base, {
         de, ate,
-        unidadeId: unidadeId || undefined,
-        empresaId: empresaId || undefined,
-        urgencia: urgencia || undefined,
-        status: status || undefined,
+        ...(unidadeId && { unidadeId }),
+        ...(empresaId && { empresaId }),
+        ...(urgencia && { urgencia }),
+        ...(status && { status }),
       });
     }
     const l = limitesMes(mes);
-    const extras: Record<string, string> = {};
-    if (tipo === "unidade") extras.unidadeId = unidadeId;
-    if (tipo === "empresa" && empresaId) extras.empresaId = empresaId;
-    return filtrar(base, { ...l, ...extras });
+    return filtrar(base, {
+      ...l,
+      ...(tipo === "unidade" && unidadeId ? { unidadeId } : {}),
+      ...(tipo === "empresa" && empresaId ? { empresaId } : {}),
+    });
   }, [chamados, tipo, mes, unidadeId, empresaId, urgencia, status, de, ate]);
 
   const dados = useMemo(() => agregar(filtrados, nomeUnidade, nomeEmpresa), [filtrados]); // eslint-disable-line react-hooks/exhaustive-deps

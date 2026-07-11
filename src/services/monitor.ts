@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { deveReportar, type ErroRegistro, type AnaliseErros } from "@/lib/monitor";
+import { redigirTexto, redigirValor } from "@/lib/lgpd";
 
 // Erros recentes (RLS: só superadmin lê).
 export async function listarErros(limite = 500): Promise<ErroRegistro[]> {
@@ -91,10 +92,14 @@ export function instalarReporterErros(): void {
   supabase.auth.onAuthStateChange((_evt, session) => { usuarioIdCache = session?.user?.id ?? null; });
 
   const reportar = (mensagem: string, contexto: Record<string, unknown>) => {
-    const msg = (mensagem || "Erro desconhecido").slice(0, 2000);
+    // Redige CPF/CNPJ/email/telefone/CEP na mensagem e em qualquer valor
+    // do contexto ANTES de enviar (payloads de PostgREST costumam trazer
+    // PII em details/hint — sem esta passagem violaria LGPD).
+    const msg = redigirTexto((mensagem || "Erro desconhecido").slice(0, 2000));
     if (!deveReportar(msg, Date.now(), ultimos)) return;
+    const contextoLimpo = redigirValor({ ...contextoBase(), ...contexto }) as Record<string, unknown>;
     void supabase.functions.invoke("log-erro", {
-      body: { fonte: "front", nivel: "error", mensagem: msg, contexto: { ...contextoBase(), ...contexto } },
+      body: { fonte: "front", nivel: "error", mensagem: msg, contexto: contextoLimpo },
     }).catch(() => {});
   };
 

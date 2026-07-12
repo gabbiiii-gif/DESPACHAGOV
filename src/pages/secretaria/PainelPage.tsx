@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import {
@@ -20,7 +20,9 @@ import {
   contarPorStatus, contarPorUrgencia, taxaConclusao, tempoMedioConclusaoHoras, serieMensal,
 } from "@/lib/kpis";
 import { linhasRelatorio, nomeArquivoRelatorio } from "@/lib/relatorios";
-import { gerarRelatorioPdf } from "@/lib/relatorioPdf";
+import { agregar, dataBR, type ChamadoRel } from "@/lib/relatorioModelo";
+import { RelatorioDoc } from "@/components/relatorios/RelatorioDoc";
+import { exportarRelatorio } from "@/lib/exportarRelatorio";
 
 function fmtHoras(h: number | null): string {
   if (h == null) return "—";
@@ -52,6 +54,8 @@ export function PainelPage() {
   const [nUsuarios, setNUsuarios] = useState(0);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [exportandoPdf, setExportandoPdf] = useState(false);
+  const docRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ativo = true;
@@ -91,24 +95,48 @@ export function PainelPage() {
   const nomeEmpresa = (id: string | null) => (id ? empresas.find((e) => e.id === id)?.razao_social ?? "—" : "—");
   const contagens = { unidades: unidades.length, empresas: empresas.length, usuarios: nUsuarios };
 
+  // Dados no mesmo modelo dos relatórios (para exportar o painel no padrão institucional).
+  const dadosRel = useMemo(
+    () => agregar(chamados as ChamadoRel[], nomeUnidade, (id) => nomeEmpresa(id)),
+    [chamados, unidades, empresas], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const propsRel = useMemo(() => {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+    return {
+      tipo: "mensal",
+      titulo: "Painel — Visão geral",
+      subtitulo: "Resumo consolidado dos chamados de manutenção e serviços das unidades da Secretaria de Educação.",
+      periodoRotulo: "Relatório do Painel",
+      periodoValor: "Visão geral",
+      docNum: `DG-${ano}-${mm}-PNL`,
+      emitidoEm: dataBR(hoje.toISOString()),
+      secretariaNome: profile?.nome ?? "Secretaria",
+      dados: dadosRel,
+    } as const;
+  }, [dadosRel, profile]);
+
   function exportarCsv() {
     const linhas = linhasRelatorio(chamados, nomeUnidade, nomeEmpresa);
     baixar(Papa.unparse(linhas), `${nomeArquivoRelatorio("chamados")}.csv`, "text/csv;charset=utf-8;");
   }
 
-  function exportarPdf() {
-    void gerarRelatorioPdf({
-      secretaria: profile?.nome ?? "Secretaria",
-      total: chamados.length,
-      concluidos: porStatus.concluido,
-      taxaConclusaoPct: taxaPct,
-      tempoMedioConclusaoHoras: tMedio,
-      porStatus: STATUS.map((s) => ({ label: STATUS_META[s].label, n: porStatus[s] })),
-      porUrgencia: [
-        ...URGENCIAS.map((u) => ({ label: URGENCIA_META[u].label, n: porUrgencia[u] })),
-        { label: "Sem triagem", n: porUrgencia.sem_triagem },
-      ],
-    });
+  async function exportarPdf() {
+    if (!docRef.current) return;
+    setExportandoPdf(true);
+    try {
+      await exportarRelatorio("pdf", {
+        el: docRef.current,
+        nome: nomeArquivoRelatorio("relatorio-painel"),
+        dados: dadosRel,
+        meta: { periodo: "Visão geral", orgao: "Secretaria Municipal de Educação" },
+      });
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Falha ao exportar");
+    } finally {
+      setExportandoPdf(false);
+    }
   }
 
   return (
@@ -124,7 +152,7 @@ export function PainelPage() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportarCsv} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">Exportar CSV</Button>
-          <Button variant="outline" onClick={exportarPdf} disabled={chamados.length === 0} className="px-3 py-1.5 text-xs">Exportar PDF</Button>
+          <Button variant="outline" onClick={() => void exportarPdf()} loading={exportandoPdf} disabled={chamados.length === 0 || exportandoPdf} className="px-3 py-1.5 text-xs">Exportar PDF</Button>
         </div>
       </div>
 
@@ -236,6 +264,14 @@ export function PainelPage() {
               </ResponsiveContainer>
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* documento off-screen: exportado como PDF no padrão institucional dos relatórios.
+          left:-99999px (nunca visibility/opacity — html2canvas herda no clone → PDF branco). */}
+      {!carregando && chamados.length > 0 && (
+        <div aria-hidden style={{ position: "absolute", left: -99999, top: 0, pointerEvents: "none" }}>
+          <RelatorioDoc ref={docRef} {...propsRel} />
         </div>
       )}
     </div>

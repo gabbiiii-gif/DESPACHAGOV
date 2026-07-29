@@ -1,0 +1,73 @@
+name: Backup do banco
+
+# Cópia off-provider diária. O PITR do Supabase continua sendo a primeira linha
+# de recuperação — este workflow cobre perda da conta/projeto (ver scripts/backup-db.sh).
+#
+# ATENÇÃO: repositório PÚBLICO. Este workflow NÃO pode ganhar um passo de
+# upload-artifact com o dump: artifacts de repo público são baixáveis, e o dump
+# tem dados pessoais. O único destino permitido é o bucket S3 dos secrets.
+#
+# Secrets necessários (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL         postgresql://postgres:SENHA@db.<ref>.supabase.co:5432/postgres
+#   BACKUP_S3_BUCKET        s3://despachagov-backups
+#   BACKUP_GPG_PASSPHRASE   passphrase simétrica — guarde uma cópia FORA do GitHub,
+#                           senão o backup é indecifrável justamente no dia do incidente
+#   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+#   AWS_ENDPOINT_URL        (opcional) só para R2/B2/MinIO
+
+on:
+  schedule:
+    # 06:00 UTC = 03:00 em Altamira (UTC-3). Fora da janela de uso das secretarias.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+# Um backup por vez: duas execuções concorrentes disputariam o mesmo nome de
+# destino e poderiam subir um arquivo pela metade.
+concurrency:
+  group: backup-db
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir secrets
+        # Falha explícita e cedo. Sem isso o job quebraria no meio do script com
+        # um erro de conexão obscuro, e o alerta viria como "falha de rede".
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          PASSPHRASE: ${{ secrets.BACKUP_GPG_PASSPHRASE }}
+        run: |
+          faltando=""
+          [ -z "$DB_URL" ]     && faltando="$faltando SUPABASE_DB_URL"
+          [ -z "$BUCKET" ]     && faltando="$faltando BACKUP_S3_BUCKET"
+          [ -z "$PASSPHRASE" ] && faltando="$faltando BACKUP_GPG_PASSPHRASE"
+          if [ -n "$faltando" ]; then
+            echo "::error::Secrets ausentes:$faltando — backup NÃO executado."
+            exit 1
+          fi
+
+      - name: Instalar postgresql-client 17
+        # A imagem do runner traz um client mais antigo que o servidor (PG 17),
+        # e pg_dump antigo contra servidor novo aborta.
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+
+      - name: Executar backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          BACKUP_GPG_PASSPHRASE: ${{ secrets.BACKUP_GPG_PASSPHRASE }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+        run: |
+          chmod +x scripts/backup-db.sh
+          ./scripts/backup-db.sh

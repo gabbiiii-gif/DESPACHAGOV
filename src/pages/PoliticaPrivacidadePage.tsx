@@ -46,10 +46,15 @@ export function PoliticaPrivacidadePage() {
           </section>
           <section>
             <h2 className="mb-1 font-semibold text-cinza-texto">5. Seus direitos (art. 18)</h2>
-            <p>Você pode acessar, baixar (portabilidade), corrigir e solicitar a exclusão dos seus dados.
-              Acesso e download estão disponíveis na tela <b>“Meus dados”</b>. Correção e exclusão são solicitadas
-              ao administrador da sua Secretaria; a exclusão é mediada para preservar a integridade dos registros
-              públicos exigidos por lei.</p>
+            <p>Acesso, download (portabilidade) e <b>exclusão</b> estão disponíveis diretamente na tela
+              <b> “Meus dados”</b>, sem depender de solicitação a terceiros. A correção de cadastro é feita
+              pelo administrador da sua Secretaria.</p>
+            <p className="mt-2">Ao excluir, seus dados pessoais (nome, e-mail, CPF, telefone, cargo e matrícula)
+              são apagados e seu acesso é encerrado de forma permanente e irreversível. Os chamados que você
+              abriu <b>permanecem sem qualquer vínculo com você</b>: são registro de serviço público que a
+              Secretaria é obrigada a conservar (art. 16, I). Também é mantido o registro de que houve aceite
+              do termo e em que versão — prova da base legal do tratamento —, sem os identificadores associados
+              (IP e navegador são apagados).</p>
           </section>
           <section>
             <h2 className="mb-1 font-semibold text-cinza-texto">6. Segurança</h2>

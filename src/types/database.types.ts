@@ -842,6 +842,7 @@ export type Database = {
       }
       users: {
         Row: {
+          anonimizado_em: string | null
           ativo: boolean
           cargo: string | null
           cpf: string | null
@@ -858,6 +859,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          anonimizado_em?: string | null
           ativo?: boolean
           cargo?: string | null
           cpf?: string | null
@@ -874,6 +876,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          anonimizado_em?: string | null
           ativo?: boolean
           cargo?: string | null
           cpf?: string | null

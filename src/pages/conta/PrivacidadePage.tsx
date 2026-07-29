@@ -3,19 +3,26 @@ import { Link } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Card, Alert } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Modal } from "@/components/ui/Modal";
 import { useAuth } from "@/hooks/useAuth";
 import {
   montarExportacao, camposPessoais, nomeArquivoExport,
+  confirmacaoExclusaoValida, CONFIRMACAO_EXCLUSAO,
   type ConsentimentoResumo, type ChamadoResumoExport,
 } from "@/lib/privacidade";
-import { obterConsentimentos, obterMeusChamados } from "@/services/privacidade";
+import { obterConsentimentos, obterMeusChamados, excluirMinhaConta } from "@/services/privacidade";
 
 export function PrivacidadePage() {
-  const { profile, session } = useAuth();
+  const { profile, session, signOut } = useAuth();
   const [consentimentos, setConsentimentos] = useState<ConsentimentoResumo[]>([]);
   const [chamados, setChamados] = useState<ChamadoResumoExport[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [confirmacao, setConfirmacao] = useState("");
+  const [excluindo, setExcluindo] = useState(false);
+  const [erroExclusao, setErroExclusao] = useState<string | null>(null);
 
   useEffect(() => {
     let ativo = true;
@@ -45,7 +52,23 @@ export function PrivacidadePage() {
     URL.revokeObjectURL(url);
   }
 
+  async function confirmarExclusao() {
+    setExcluindo(true);
+    setErroExclusao(null);
+    const { error } = await excluirMinhaConta(confirmacao);
+    if (error) {
+      setExcluindo(false);
+      setErroExclusao(error);
+      return;
+    }
+    // A sessão foi revogada no servidor. O signOut local limpa o storage e o
+    // ProtectedRoute redireciona para /login — sem ele a UI ficaria com um
+    // perfil em memória que não existe mais.
+    await signOut();
+  }
+
   const campos = profile ? camposPessoais(profile) : [];
+  const podeConfirmar = confirmacaoExclusaoValida(confirmacao);
 
   return (
     <AppShell titulo="Meus dados (LGPD)">
@@ -90,13 +113,64 @@ export function PrivacidadePage() {
         <Card>
           <h2 className="mb-1 text-sm font-semibold text-cinza-texto">Seus direitos</h2>
           <p className="text-sm text-cinza-secundario">
-            Você pode <b>acessar</b> e <b>baixar</b> seus dados nesta tela (portabilidade). Para
-            <b> correção</b> ou <b>exclusão</b> (direito ao esquecimento), solicite ao administrador da
-            sua Secretaria — a exclusão é mediada para preservar a integridade dos registros públicos.
-            Detalhes em <Link to="/politica-privacidade" className="text-azul-principal underline">Política de Privacidade</Link>.
+            Você pode <b>acessar</b> e <b>baixar</b> seus dados nesta tela (portabilidade) e{" "}
+            <b>excluir</b> seus dados pessoais abaixo. Para <b>correção</b>, procure o administrador
+            da sua Secretaria. Detalhes em{" "}
+            <Link to="/politica-privacidade" className="text-azul-principal underline">Política de Privacidade</Link>.
           </p>
         </Card>
+
+        <Card className="border-vermelho-critico/30">
+          <h2 className="mb-1 text-sm font-semibold text-vermelho-critico">Excluir meus dados</h2>
+          <p className="text-sm text-cinza-secundario">
+            Seus dados pessoais — nome, e-mail, CPF, telefone, cargo e matrícula — são apagados e seu
+            acesso é encerrado permanentemente.
+          </p>
+          <p className="mt-2 text-sm text-cinza-secundario">
+            Os chamados que você abriu <b>continuam existindo sem o seu nome</b>. São registro de
+            serviço público e a lei obriga a Secretaria a mantê-los (LGPD, art. 16, I) — mas eles
+            deixam de estar ligados a você.
+          </p>
+          <p className="mt-2 text-sm font-medium text-cinza-texto">Esta ação não pode ser desfeita.</p>
+          <Button
+            variant="outline"
+            onClick={() => { setConfirmacao(""); setErroExclusao(null); setModalAberto(true); }}
+            className="mt-3 border-vermelho-critico/40 px-3 py-1.5 text-xs text-vermelho-critico hover:bg-vermelho-critico/5"
+          >
+            Excluir meus dados
+          </Button>
+        </Card>
       </div>
+
+      <Modal aberto={modalAberto} titulo="Excluir meus dados" onClose={() => setModalAberto(false)}>
+        <div className="flex flex-col gap-4">
+          {erroExclusao && <Alert tipo="erro">{erroExclusao}</Alert>}
+          <p className="text-sm text-cinza-secundario">
+            Você perderá o acesso ao DespachaGov imediatamente e não será possível recuperar a conta.
+            Se quiser guardar uma cópia, feche esta janela e use <b>Baixar meus dados (JSON)</b> antes.
+          </p>
+          <Input
+            label={`Digite "${CONFIRMACAO_EXCLUSAO}" para confirmar`}
+            value={confirmacao}
+            onChange={(e) => setConfirmacao(e.target.value)}
+            autoComplete="off"
+            disabled={excluindo}
+          />
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="ghost" onClick={() => setModalAberto(false)} disabled={excluindo}>
+              Cancelar
+            </Button>
+            <Button
+              variant="acento"
+              onClick={() => void confirmarExclusao()}
+              loading={excluindo}
+              disabled={!podeConfirmar}
+            >
+              Excluir definitivamente
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </AppShell>
   );
 }

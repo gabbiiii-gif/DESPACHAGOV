@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { montarExportacao, camposPessoais, nomeArquivoExport, type ConsentimentoResumo } from "./privacidade";
+import {
+  montarExportacao, camposPessoais, nomeArquivoExport,
+  confirmacaoExclusaoValida, CONFIRMACAO_EXCLUSAO,
+  type ConsentimentoResumo,
+} from "./privacidade";
 import type { UserProfile } from "./auth";
 
 const perfil = {
@@ -46,5 +50,23 @@ describe("camposPessoais", () => {
 describe("nomeArquivoExport", () => {
   it("carimba a data", () => {
     expect(nomeArquivoExport(new Date(2026, 5, 7))).toBe("meus-dados_2026-06-07.json");
+  });
+});
+
+describe("confirmacaoExclusaoValida", () => {
+  it("aceita a frase exata", () => {
+    expect(confirmacaoExclusaoValida(CONFIRMACAO_EXCLUSAO)).toBe(true);
+  });
+
+  it("tolera caixa e espaço sobrando", () => {
+    expect(confirmacaoExclusaoValida("  excluir meus dados  ")).toBe(true);
+    expect(confirmacaoExclusaoValida("Excluir Meus Dados")).toBe(true);
+  });
+
+  it("recusa frase parcial, vazia ou aproximada", () => {
+    expect(confirmacaoExclusaoValida("")).toBe(false);
+    expect(confirmacaoExclusaoValida("excluir")).toBe(false);
+    expect(confirmacaoExclusaoValida("EXCLUIR MEUS DADO")).toBe(false);
+    expect(confirmacaoExclusaoValida("EXCLUIR  MEUS  DADOS")).toBe(false);
   });
 });

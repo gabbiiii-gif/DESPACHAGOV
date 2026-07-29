@@ -71,3 +71,16 @@ export function nomeArquivoExport(agora: Date = new Date()): string {
   const d = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
   return `meus-dados_${d}.json`;
 }
+
+// ─── Exclusão de dados (LGPD art. 18, VI) ────────────────────────────────────
+// A frase precisa bater com a esperada em supabase/functions/delete-account.
+// Duplicar a string nos dois lados é intencional: são runtimes separados
+// (Deno x browser) sem módulo compartilhado, e o backend não pode confiar numa
+// constante que o cliente controla — ele revalida por conta própria.
+export const CONFIRMACAO_EXCLUSAO = "EXCLUIR MEUS DADOS";
+
+// Aceita espaço sobrando e diferença de caixa — o usuário está digitando uma
+// frase à mão sob estresse. Só o conteúdo importa.
+export function confirmacaoExclusaoValida(texto: string): boolean {
+  return texto.trim().toUpperCase() === CONFIRMACAO_EXCLUSAO;
+}

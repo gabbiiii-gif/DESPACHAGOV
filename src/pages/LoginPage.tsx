@@ -87,7 +87,7 @@ export function LoginPage() {
             >
               <option value="">Selecione o subdomínio…</option>
               {tenants.map((t) => (
-                <option key={t.id} value={t.subdomain}>{t.subdomain}</option>
+                <option key={t.subdomain} value={t.subdomain}>{t.subdomain}</option>
               ))}
             </Select>
           ) : (

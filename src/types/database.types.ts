@@ -934,7 +934,7 @@ export type Database = {
       is_superadmin: { Args: never; Returns: boolean }
       listar_tenants_publicos: {
         Args: never
-        Returns: { id: string; nome_secretaria: string; subdomain: string }[]
+        Returns: { subdomain: string }[]
       }
       pode_acessar_chamado: { Args: { p_chamado_id: string }; Returns: boolean }
     }

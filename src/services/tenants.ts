@@ -10,11 +10,15 @@ export async function listarTenants(): Promise<Tenant[]> {
   return data ?? [];
 }
 
-// Público (login): apenas id/nome/subdomínio de tenants ativos, via RPC
-// SECURITY DEFINER — não vaza cnpj, contrato, valor, etc.
+// Público (login): SOMENTE o subdomínio dos tenants ativos, via RPC
+// SECURITY DEFINER exposta a anon.
+//
+// Só o subdomínio porque é só o que a tela de login usa. A RPC devolvia também
+// id e nome_secretaria, que eram trafegados para qualquer anônimo e nunca
+// renderizados — entregava a carteira de clientes de graça (migration 0023).
+// O nome da secretaria continua acessível a quem tem sessão, por select normal
+// em `tenants` sob RLS.
 export interface TenantPublico {
-  id: string;
-  nome_secretaria: string;
   subdomain: string;
 }
 

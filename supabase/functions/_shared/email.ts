@@ -1,5 +1,17 @@
 // Envio de e-mail via Resend (best-effort). Se RESEND_API_KEY não estiver
 // configurada, retorna { sent: false } sem quebrar o fluxo de criação.
+
+// Remetente dos transacionais. Estava hardcoded: trocar de domínio exigia
+// editar e republicar a função, e o valor fixo escondia que este remetente NÃO
+// é o mesmo dos e-mails do Supabase Auth (confirmação, recuperação, magic
+// link), que saem pelo SMTP do painel. São dois remetentes distintos em
+// produção e mantê-los alinhados é conferência manual.
+//
+// O fallback é o domínio que já está em uso, não um placeholder: o Resend
+// aceita a chamada mesmo com domínio não verificado e só falha na entrega, então
+// um valor errado aqui quebraria em silêncio.
+const REMETENTE_PADRAO = "DespachaGov <nao-responder@despachagov.com>";
+
 export async function enviarEmail(opts: {
   to: string;
   subject: string;
@@ -12,7 +24,7 @@ export async function enviarEmail(opts: {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "DespachaGov <nao-responder@despachagov.com>",
+        from: Deno.env.get("EMAIL_FROM") ?? REMETENTE_PADRAO,
         to: [opts.to],
         subject: opts.subject,
         html: opts.html,

@@ -41,12 +41,24 @@ export async function registrarConsentimento(
   );
   if (!erroFuncao) return { error: null };
 
-  const { error } = await supabase.from("lgpd_consents").insert({
+  const base = {
     user_id: userId,
     tenant_id: tenantId,
     versao_termo: TERMO_VERSAO,
-    texto_hash: textoHash,
     user_agent: navigator.userAgent,
-  });
-  return { error: error?.message ?? null };
+  };
+
+  const { error } = await supabase.from("lgpd_consents").insert({ ...base, texto_hash: textoHash });
+  if (!error) return { error: null };
+
+  // Segunda tentativa sem texto_hash: cobre a janela em que o frontend já
+  // subiu (deploy automático da Vercel no push) mas a migration 0022 ainda não
+  // foi aplicada — a coluna não existe e o PostgREST rejeita o insert inteiro.
+  //
+  // Sem isto, essa janela trancaria TODOS os usuários fora do app: a versão do
+  // termo mudou para 2026-07-v2, então todo mundo passa pelo gate, e um gate
+  // que não consegue gravar o aceite não deixa ninguém entrar. Perder o hash
+  // de alguns aceites é um custo pequeno perto de derrubar a operação inteira.
+  const { error: erroSemHash } = await supabase.from("lgpd_consents").insert(base);
+  return { error: erroSemHash?.message ?? null };
 }

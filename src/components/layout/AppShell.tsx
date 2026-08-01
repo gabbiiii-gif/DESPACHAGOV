@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
 import { useEntrada } from "@/hooks/useEntrada";
+import { Footer } from "./Footer";
 
 // Casca mínima das áreas internas: header com marca + usuário + sair.
 export function AppShell({ titulo, children }: { titulo: string; children: ReactNode }) {
@@ -33,6 +34,7 @@ export function AppShell({ titulo, children }: { titulo: string; children: React
         <h1 className="mb-5 font-display text-2xl font-bold text-cinza-texto">{titulo}</h1>
         {children}
       </main>
+      <Footer className="border-t border-cinza-borda px-4 py-6 sm:px-6" />
     </div>
   );
 }

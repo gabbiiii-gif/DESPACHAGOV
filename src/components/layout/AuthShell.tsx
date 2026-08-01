@@ -1,6 +1,7 @@
 import { Suspense, lazy, type ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { useEntrada } from "@/hooks/useEntrada";
+import { Footer } from "./Footer";
 
 // Fundos animados só aqui e lazy-loaded (chunks separados) — não pesam o
 // resto do app. Plasma é a camada de trás; o globo 3D fica por cima dele.
@@ -53,7 +54,7 @@ export function AuthShell({ titulo, subtitulo, children }: { titulo: string; sub
         </div>
       </div>
 
-      <p className="text-xs text-cinza-secundario">Menos papel, mais ação.</p>
+      <Footer />
     </main>
   );
 }

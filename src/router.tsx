@@ -6,6 +6,7 @@ import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { HomeRedirect } from "./pages/HomeRedirect";
 import { SemAcessoPage } from "./pages/SemAcessoPage";
 import { PoliticaPrivacidadePage } from "./pages/PoliticaPrivacidadePage";
+import { TermosUsoPage } from "./pages/TermosUsoPage";
 import { PrivacidadePage } from "./pages/conta/PrivacidadePage";
 import { TenantsPage } from "./pages/superadmin/TenantsPage";
 import { SaudePage } from "./pages/superadmin/SaudePage";
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
   { path: "/recuperar-senha", element: <RecoverPage /> },
   { path: "/redefinir-senha", element: <ResetPasswordPage /> },
   { path: "/politica-privacidade", element: <PoliticaPrivacidadePage /> },
+  { path: "/termos-de-uso", element: <TermosUsoPage /> },
 
   { path: "/", element: <ProtectedRoute><HomeRedirect /></ProtectedRoute> },
   { path: "/sem-acesso", element: <ProtectedRoute><SemAcessoPage /></ProtectedRoute> },

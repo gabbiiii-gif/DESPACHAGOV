@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { consentiuVersaoVigente, registrarConsentimento } from "@/services/lgpd";
-import { TERMO_LGPD_VERSAO } from "@/lib/auth";
+import { TERMO_SECOES, TERMO_VERSAO } from "@/lib/termo";
 import { Button } from "@/components/ui/Button";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Alert } from "@/components/ui/Card";
@@ -34,19 +35,32 @@ export function LgpdGate({ children }: { children: ReactNode }) {
 
   if (estado === "pendente") {
     return (
-      <AuthShell titulo="Termo de Uso e Privacidade" subtitulo={`Versão ${TERMO_LGPD_VERSAO}`}>
+      <AuthShell titulo="Termo de Uso e Privacidade" subtitulo={`Versão ${TERMO_VERSAO}`}>
         <div className="flex flex-col gap-4">
           {erro && <Alert tipo="erro">{erro}</Alert>}
-          <div className="max-h-48 overflow-y-auto rounded-lg border border-cinza-borda bg-cinza-fundo p-3 text-xs leading-relaxed text-cinza-secundario">
-            <p>
-              Ao continuar, você concorda com o tratamento de dados pessoais conforme a Lei nº 13.709/2018 (LGPD),
-              exclusivamente para a gestão de demandas de manutenção das unidades públicas. Os dados são isolados por
-              órgão contratante e usados para fins de execução contratual, auditoria e prestação de contas.
-            </p>
-            <p className="mt-2">
-              Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento pela tela “Meus dados”.
-            </p>
+          {/* Renderiza a MESMA fonte que /termos-de-uso e que alimenta o hash
+              gravado no aceite — o que a pessoa lê é exatamente o que fica
+              provado no banco. */}
+          <div className="max-h-56 overflow-y-auto rounded-lg border border-cinza-borda bg-cinza-fundo p-3 text-xs leading-relaxed text-cinza-secundario">
+            {TERMO_SECOES.map((secao) => (
+              <section key={secao.titulo} className="mb-3 last:mb-0">
+                <h2 className="font-semibold text-cinza-texto">{secao.titulo}</h2>
+                {secao.paragrafos.map((p, i) => (
+                  <p key={i} className="mt-1">{p}</p>
+                ))}
+              </section>
+            ))}
           </div>
+          <p className="text-xs text-cinza-secundario">
+            Também disponível em{" "}
+            <Link to="/termos-de-uso" target="_blank" className="text-azul-principal underline">
+              página completa
+            </Link>{" "}
+            e{" "}
+            <Link to="/politica-privacidade" target="_blank" className="text-azul-principal underline">
+              Política de Privacidade
+            </Link>.
+          </p>
           <Button onClick={aceitar} loading={salvando} className="w-full">
             Li e aceito o termo
           </Button>

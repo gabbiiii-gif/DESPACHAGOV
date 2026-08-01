@@ -528,6 +528,7 @@ export type Database = {
           id: string
           ip: string | null
           tenant_id: string | null
+          texto_hash: string | null
           user_agent: string | null
           user_id: string
           versao_termo: string
@@ -537,6 +538,7 @@ export type Database = {
           id?: string
           ip?: string | null
           tenant_id?: string | null
+          texto_hash?: string | null
           user_agent?: string | null
           user_id: string
           versao_termo: string
@@ -546,6 +548,7 @@ export type Database = {
           id?: string
           ip?: string | null
           tenant_id?: string | null
+          texto_hash?: string | null
           user_agent?: string | null
           user_id?: string
           versao_termo?: string

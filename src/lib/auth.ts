@@ -40,4 +40,6 @@ export function homeRouteForRole(role: Role): string {
   }
 }
 
-export const TERMO_LGPD_VERSAO = "2026-06-v1";
+// A versão do termo mudou de casa: vive em src/lib/termo.ts, junto do texto que
+// ela versiona. Mantê-la aqui, longe do conteúdo, era o que permitia editar o
+// termo sem lembrar de subir a versão.

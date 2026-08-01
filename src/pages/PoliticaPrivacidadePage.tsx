@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/ui/Logo";
-import { TERMO_LGPD_VERSAO } from "@/lib/auth";
+import { TERMO_VERSAO } from "@/lib/termo";
 
 // Política de Privacidade — pública (linkada do termo de aceite e da tela "Meus dados").
 export function PoliticaPrivacidadePage() {
@@ -17,7 +17,7 @@ export function PoliticaPrivacidadePage() {
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-2xl font-bold text-cinza-texto">Política de Privacidade</h1>
-        <p className="mt-1 text-sm text-cinza-secundario">Versão {TERMO_LGPD_VERSAO} · Lei nº 13.709/2018 (LGPD)</p>
+        <p className="mt-1 text-sm text-cinza-secundario">Versão {TERMO_VERSAO} · Lei nº 13.709/2018 (LGPD)</p>
 
         <div className="mt-6 space-y-5 text-sm leading-relaxed text-cinza-texto">
           <section>

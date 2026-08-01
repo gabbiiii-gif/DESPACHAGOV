@@ -20,12 +20,17 @@
 
 drop function if exists public.listar_tenants_publicos();
 
+-- search_path = '' (e não `public`, como em 0019): com o path vazio, nenhum
+-- objeto resolve por nome curto, então um schema malicioso no path do chamador
+-- não consegue sequestrar a referência dentro de uma função SECURITY DEFINER.
+-- O corpo já qualifica public.tenants, então nada muda de comportamento. É o
+-- padrão que as demais funções do projeto usam (0001, 0005, 0012).
 create or replace function public.listar_tenants_publicos()
 returns table (subdomain text)
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select t.subdomain
     from public.tenants t

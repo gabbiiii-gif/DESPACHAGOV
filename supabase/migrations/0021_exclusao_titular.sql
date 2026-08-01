@@ -79,6 +79,21 @@ declare
   v_chamados   integer;
   v_eventos    integer;
 begin
+  -- Defesa em profundidade. O grant é revogado de anon/authenticated no fim
+  -- deste arquivo e a Edge Function já valida o chamador, mas SECURITY DEFINER
+  -- em `public` é um endpoint público por padrão: o Postgres concede EXECUTE a
+  -- PUBLIC no momento da criação, e anon/authenticated herdam de PUBLIC. Se um
+  -- grant futuro reabrir a função — ou se o revoke for esquecido num rebuild —,
+  -- sem esta checagem qualquer usuário autenticado poderia anonimizar QUALQUER
+  -- outro passando um p_user_id arbitrário.
+  --
+  -- service_role chama sem JWT de usuário, então auth.uid() é null e a condição
+  -- não dispara. Usuário autenticado só passa se o alvo for ele mesmo.
+  if auth.uid() is not null and auth.uid() <> p_user_id then
+    raise exception 'apenas o próprio titular pode excluir seus dados'
+      using errcode = 'insufficient_privilege';
+  end if;
+
   select * into v_user from public.users where id = p_user_id;
   if not found then
     raise exception 'titular não encontrado' using errcode = 'no_data_found';

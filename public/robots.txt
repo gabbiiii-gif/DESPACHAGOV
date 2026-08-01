@@ -1,0 +1,18 @@
+# DespachaGov — plataforma B2G de acesso restrito.
+#
+# Postura: negar por padrão, liberar o que é deliberadamente público.
+# Não há conteúdo aberto a indexar além dos documentos legais e da porta de
+# entrada — todo o resto exige sessão, e as rotas carregam identificadores de
+# chamado, unidade e tenant que não devem aparecer em busca.
+#
+# /redefinir-senha fica DE FORA do Allow de propósito: a URL carrega o token de
+# recuperação. Indexá-la exporia o token em cache de buscador.
+
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /termos-de-uso
+Allow: /politica-privacidade
+Disallow: /
+
+Sitemap: https://despachagov.com/sitemap.xml

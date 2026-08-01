@@ -54,10 +54,25 @@ Corrigir o descasamento de vez (renomear os 23 arquivos para o timestamp real de
 cada um, ou usar `supabase migration repair`) é trabalho à parte, que deve ser
 feito com staging disponível — não no meio de um deploy.
 
+## Aplicar migrations — script
+
+```bash
+export SUPABASE_ACCESS_TOKEN=sbp_...    # Painel → Account → Access Tokens
+node scripts/aplicar-migrations.mjs --dry-run   # mostra o que falta
+node scripts/aplicar-migrations.mjs             # aplica
+```
+
+Usa a Management API, não o CLI, justamente para não esbarrar no descasamento
+de nomes acima. Consulta o histórico remoto antes e pula o que já foi aplicado
+(idempotente), aplica uma por vez, para no primeiro erro sem tocar nas
+seguintes, registra no histórico e roda a verificação pós-deploy no fim.
+
+Revogue o token depois de usar.
+
 ## Aplicar migrations — procedimento manual
 
-Uma de cada vez, na ordem, conferindo entre elas. Pelo SQL Editor do painel
-(Database → SQL Editor) ou por `psql`:
+Se preferir olhar cada passo. Uma de cada vez, na ordem, conferindo entre elas.
+Pelo SQL Editor do painel (Database → SQL Editor) ou por `psql`:
 
 ```bash
 psql "$SUPABASE_DB_URL" -1 -f supabase/migrations/0021_exclusao_titular.sql

@@ -36,78 +36,7 @@ const PENDENTES = [
   { versao: "20260729000023", nome: "0023_tenants_publicos_minimo" },
 ];
 
-if (!TOKEN) {
-  console.error("ERRO: defina SUPABASE_ACCESS_TOKEN (Painel → Account → Access Tokens).");
-  process.exit(1);
-}
-
-async function sql(query) {
-  const resp = await fetch(`https://api.supabase.com/v1/projects/${REF}/database/query`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
-  });
-  const texto = await resp.text();
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${texto.slice(0, 600)}`);
-  try { return JSON.parse(texto); } catch { return texto; }
-}
-
-// ─── 1) Estado atual ─────────────────────────────────────────────────────────
-console.log(`Projeto: ${REF}${DRY ? "  (DRY RUN — nada será aplicado)" : ""}\n`);
-
-const aplicadas = await sql(
-  "select version, name from supabase_migrations.schema_migrations order by version",
-);
-const jaAplicadas = new Set(aplicadas.map((m) => m.name));
-console.log(`Histórico remoto: ${aplicadas.length} migrations.`);
-console.log(`Última: ${aplicadas.at(-1)?.name ?? "(nenhuma)"}\n`);
-
-// ─── 2) Aplicar o que falta ──────────────────────────────────────────────────
-let aplicadasAgora = 0;
-
-for (const { versao, nome } of PENDENTES) {
-  if (jaAplicadas.has(nome)) {
-    console.log(`· ${nome} — já aplicada, pulando.`);
-    continue;
-  }
-
-  const caminho = join(RAIZ, "supabase", "migrations", `${nome}.sql`);
-  const conteudo = await readFile(caminho, "utf8");
-
-  if (DRY) {
-    console.log(`· ${nome} — PENDENTE (${conteudo.length} bytes).`);
-    continue;
-  }
-
-  process.stdout.write(`· ${nome} — aplicando… `);
-  try {
-    // A Management API já roda cada requisição numa transação: erro no meio
-    // desfaz o arquivo inteiro em vez de deixar o schema pela metade.
-    await sql(conteudo);
-    await sql(
-      `insert into supabase_migrations.schema_migrations (version, name)
-       values ('${versao}', '${nome}')
-       on conflict (version) do nothing`,
-    );
-    console.log("OK");
-    aplicadasAgora++;
-  } catch (e) {
-    console.log("FALHOU");
-    console.error(`\n  ${e.message}\n`);
-    console.error("Parando aqui. Nada além desta migration foi aplicado.");
-    process.exit(1);
-  }
-}
-
-if (DRY) {
-  console.log("\nDry run concluído. Rode sem --dry-run para aplicar.");
-  process.exit(0);
-}
-
-// ─── 3) Verificação ──────────────────────────────────────────────────────────
-console.log(`\n${aplicadasAgora} migration(s) aplicada(s). Verificando…\n`);
-
-const checagens = [
+const CHECAGENS = [
   ["0021 · função anonimizar_titular",
    "select count(*)::int as n from pg_proc where proname = 'anonimizar_titular'"],
   ["0021 · guarda auth.uid() no corpo",
@@ -124,17 +53,101 @@ const checagens = [
    "select (count(*) = 0)::int as n from pg_tables where schemaname='public' and not rowsecurity"],
 ];
 
-let falhas = 0;
-for (const [rotulo, query] of checagens) {
-  const r = await sql(query);
-  const ok = Number(r?.[0]?.n) === 1;
-  console.log(`${ok ? "✓" : "✗"} ${rotulo}`);
-  if (!ok) falhas++;
+async function sql(query) {
+  const resp = await fetch(`https://api.supabase.com/v1/projects/${REF}/database/query`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  const texto = await resp.text();
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${texto.slice(0, 600)}`);
+  try { return JSON.parse(texto); } catch { return texto; }
 }
 
-console.log(
-  falhas === 0
-    ? "\nTudo certo. Próximo passo: publicar as Edge Functions (docs/DEPLOY.md)."
-    : `\n${falhas} verificação(ões) falharam — investigue antes de publicar as functions.`,
-);
-process.exit(falhas === 0 ? 0 : 1);
+async function main() {
+  if (!TOKEN) {
+    console.error("ERRO: defina SUPABASE_ACCESS_TOKEN (Painel → Account → Access Tokens).");
+    return 1;
+  }
+
+  console.log(`Projeto: ${REF}${DRY ? "  (DRY RUN — nada será aplicado)" : ""}\n`);
+
+  // ─── 1) Estado atual ───────────────────────────────────────────────────────
+  const aplicadas = await sql(
+    "select version, name from supabase_migrations.schema_migrations order by version",
+  );
+  const jaAplicadas = new Set(aplicadas.map((m) => m.name));
+  console.log(`Histórico remoto: ${aplicadas.length} migrations.`);
+  console.log(`Última: ${aplicadas.at(-1)?.name ?? "(nenhuma)"}\n`);
+
+  // ─── 2) Aplicar o que falta ────────────────────────────────────────────────
+  let aplicadasAgora = 0;
+
+  for (const { versao, nome } of PENDENTES) {
+    if (jaAplicadas.has(nome)) {
+      console.log(`· ${nome} — já aplicada, pulando.`);
+      continue;
+    }
+
+    const conteudo = await readFile(join(RAIZ, "supabase", "migrations", `${nome}.sql`), "utf8");
+
+    if (DRY) {
+      console.log(`· ${nome} — PENDENTE (${conteudo.length} bytes).`);
+      continue;
+    }
+
+    process.stdout.write(`· ${nome} — aplicando… `);
+    try {
+      // A Management API já roda cada requisição numa transação: erro no meio
+      // desfaz o arquivo inteiro em vez de deixar o schema pela metade.
+      await sql(conteudo);
+      await sql(
+        `insert into supabase_migrations.schema_migrations (version, name)
+         values ('${versao}', '${nome}')
+         on conflict (version) do nothing`,
+      );
+      console.log("OK");
+      aplicadasAgora++;
+    } catch (e) {
+      console.log("FALHOU");
+      console.error(`\n  ${e.message}\n`);
+      console.error("Parando aqui. Nada além desta migration foi aplicado.");
+      return 1;
+    }
+  }
+
+  if (DRY) {
+    console.log("\nDry run concluído. Rode sem --dry-run para aplicar.");
+    return 0;
+  }
+
+  // ─── 3) Verificação ────────────────────────────────────────────────────────
+  console.log(`\n${aplicadasAgora} migration(s) aplicada(s). Verificando…\n`);
+
+  let falhas = 0;
+  for (const [rotulo, query] of CHECAGENS) {
+    const r = await sql(query);
+    const ok = Number(r?.[0]?.n) === 1;
+    console.log(`${ok ? "✓" : "✗"} ${rotulo}`);
+    if (!ok) falhas++;
+  }
+
+  console.log(
+    falhas === 0
+      ? "\nTudo certo. Próximo passo: publicar as Edge Functions (docs/DEPLOY.md)."
+      : `\n${falhas} verificação(ões) falharam — investigue antes de publicar as functions.`,
+  );
+  return falhas === 0 ? 0 : 1;
+}
+
+// process.exit() derruba o processo com sockets do fetch ainda abertos, e no
+// Windows isso vira "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)"
+// com exit code 9 — mesmo quando tudo deu certo. Num script de deploy o código
+// de saída é o que distingue sucesso de falha, então definimos process.exitCode
+// e deixamos o Node encerrar naturalmente quando os handles fecharem.
+main()
+  .then((codigo) => { process.exitCode = codigo; })
+  .catch((e) => {
+    console.error(`\nERRO: ${e.message}`);
+    process.exitCode = 1;
+  });

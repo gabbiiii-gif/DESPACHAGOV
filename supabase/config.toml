@@ -1,0 +1,74 @@
+# ─── DespachaGov · Configuração do Supabase CLI ──────────────────────────────
+# Criado em 2026-07-29 para fechar o achado da auditoria: o verify_jwt de cada
+# Edge Function existia SOMENTE no painel. Três funções dependem de
+# verify_jwt = false para funcionar, e isso vivia como comentário no topo do
+# arquivo .ts — sem enforcement. Um redeploy feito de outra máquina, ou um
+# toggle trocado sem querer no painel, derrubava o login inteiro sem deixar
+# rastro em lugar nenhum do repositório.
+#
+# ⚠️ ESCOPO DELIBERADAMENTE MÍNIMO
+# Este arquivo declara APENAS project_id e [functions.*]. Não inclui [auth],
+# [db], [api] ou [storage] de propósito: `supabase config push` sobrescreve a
+# configuração remota com o que estiver aqui, e uma seção [auth] parcial
+# resetaria ajustes de produção (templates de e-mail, SMTP, expiração de token)
+# para o default do CLI. Se um dia for necessário versionar essas seções,
+# extraia a configuração REAL do projeto antes, não escreva de cabeça.
+
+project_id = "evdjijvxllhrlkkhrcdi"
+
+# ─── Funções SEM verificação de JWT ──────────────────────────────────────────
+# Estas três precisam receber requisições que não carregam token de usuário.
+# Cada uma faz a própria autorização no handler — não são endpoints abertos.
+
+[functions.login]
+# Autentica por e-mail/matrícula + senha e devolve a sessão. Por definição o
+# chamador ainda não tem JWT. Marcar true aqui trava o login de todo mundo.
+verify_jwt = false
+
+[functions.notify-event]
+# Chamada pelo trigger pg_net do Postgres, não pelo browser. A autorização é o
+# header x-notify-secret conferido contra NOTIFY_WEBHOOK_SECRET (ou
+# public.notify_config). Com verify_jwt = true o gateway rejeitaria a chamada
+# do trigger antes de o handler rodar, e as notificações parariam em silêncio.
+verify_jwt = false
+
+[functions.log-erro]
+# Recebe erros do frontend, inclusive os que acontecem na tela de login, onde
+# não há sessão. O handler lê o JWT quando existe (para carimbar tenant_id) e
+# aceita null quando não existe. Com verify_jwt = true perderíamos exatamente
+# os erros de autenticação — a classe que mais precisamos enxergar.
+verify_jwt = false
+
+# ─── Funções COM verificação de JWT ──────────────────────────────────────────
+# Padrão do CLI já é true; declaradas explicitamente para que o arquivo seja a
+# lista completa das funções e ninguém precise adivinhar o que ficou de fora.
+
+[functions.health]
+# Exceção consciente: o healthcheck precisa ser sondável por um monitor externo
+# de uptime, que não tem credencial. Não devolve dado de negócio — só o estado
+# das dependências. Ver o comentário no próprio index.ts.
+verify_jwt = false
+
+[functions.create-tenant]
+verify_jwt = true
+
+[functions.delete-tenant]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.record-consent]
+verify_jwt = true
+
+[functions.invite-user]
+verify_jwt = true
+
+[functions.geocode]
+verify_jwt = true
+
+[functions.ai-agent]
+verify_jwt = true
+
+[functions.ai-monitor]
+verify_jwt = true

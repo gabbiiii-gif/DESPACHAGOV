@@ -95,7 +95,7 @@ Isto é o que faz uma restauração "bem-sucedida" resultar num sistema quebrado
 | Item | Consequência | Como recuperar |
 |---|---|---|
 | **Usuários do `auth.users`** | Ninguém consegue entrar. `public.users` fica com FK apontando para nada. | Recriar via `create-tenant` / `invite-user`, ou restaurar o schema `auth` se o dump o incluir. |
-| **Arquivos do Storage** (`contratos`, `chamado-anexos`) | Anexos e fotos de execução somem; comprovantes de obra ficam sem prova. | Backup separado dos buckets — **não existe hoje**. Ver "Lacunas conhecidas". |
+| **Arquivos do Storage** (`contratos`, `chamado-anexos`) | Anexos e fotos de execução somem; comprovantes de obra ficam sem prova. | Snapshot próprio dos buckets — ver seção 3.6. O dump do Postgres guarda a **linha** de `chamado_anexos` (`storage_path`, mime, tamanho), nunca o **arquivo**. |
 | **Secrets das Edge Functions** | E-mail, IA e geocoding param. | `supabase secrets set` de novo (`RESEND_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_MAPS_API_KEY`, `NOTIFY_WEBHOOK_SECRET`). |
 | **Edge Functions** | Login, convite e notificação param. | `supabase functions deploy` a partir do repo. |
 | **Config de `verify_jwt` por função** | `login` pode voltar exigindo JWT e quebrar a autenticação inteira. | Reconferir função a função no painel. Não há `config.toml` versionado. |
@@ -108,6 +108,47 @@ Isto é o que faz uma restauração "bem-sucedida" resultar num sistema quebrado
 3. `supabase secrets set` para todos os segredos.
 4. Reconfira `verify_jwt` (especialmente `login`, que exige **false**).
 5. Seção 5.
+
+### 3.6 Restaurar os arquivos do Storage
+
+Snapshot gerado por `scripts/backup-storage.mjs`, no mesmo formato do dump do
+banco (tar.gz → gpg), em `s3://<bucket>/storage/AAAA/MM/`.
+
+```bash
+aws s3 ls s3://despachagov-backups/storage/ --recursive | sort | tail -5
+aws s3 cp s3://despachagov-backups/storage/2026/08/despachagov-storage_20260801T060000Z.tar.gz.gpg .
+
+mkdir -p ~/restore-storage && chmod 700 ~/restore-storage && cd ~/restore-storage
+gpg --batch --passphrase-fd 0 --decrypt \
+    --output snapshot.tar.gz ../despachagov-storage_20260801T060000Z.tar.gz.gpg
+tar -xzf snapshot.tar.gz
+```
+
+A árvore extraída preserva `<bucket>/<tenant>/<chamado>/arquivo`, que é
+exatamente o layout que as policies de Storage esperam — a primeira pasta
+precisa ser o `tenant_id`, senão `contratos_storage_select` e
+`chamado_anexos_storage_select` negam a leitura.
+
+Reenvie com o CLI (usa a service key, ignora RLS):
+
+```bash
+cd despachagov-storage_20260801T060000Z
+supabase storage cp -r contratos      ss:///contratos      --project-ref <ref>
+supabase storage cp -r chamado-anexos ss:///chamado-anexos --project-ref <ref>
+```
+
+Confira o alinhamento entre banco e arquivos — é aqui que uma restauração
+"bem-sucedida" costuma se revelar incompleta:
+
+```sql
+-- Anexos registrados no banco cujo arquivo não voltou ficam órfãos: o chamado
+-- mostra a foto na lista e quebra ao abrir.
+select count(*) from chamado_anexos;
+```
+
+Compare com a contagem de arquivos extraídos em `chamado-anexos/`. Divergência
+significa que o snapshot é mais antigo que o dump do banco — restaure o par mais
+próximo em data.
 
 ## 4. Drill trimestral (o que valida este documento)
 
@@ -153,10 +194,16 @@ assinatura. Se o anexo falhar, o problema é Storage (3.4), não banco.
 
 ## Lacunas conhecidas
 
-- **Storage não tem backup.** Os buckets `contratos` e `chamado-anexos` não são
-  copiados por nenhum processo. Um desastre no Storage é hoje **perda total** de
-  anexos, fotos de execução e PDFs de contrato. Este é o próximo item a resolver.
-- **Nenhum drill executado.** A tabela abaixo está vazia por isso.
+- **Nenhum drill executado.** A tabela abaixo está vazia por isso — é a lacuna
+  mais séria que resta, porque todo o resto deste documento é teoria até alguém
+  cronometrar uma restauração de verdade.
+- **Banco e Storage são snapshots independentes.** Rodam no mesmo horário mas
+  não são atômicos entre si: um anexo enviado entre os dois pode existir num e
+  não no outro. Na restauração, use o par mais próximo em data e trate a
+  divergência com a consulta da seção 3.6.
+- **Snapshot de Storage é completo, não incremental.** Adequado no volume de
+  piloto; acima de ~5 GB o custo de tempo e egress cresce e vale migrar para
+  manifesto incremental. O script avisa ao cruzar esse limite.
 - **Sem alerta de falha.** Se o workflow de backup quebrar, ninguém é avisado
   além do e-mail padrão do GitHub Actions.
 

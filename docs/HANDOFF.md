@@ -63,11 +63,44 @@ O botão "Buscar coordenadas pelo endereço" chama a Edge Function **`geocode`**
 Google, chave server-side fora do bundle); se vazio, cai no **Nominatim** (grátis, sem chave).
 `src/services/geocode.ts` → `supabase.functions.invoke("geocode")` → Nominatim fallback.
 
+### ⚠️ 2026-08-01 — CHAVE EXPOSTA E IRRESTRITA. AÇÃO PENDENTE.
+
+O texto abaixo (de 2026-06-27) descrevia um plano cuja premissa **não se
+concretizou**, e a combinação resultante é explorável. Verificado em produção:
+
+- A chave **está no bundle público**: 3 ocorrências em
+  `https://www.despachagov.com/assets/*.js`, injetadas por
+  `VITE_GOOGLE_MAPS_API_KEY` (lida em `MapaUnidades.tsx`, `PinPickerMap.tsx`,
+  `MapaChamados.tsx`). A variável **continua definida na Vercel** — nunca foi
+  removida, apesar de a linha abaixo afirmar que sim.
+- A chave **está irrestrita**: requisição ao Geocoding sem cabeçalho `Referer`
+  responde `status: OK`.
+
+Ou seja: qualquer pessoa copia a chave do JavaScript e gasta na conta do owner.
+A restrição de referrer foi removida (passo 2 abaixo) confiando em que a chave
+tinha saído do front — ela não saiu, e a proteção que existia caiu junto.
+
+**Correção — precisa de DUAS chaves, não uma:**
+
+1. **Rotacionar a chave atual.** Ela está pública e irrestrita; qualquer coisa
+   feita sem rotacionar deixa a chave antiga válida.
+2. **Chave A (frontend)** — restrita a **Maps JavaScript API** + restrição de
+   **referrer HTTP** (`https://www.despachagov.com/*` e o apex). Pode ficar no
+   bundle: é assim que o Google espera que chaves de Maps JS sejam usadas.
+   Continua em `VITE_GOOGLE_MAPS_API_KEY` na Vercel.
+3. **Chave B (server-side)** — restrita a **Geocoding API**, sem referrer
+   (o web service rejeita chaves referrer-restricted). Vive só como secret
+   `GOOGLE_MAPS_API_KEY` da Edge Function. Nunca entra no front.
+4. **Orçamento e cota** no Google Cloud: budget com alerta + cota mensal por
+   API. Sem teto, chave vazada é fatura aberta.
+
+---
+
 Estado (2026-06-27): function deployada. Falta **2 passos do owner** p/ Google funcionar:
 1. **Setar o secret**: `supabase secrets set GOOGLE_MAPS_API_KEY=<chave> --project-ref evdjijvxllhrlkkhrcdi` (classifier bloqueou eu setar; é teu).
-2. **Mudar a restrição da chave** no Google Cloud Console de **HTTP referrer → "Nenhuma" (ou IP)** — o Geocoding web service **rejeita chaves referrer-restricted** (erro `REQUEST_DENIED`), mesmo server-side. Como agora a chave é secret (não vai no bundle), restrição "Nenhuma" é segura. Manter limite à **Geocoding API** + **cota 10k/mês**.
+2. **Mudar a restrição da chave** no Google Cloud Console de **HTTP referrer → "Nenhuma" (ou IP)** — o Geocoding web service **rejeita chaves referrer-restricted** (erro `REQUEST_DENIED`), mesmo server-side. ~~Como agora a chave é secret (não vai no bundle), restrição "Nenhuma" é segura.~~ **← premissa falsa, ver aviso acima.** Manter limite à **Geocoding API** + **cota 10k/mês**.
 
-Enquanto isso, geocoding funciona via Nominatim. A `VITE_GOOGLE_MAPS_API_KEY` saiu do front (pode remover da Vercel).
+Enquanto isso, geocoding funciona via Nominatim. ~~A `VITE_GOOGLE_MAPS_API_KEY` saiu do front (pode remover da Vercel).~~ **← não saiu; segue no bundle em 2026-08-01.**
 
 ## Mudança de escopo (2026-06-27, pedido do owner)
 - **Técnicos não são usuários do app** (nem interno nem de empresa). A empresa cadastra técnicos

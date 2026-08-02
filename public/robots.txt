@@ -15,4 +15,5 @@ Allow: /termos-de-uso
 Allow: /politica-privacidade
 Disallow: /
 
-Sitemap: https://despachagov.com/sitemap.xml
+# Domínio canônico é o www: o apex responde 308 para https://www.despachagov.com.
+Sitemap: https://www.despachagov.com/sitemap.xml
